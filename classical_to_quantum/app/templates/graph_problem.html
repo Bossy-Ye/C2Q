@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Problem</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div id="container">
+        <h1>Graph Problem</h1>
+
+        <h2>Select Problem Type</h2>
+        <select id="problem_type" name="problem_type">
+            <option value="maxcut">MaxCut</option>
+            <option value="clique">Clique</option>
+            <option value="partition">Partition</option>
+            <option value="tsp">TSP</option>
+            <option value="vertex_cover">Vertex Cover</option>
+        </select>
+        <!-- Form to upload file -->
+        <form id="gset_form" enctype="multipart/form-data" method="post">
+            <h2>Upload GSET or Other Supported File</h2>
+            <input type="file" id="gset_file" name="gset_file" accept=".gset,.txt,.csv">
+            <button type="submit">Upload</button>
+        </form>
+
+        <!-- Form to input data manually -->
+        <form id="manual_form" method="post">
+            <h2>Or Input Data Manually</h2>
+            <textarea id="gset_data" name="gset_data" rows="10" cols="50"></textarea>
+            <button type="submit">Submit</button>
+        </form>
+
+        <h2>QASM 3.0 Code</h2>
+        <pre id="qasm_code"></pre>
+
+        <h2>Circuit Diagram</h2>
+        <img id="circuit_image" src="" alt="Circuit Image">
+
+        <h2>Graph Image</h2>
+        <img id="graph_image" src="" alt="Graph Image">
+    </div>
+
+    <script>
+        document.getElementById('gset_form').onsubmit = function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            formData.append('problem_type', document.getElementById('problem_type').value);
+            fetch('/graph_problem', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    document.getElementById('qasm_code').textContent = data.qasm_code;
+                    document.getElementById('circuit_image').src = data.circuit_image;
+                    document.getElementById('graph_image').src = data.graph_image;
+                }
+            });
+        };
+
+        document.getElementById('manual_form').onsubmit = function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            formData.append('problem_type', document.getElementById('problem_type').value);
+            fetch('/graph_problem', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    document.getElementById('qasm_code').textContent = data.qasm_code;
+                    document.getElementById('circuit_image').src = data.circuit_image;
+                    document.getElementById('graph_image').src = data.graph_image;
+                }
+            });
+        };
+    </script>
+</body>
+</html>

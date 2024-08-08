@@ -1,0 +1,3 @@
+pytsp
+qiskit
+tsplib95

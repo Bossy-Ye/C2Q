@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+ <head>
+  <title>Index of /~yyye/yyye/Gset</title>
+ </head>
+ <body>
+<h1>Index of /~yyye/yyye/Gset</h1>
+  <table>
+   <tr><th valign="top"><img src="/icons/blank.gif" alt="[ICO]"></th><th><a href="?C=N;O=D">Name</a></th><th><a href="?C=M;O=A">Last modified</a></th><th><a href="?C=S;O=A">Size</a></th><th><a href="?C=D;O=A">Description</a></th></tr>
+   <tr><th colspan="5"><hr></th></tr>
+<tr><td valign="top"><img src="/icons/back.gif" alt="[PARENTDIR]"></td><td><a href="/~yyye/yyye/">Parent Directory</a></td><td>&nbsp;</td><td align="right">  - </td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G1">G1</a></td><td align="right">2003-09-11 12:16  </td><td align="right">182K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G2">G2</a></td><td align="right">2003-09-11 12:16  </td><td align="right">182K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G3">G3</a></td><td align="right">2003-09-11 12:16  </td><td align="right">182K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G4">G4</a></td><td align="right">2003-09-11 12:16  </td><td align="right">182K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G5">G5</a></td><td align="right">2003-09-11 12:16  </td><td align="right">182K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G6">G6</a></td><td align="right">2003-09-11 12:16  </td><td align="right">192K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G7">G7</a></td><td align="right">2003-09-11 12:16  </td><td align="right">192K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G8">G8</a></td><td align="right">2003-09-11 12:16  </td><td align="right">192K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G9">G9</a></td><td align="right">2003-09-11 12:16  </td><td align="right">192K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G10">G10</a></td><td align="right">2003-09-11 12:16  </td><td align="right">192K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G11">G11</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 16K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G12">G12</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 16K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G13">G13</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 16K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G14">G14</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 42K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G15">G15</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 42K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G16">G16</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 42K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G17">G17</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 42K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G18">G18</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 44K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G19">G19</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 44K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G20">G20</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 44K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G21">G21</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 44K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G22">G22</a></td><td align="right">2003-09-11 12:16  </td><td align="right">213K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G23">G23</a></td><td align="right">2023-05-05 19:19  </td><td align="right">213K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G24">G24</a></td><td align="right">2003-09-11 12:16  </td><td align="right">213K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G25">G25</a></td><td align="right">2003-09-11 12:16  </td><td align="right">213K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G26">G26</a></td><td align="right">2003-09-11 12:16  </td><td align="right">213K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G27">G27</a></td><td align="right">2003-09-11 12:16  </td><td align="right">223K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G28">G28</a></td><td align="right">2003-09-11 12:16  </td><td align="right">222K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G29">G29</a></td><td align="right">2003-09-11 12:16  </td><td align="right">222K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G30">G30</a></td><td align="right">2003-09-11 12:16  </td><td align="right">222K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G31">G31</a></td><td align="right">2003-09-11 12:16  </td><td align="right">222K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G32">G32</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 45K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G33">G33</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 45K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G34">G34</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 45K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G35">G35</a></td><td align="right">2003-09-11 12:16  </td><td align="right">115K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G36">G36</a></td><td align="right">2003-09-11 12:16  </td><td align="right">116K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G37">G37</a></td><td align="right">2003-09-11 12:16  </td><td align="right">116K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G38">G38</a></td><td align="right">2003-09-11 12:16  </td><td align="right">116K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G39">G39</a></td><td align="right">2003-09-11 12:16  </td><td align="right">121K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G40">G40</a></td><td align="right">2003-09-11 12:16  </td><td align="right">121K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G41">G41</a></td><td align="right">2003-09-11 12:16  </td><td align="right">121K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G42">G42</a></td><td align="right">2003-09-11 12:16  </td><td align="right">121K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G43">G43</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 95K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G44">G44</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 95K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G45">G45</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 96K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G46">G46</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 95K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G47">G47</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 96K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G48">G48</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 66K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G49">G49</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 66K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G50">G50</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 66K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G51">G51</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 53K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G52">G52</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 53K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G53">G53</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 53K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G54">G54</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 53K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G55">G55</a></td><td align="right">2003-09-11 12:16  </td><td align="right">141K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G56">G56</a></td><td align="right">2003-09-11 12:16  </td><td align="right">159K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G57">G57</a></td><td align="right">2003-09-11 12:16  </td><td align="right">118K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G58">G58</a></td><td align="right">2003-09-11 12:16  </td><td align="right">311K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G59">G59</a></td><td align="right">2003-09-11 12:16  </td><td align="right">325K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G60">G60</a></td><td align="right">2003-09-11 12:16  </td><td align="right">212K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G61">G61</a></td><td align="right">2003-09-11 12:16  </td><td align="right">221K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G62">G62</a></td><td align="right">2003-09-11 12:16  </td><td align="right">167K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G63">G63</a></td><td align="right">2003-09-11 12:16  </td><td align="right">443K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G64">G64</a></td><td align="right">2003-09-11 12:16  </td><td align="right">463K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G65">G65</a></td><td align="right">2003-09-11 12:16  </td><td align="right">191K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G66">G66</a></td><td align="right">2003-09-11 12:16  </td><td align="right">215K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G67">G67</a></td><td align="right">2003-09-11 12:16  </td><td align="right">240K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G70">G70</a></td><td align="right">2003-09-11 12:16  </td><td align="right">115K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G72">G72</a></td><td align="right">2003-09-11 12:16  </td><td align="right">240K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G77">G77</a></td><td align="right">2003-09-11 12:16  </td><td align="right">353K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="G81">G81</a></td><td align="right">2003-09-11 12:16  </td><td align="right">523K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="Makefile">Makefile</a></td><td align="right">2003-09-11 12:16  </td><td align="right">125 </td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="ecutG1">ecutG1</a></td><td align="right">2003-09-11 12:16  </td><td align="right">356K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="ecutG11">ecutG11</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 52K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="ecutG13">ecutG13</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 52K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="ecutG32">ecutG32</a></td><td align="right">2003-09-11 12:16  </td><td align="right">142K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="ecutG48">ecutG48</a></td><td align="right">2003-09-11 12:16  </td><td align="right">214K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/text.gif" alt="[TXT]"></td><td><a href="g2sdp.c">g2sdp.c</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 12K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/text.gif" alt="[TXT]"></td><td><a href="gb_lib.c">gb_lib.c</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 59K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="ggenerator.readme">ggenerator.readme</a></td><td align="right">2003-09-11 12:16  </td><td align="right">783 </td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="maxG1">maxG1</a></td><td align="right">2003-09-11 12:16  </td><td align="right">347K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="maxG11">maxG11</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 44K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="maxG13">maxG13</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 44K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="maxG32">maxG32</a></td><td align="right">2003-09-11 12:16  </td><td align="right">117K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="maxG48">maxG48</a></td><td align="right">2003-09-11 12:16  </td><td align="right">177K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/text.gif" alt="[TXT]"></td><td><a href="rudy.c">rudy.c</a></td><td align="right">2003-09-11 12:16  </td><td align="right"> 32K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="stableG11">stableG11</a></td><td align="right">2003-09-11 12:16  </td><td align="right">101K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="stableG13">stableG13</a></td><td align="right">2003-09-11 12:16  </td><td align="right">101K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="stableG32">stableG32</a></td><td align="right">2003-09-11 12:16  </td><td align="right">269K</td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="stableG48">stableG48</a></td><td align="right">2003-09-11 12:16  </td><td align="right">407K</td><td>&nbsp;</td></tr>
+   <tr><th colspan="5"><hr></th></tr>
+</table>
+</body></html>
