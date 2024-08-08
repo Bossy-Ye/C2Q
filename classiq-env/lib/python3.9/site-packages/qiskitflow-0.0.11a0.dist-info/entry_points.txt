@@ -1,0 +1,4 @@
+
+        [console_scripts]
+        qiskitflow=qiskitflow.cli.cli:qiskitflow
+    
