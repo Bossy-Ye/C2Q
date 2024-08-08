@@ -57,9 +57,8 @@ if __name__ == "__main__":
 
 generator = QASMGenerator()
 
-qasm = generator.qasm_generate(classical_code, verbose=True)
+qasm = generator.qasm_generate(classical_code, verbose=False)
 print(generator.parser.variables)
-result = generator.run_qasm_aer(qasm)
-print(result)
+print(generator.parser.functions)
 
 
