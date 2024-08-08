@@ -18,19 +18,9 @@ Parts of this project are based on code and documentation from the Qiskit projec
 
 The following changes were made to the original Qiskit documentation and provided examples:
 -
+### Workflow of Classi|Q>
+![alt text](./assets/workflow.png "Title")
 
-
-IMPLEMENTED
-
-1. VARIABLE TYPES: int, float, value, array
-2. CONTROL FLOW: for loop, while loop, if else, etc.,
-3. function(subroutines)
-4. assignment (variable declaration): normal assignment, argument assignment(such as: '+=', '-=')
-
-LIMITATION:
-1. IN PYTHON, we dont have variable declaring, apply keyword "value" for most of the declaration(except float and uint32 currently).
-2. There is no else if in QASM3.0, but I still apply it (translate from .py directly).
-run $ python3 demo4.py
 
 
 developed in another machine
