@@ -41,13 +41,16 @@ class QASMGenerator:
 
     def qasm_generate(self, classical_code, verbose=False):
         self.parser = ProblemParser()
-        self.problem_type = self.parser.parse_code(classical_code)
+        self.parser.parse_code(classical_code)
+        self.parser.evaluate_problem_type()
+        self.problem_type = self.parser.problem_type
+        print(self.parser.evaluation())
         if verbose:
-            print(self.parser.variables)
+            print(f'problem type: {self.parser.problem_type} data: {self.parser.data}')
         if self.problem_type == ProblemType.EIGENVALUE:
-            self.observable = decompose_into_pauli(self.parser.observable)
+            self.observable = decompose_into_pauli(self.parser.data)
             algorithm = VQEAlgorithm(self.observable,
-                                     qubit_num(len(self.parser.observable[0])),
+                                     qubit_num(len(self.parser.data[0])),
                                      reps=2)
             algorithm.generate_quantum_code()
             return algorithm.export_to_qasm3()

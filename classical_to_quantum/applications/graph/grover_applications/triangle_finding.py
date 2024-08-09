@@ -214,7 +214,6 @@ class TriangleFinding(GraphProblem):
         inv_stat_prep = sub_cir.inverse().to_instruction()
         self.qc = grover(n_nodes, stat_prep, inv_stat_prep, self.edges)
         print(self.qc)
-
     def search(self):
         # Simulate and plot results
         qasm_simulator = Aer.get_backend('qasm_simulator')

@@ -5,16 +5,20 @@ from classical_to_quantum.applications.graph.ising_applications.max_cut import M
 
 from classical_to_quantum.applications.graph.ising_applications.vertex_coverp import VertexCoverp
 
+
 class MyGraphTest(unittest.TestCase):
-    def test_something(self):
-        tri = TriangleFinding("/Users/mac/workspace/quantum-journey2/classical_to_quantum/graph_cases/Gset/G7.txt")
+    def test_triangle_finding(self):
+        tri = TriangleFinding("/Users/mac/workspace/quantum-journey2/classical_to_quantum/graph_cases/Gset/G3")
         res = tri.search()
         print(res)
         self.assertEqual(True, True)  # add assertion here
+
     def test_tsp(self):
         tsp = TspP("/Users/mac/workspace/quantum-journey2/classical_to_quantum/graph_cases/TSPLIB/G1")
         tsp.run(verbose=True)
+        print(tsp.generate_qasm3())
         tsp.plot_res()
+
     def test_maxcut(self):
         maxcut = MaxCut("/Users/mac/workspace/quantum-journey2/classical_to_quantum/graph_cases/Gset/G7.txt")
         maxcut.run(verbose=True)
@@ -24,6 +28,7 @@ class MyGraphTest(unittest.TestCase):
         vx = VertexCoverp("/Users/mac/workspace/quantum-journey2/classical_to_quantum/graph_cases/Gset/G7.txt")
         vx.run(verbose=True)
         vx.plot_res()
+
 
 if __name__ == '__main__':
     unittest.main()

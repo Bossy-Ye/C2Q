@@ -18,43 +18,21 @@ print(f"The minimum eigenvalue of the matrix is: {min_eigval}")
 """
 classical_code_kernel = """
 import numpy as np
-from sklearn import datasets
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score
-
-# Load the dataset
-iris = datasets.load_iris()
-X = iris.data
-y = iris.target
-
-# Only take the first two features for simplicity
-X = X[:, :2]
-
-# Split the dataset into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
-
-# Standardize features by removing the mean and scaling to unit variance
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
-
-# Create an SVM classifier with an RBF kernel
-svm_rbf = SVC(kernel='rbf', gamma='scale')
-
-a, b ,c = 1, 2, 3
-# Train the classifier
-svm_rbf.fit(X_train, y_train)
-
-# Make predictions
-y_pred = svm_rbf.predict(X_test)
-
-# Calculate accuracy
-accuracy = accuracy_score(y_test, y_pred)
+def minimum_eigenvalue(matrix):
+    eigenvalues = np.linalg.eigvals(matrix)
+    return np.min(eigenvalues)
+a= 4
+b = [[1,2],[3,4],[5]]
+matrix = np.array([[-2, 0, 0, -5], [0, 4, 1, 0], [0, 1, 4, 0], [-5, 0, 0, -2]])
+min_eigval = minimum_eigenvalue(matrix)
+print(f"The minimum eigenvalue of the matrix is: {min_eigval}")
 """
 #parser = ProblemParser()
 parser = ProblemParser()
 m = parser.parse_code(classical_code_kernel)
-print(parser.functions)
+parser.evaluate_problem_type()
+print(parser.problem_type)
+print(parser.evaluation())
+print(parser.visitor.variables)
+
 #print(parser.parse_code(classical_code))

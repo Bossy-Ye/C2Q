@@ -1,7 +1,7 @@
 import unittest
-from graph_color import *
+from classical_to_quantum.applications.graph.grover_applications.graph_color import *
 from qiskit.quantum_info import Statevector
-
+from classical_to_quantum.applications.graph.grover_applications.triangle_finding import *
 
 def print_amplitudes(statevector, relevant_bits=None):
     num = 0
@@ -87,6 +87,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_coloring_graph_init(self):
         return
+
 
 if __name__ == '__main__':
     unittest.main()

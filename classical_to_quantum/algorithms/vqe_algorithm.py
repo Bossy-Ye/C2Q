@@ -20,7 +20,7 @@ from qiskit import qasm3
 class VQEAlgorithm(BaseAlgorithm):
     def __init__(self, observable: object, n_qubits,
                  run_as_classical=True, run_as_quantum=False,
-                 reps = 3):
+                 reps=3):
         super().__init__(run_as_classical, run_as_quantum)
         self.result = None
         self.ansatz = None
@@ -35,6 +35,7 @@ class VQEAlgorithm(BaseAlgorithm):
         Returns:
             dict: The result containing the eigenvalue and optimal parameters.
         """
+
         def cost_func_vqe(params, ansatz, hamiltonian, estimator):
             """Return estimate of energy from estimator
 
@@ -105,5 +106,5 @@ class VQEAlgorithm(BaseAlgorithm):
             session.close()
 
     def export_to_qasm3(self):
-        return qasm3.dumps(self.ansatz.assign_parameters(self.result.x), experimental=qasm3.ExperimentalFeatures.SWITCH_CASE_V1)
-
+        return qasm3.dumps(self.ansatz.assign_parameters(self.result.x),
+                           experimental=qasm3.ExperimentalFeatures.SWITCH_CASE_V1)

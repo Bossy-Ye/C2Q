@@ -21,6 +21,6 @@ print(f"The minimum eigenvalue of the matrix is: {min_eigval}")
 
 generator = QASMGenerator()
 
-qasm = generator.qasm_generate(classical_code)
-result = generator.run_qasm_aer(qasm, primitive='estimator', noise=0.02)
+qasm = generator.qasm_generate(classical_code, verbose=True)
+result = generator.run_qasm_aer(qasm, primitive='sampler', noise=0.02)
 print(result)

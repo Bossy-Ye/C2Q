@@ -134,13 +134,13 @@ def quantum_subtract(left, right, n_bits):
     return qc.decompose().decompose(), result
 
 
-qc, res = quantum_subtract(5, -16, 5)
-# qc = quantum_subtract(23, 6, 5)
+# qc, res = quantum_subtract(5, -16, 5)
+# # qc = quantum_subtract(23, 6, 5)
+# # print(qc)
+# # sampler = Sampler()
+# # result = sampler.run(qc, shots=1024).result()
 # print(qc)
-# sampler = Sampler()
-# result = sampler.run(qc, shots=1024).result()
-print(qc)
-print(res)
+# print(res)
 
 def permutations(list):
     result = []
