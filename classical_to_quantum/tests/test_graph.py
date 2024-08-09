@@ -8,9 +8,11 @@ from classical_to_quantum.applications.graph.ising_applications.vertex_coverp im
 
 class MyGraphTest(unittest.TestCase):
     def test_triangle_finding(self):
-        tri = TriangleFinding("/Users/mac/workspace/quantum-journey2/classical_to_quantum/graph_cases/Gset/G3")
+        tri = TriangleFinding("/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/graph_cases/Gset/G3")
         res = tri.search()
         print(res)
+        #tri.export_to_qasm3()
+        tri.plot_res()
         self.assertEqual(True, True)  # add assertion here
 
     def test_tsp(self):

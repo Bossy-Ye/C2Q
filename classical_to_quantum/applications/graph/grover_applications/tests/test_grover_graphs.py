@@ -37,7 +37,7 @@ def print_negative_amplitudes(statevector):
 
 
 class MyTestCase(unittest.TestCase):
-    def test_graph_oracle(self):
+    def test_graph_coloring_oracle(self):
         #prep = graph_color_prep(variable_qubits)
         prep = QuantumCircuit(output_qubit + 1)
         prep.h(variable_qubits)
@@ -55,6 +55,22 @@ class MyTestCase(unittest.TestCase):
         # Call the function with the statevector
         #print_amplitudes(state)
         #self.assertEqual(True, False)  # add assertion here
+
+    def test_graph_triangle_oracle(self):
+        tri = TriangleFinding(
+            "/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/graph_cases/Gset/G3")
+        n_nodes = tri.num_nodes
+        N = math.comb(n_nodes, 3)
+        nodes_qubits = QuantumRegister(n_nodes, name='nodes')
+        edge_anc = QuantumRegister(2, name='edge_anc')
+        ancilla = QuantumRegister(n_nodes - 2, name='cccx_diff_anc')
+        neg_base = QuantumRegister(1, name='check_qubits')
+        prep = QuantumCircuit(n_nodes+2+n_nodes-2+1)
+        prep.h(tri.graph().nodes)
+        oracle = triangle_oracle(tri.edges,nodes_qubits, edge_anc, ancilla, neg_base)
+        state = Statevector(prep)
+        state = state.evolve(oracle)
+        print(oracle)
 
     def test_equality_checker(self):
         qc = create_equality_checker_circuit(2)

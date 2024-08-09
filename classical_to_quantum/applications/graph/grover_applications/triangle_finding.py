@@ -89,6 +89,33 @@ def oracle(n_nodes, edges, qc, nodes_qubits, edge_anc, ancilla, neg_base):
     qc.barrier()
 
 
+def triangle_oracle(edges, nodes_qubits, edge_anc, ancilla, neg_base):
+    k = 3  # k is the number of edges, in case of a triangle, it's 3
+    # 1- edge counter
+    # forward circuit
+    qc = QuantumCircuit(nodes_qubits, edge_anc, ancilla, neg_base)
+    qc.x(neg_base[0])
+    qc.h(neg_base[0])
+    qc.barrier()
+    qc.ccx(nodes_qubits[edges[0][0]], nodes_qubits[edges[0][1]], edge_anc[0])
+    for i in range(1, len(edges)):
+        qc.mcx([nodes_qubits[edges[i][0]], nodes_qubits[edges[i][1]], edge_anc[0]], edge_anc[1], [ancilla[0]])
+        qc.ccx(nodes_qubits[edges[i][0]], nodes_qubits[edges[i][1]], edge_anc[0])
+    # ----------------------------------------------------------------------------------------------------------
+    # Edges check Qubit
+    edg_k = int((k / 2) * (k - 1))
+    edge_counter(qc, edge_anc, ancilla[0], neg_base[0], edg_k)
+    # ----------------------------------------------------------------------------------------------------------
+
+    # 4- Reverse edge count
+    for i in range(len(edges) - 1, 0, -1):
+        qc.ccx(nodes_qubits[edges[i][0]], nodes_qubits[edges[i][1]], edge_anc[0])
+        qc.mcx([nodes_qubits[edges[i][0]], nodes_qubits[edges[i][1]], edge_anc[0]], edge_anc[1], [ancilla[0]])
+    qc.ccx(nodes_qubits[edges[0][0]], nodes_qubits[edges[0][1]], edge_anc[0])
+    qc.barrier()
+
+    return qc
+
 def cnz(qc, num_control, node, anc):
     """Construct a multi-controlled Z gate
 
@@ -152,31 +179,6 @@ def grover(n_nodes, stat_prep, inv_stat_prep, edges):
     qc.measure(nodes_qubits, class_bits)
     return qc
 
-
-def diffuser(nqubits):
-    qc = QuantumCircuit(nqubits)
-    # Apply transformation |s> -> |00..0> (H-gates)
-    for qubit in range(nqubits):
-        qc.h(qubit)
-    # Apply transformation |00..0> -> |11..1> (X-gates)
-    for qubit in range(nqubits):
-        qc.x(qubit)
-    # Do multi-controlled-Z gate
-    qc.h(nqubits - 1)
-    qc.mcx(list(range(nqubits - 1)), nqubits - 1)  # multi-controlled-toffoli
-    qc.h(nqubits - 1)
-    # Apply transformation |11..1> -> |00..0>
-    for qubit in range(nqubits):
-        qc.x(qubit)
-    # Apply transformation |00..0> -> |s>
-    for qubit in range(nqubits):
-        qc.h(qubit)
-    # We will return the diffuser as a gate
-    U_s = qc.to_gate()
-    U_s.name = "U$_s$"
-    return U_s
-
-
 new_node_id = 0
 
 
@@ -207,13 +209,13 @@ class TriangleFinding(GraphProblem):
         n_nodes = self.num_nodes
         sub_qbits = QuantumRegister(n_nodes)
         sub_cir = QuantumCircuit(sub_qbits, name="state_prep")
-        #sub_cir, sub_qbits = wn(sub_cir, sub_qbits)
-        #sub_cir.x(sub_qbits)
-        sub_cir.h(sub_qbits)
+        sub_cir, sub_qbits = wn(sub_cir, sub_qbits)
+        sub_cir.x(sub_qbits)
+        #sub_cir.h(sub_qbits)
         stat_prep = sub_cir.to_instruction()
         inv_stat_prep = sub_cir.inverse().to_instruction()
         self.qc = grover(n_nodes, stat_prep, inv_stat_prep, self.edges)
-        print(self.qc)
+
     def search(self):
         # Simulate and plot results
         qasm_simulator = Aer.get_backend('qasm_simulator')
