@@ -2,7 +2,7 @@
 
 from classical_to_quantum.algorithms.base_algorithm import BaseAlgorithm
 from qiskit.circuit.library import TwoLocal, NLocal
-from qiskit import QuantumCircuit
+from qiskit import QuantumCircuit, qasm2
 import numpy as np
 from qiskit.primitives import StatevectorEstimator as Estimator, StatevectorEstimator
 from qiskit.primitives import StatevectorSampler as Sampler
@@ -19,9 +19,8 @@ from qiskit import qasm3
 
 class VQEAlgorithm(BaseAlgorithm):
     def __init__(self, observable: object, n_qubits,
-                 run_as_classical=True, run_as_quantum=False,
                  reps=3):
-        super().__init__(run_as_classical, run_as_quantum)
+        super().__init__()
         self.result = None
         self.ansatz = None
         self.observable = observable
@@ -69,42 +68,15 @@ class VQEAlgorithm(BaseAlgorithm):
         self.ansatz = ansatz
         self.circuit = ansatz
         # classical estimator below
-        if self.run_as_classical:
-            estimator = StatevectorEstimator()
+        estimator = StatevectorEstimator()
 
-            x0 = np.ones(len(ansatz.parameters))
-            result = minimize(cost_func_vqe, x0,
-                              args=(ansatz, self.observable, estimator),
-                              method="COBYLA")
-            self.result = result
-            if verbose:
-                print(self.result)
-        elif self.run_as_quantum:
-            service = QiskitRuntimeService(channel='ibm_quantum')
-            backend = service.least_busy(operational=True, simulator=False)
-
-            pm = generate_preset_pass_manager(backend=backend, optimization_level=3)
-            isa_ansatz = pm.run(ansatz)
-            isa_observable = self.observable.apply_layout(layout=isa_ansatz.layout)
-
-            x0 = np.ones(len(ansatz.parameters))
-
-            with Session(backend=backend) as session:
-                session_options = Options()
-                session_options.execution.shots = 4096
-                session_options.resilience_level = 1
-
-                estimator = Estimator(mode=session)
-                sampler = Sampler(mode=session)
-                estimator.options.default_shots = 10_000
-                result = minimize(cost_func_vqe, x0,
-                                  args=(isa_ansatz, isa_observable, estimator),
-                                  method="COBYLA")
-
-                self.result = result
-
-            session.close()
+        x0 = np.ones(len(ansatz.parameters))
+        result = minimize(cost_func_vqe, x0,
+                            args=(ansatz, self.observable, estimator),
+                            method="COBYLA")
+        self.result = result
+        if verbose:
+            print(self.result)
 
     def export_to_qasm(self):
-        return qasm3.dumps(self.ansatz.assign_parameters(self.result.x),
-                           experimental=qasm3.ExperimentalFeatures.SWITCH_CASE_V1)
+        return qasm2.dumps(self.ansatz.assign_parameters(self.result.x))

@@ -33,7 +33,7 @@ class MyGraphTest(unittest.TestCase):
         vx.plot_res()
 
     def test_tsp(self):
-        tsp = TspP("/Users/mac/workspace/quantum-journey2/classical_to_quantum/graph_cases/TSPLIB/G1")
+        tsp = TspP("/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/graph_cases/TSPLIB/G1")
         tsp.run(verbose=True)
         print(tsp.generate_qasm())
         tsp.plot_res()

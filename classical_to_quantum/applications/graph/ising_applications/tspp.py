@@ -1,4 +1,6 @@
 from qiskit import qasm3
+
+from applications.graph.optimization_solver import OptSolver
 from classical_to_quantum.applications.graph.gset import *
 from qiskit_optimization.applications.tsp import Tsp
 from classical_to_quantum.applications.graph.ising_applications.Ising import Ising
@@ -13,11 +15,32 @@ class TspP(Ising):
         Constraints: xip (i represents the node and p represents its order)
         \sum{i}(xip) = 1 and \sum{p}(xip) = 1
         """
+        self.result = None
+        self.solution = None
+        self.is_executed_search = None
+        self.state_vector = None
+        self.ansatz = None
+        self.qp = None
+        self.qubitOp = None
+        self.converge_vals = None
+        self.converge_counts = None
+        self.problem = None
+        self.results = []
+        self.reps_results = []
+        self.is_executed = False
+        self.opt_solver = OptSolver()
         #super().__init__(file_path)
-        super().__init__(file_path)
         #self.problem = Tsp.parse_tsplib_format(file_path)
-        Tsp.parse_tsplib_format()
-        self.problem = Tsp.create_random_instance(3, seed = 1323)
+        self.problem = Tsp.parse_tsplib_format(filename=file_path)
+        self.file_path = file_path
+        self.elist = self.problem.graph.edges
+        self.num_nodes = self.problem.graph.number_of_nodes()
+        self.num_edges = self.problem.graph.number_of_edges()
+        self._graph = self.problem.graph
+        self._w = get_weight_matrix(self._graph, self.num_nodes)
+        print(self._w)
+        self.nodes_results = None
+        self.problem = Tsp.create_random_instance(4, seed = 123)
         self.qp = self.problem.to_quadratic_program()
         self.qp2qubo = QuadraticProgramToQubo()
         self.qubo = self.qp2qubo.convert(self.qp)

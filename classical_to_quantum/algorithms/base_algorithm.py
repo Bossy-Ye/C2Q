@@ -1,8 +1,6 @@
 # classical_to_quantum/algorithms/base_algorithm.py
 class BaseAlgorithm:
-    def __init__(self, run_as_classical=False, run_as_quantum=False):
-        self.run_as_classical = run_as_classical
-        self.run_as_quantum = run_as_quantum
+    def __init__(self):
         self.circuit = None
 
     def run(self):

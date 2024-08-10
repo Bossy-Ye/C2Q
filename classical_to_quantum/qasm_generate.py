@@ -5,7 +5,7 @@ from classical_to_quantum.parser import ProblemParser, ProblemType
 from classical_to_quantum.algorithms.vqe_algorithm import VQEAlgorithm
 from classical_to_quantum.applications.quantum_machine_learning.quantum_kernel_ml import QMLKernel
 from classical_to_quantum.utils import *
-from qiskit import QuantumCircuit, transpile
+from qiskit import QuantumCircuit, transpile, qasm2
 from qiskit.primitives import Sampler, Estimator
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from classical_to_quantum.algorithms.grover import GroverWrapper
@@ -91,7 +91,7 @@ class QASMGenerator:
 
     def run_qasm(self, str, primitive: str = 'sampler'):
         seed = int(np.random.randint(1, 1000000))
-        circuit = qiskit.qasm3.loads(str)
+        circuit = qasm2.loads(str)
         pm = generate_preset_pass_manager(optimization_level=1)
         optimized_circuit = pm.run(circuit)
         if primitive == "sampler":
@@ -106,7 +106,7 @@ class QASMGenerator:
             return result
 
     def run_qasm_aer(self, str, primitive: str = 'sampler', noise=None):
-        circuit = qiskit.qasm3.loads(str)
+        circuit = qasm2.loads(str)
         circuit.measure_all()
         simulator = Aer.get_backend('qasm_simulator')
         compiled_circuit = transpile(circuit, simulator)
