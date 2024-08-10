@@ -1,4 +1,10 @@
+from qiskit.algorithms import NumPyMinimumEigensolver
+from qiskit.algorithms.minimum_eigensolvers import SamplingVQE
+from qiskit.algorithms.optimizers import COBYLA
+from qiskit.utils import algorithm_globals
+
 from classical_to_quantum.applications.graph.graph_problem import *
+from openqaoa.utilities import plot_graph
 
 
 class Ising(GraphProblem):
@@ -18,6 +24,9 @@ class Ising(GraphProblem):
         self.is_executed = False
         self.opt_solver = OptSolver()
         super().__init__(file_path=filepath)
+
+    def plot_graph(self):
+        plot_graph(self.graph())
 
     def run(self, verbose=False):
         if self.is_executed:
@@ -66,8 +75,8 @@ class Ising(GraphProblem):
                 log = OptimizerLog()
                 sampler = Sampler()
                 veq = SamplingVQE(sampler=sampler, optimizer=optimizer,
-                                       callback=log.update, aggregation=alpha,
-                                       ansatz=ansatz)
+                                  callback=log.update, aggregation=alpha,
+                                  ansatz=ansatz)
 
                 result = veq.compute_minimum_eigenvalue(self.qubitOp)
                 #self.result = result
