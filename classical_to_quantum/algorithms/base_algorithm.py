@@ -5,7 +5,7 @@ class BaseAlgorithm:
         self.run_as_quantum = run_as_quantum
         self.circuit = None
 
-    def generate_quantum_code(self):
+    def run(self):
         raise NotImplementedError("Subclasses should implement this method")
 
     def export_to_qasm(self):

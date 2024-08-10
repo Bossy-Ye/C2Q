@@ -187,7 +187,8 @@ class ProblemParser:
             pass
         elif self.problem_type == ProblemType.CNF:
             # For CNF problems, look for the relevant CNF formula representation
-            self.data = self.visitor.variables.get('cnf') or self.visitor.variables.get('observable')
+            self.data = (self.visitor.variables.get('cnf') or self.visitor.variables.get('3sat') or self.visitor.variables.get('cnf_formula') or
+                         self.visitor.variables.get('formula'))
         # Add other cases for GRAPH, FACTOR, etc.
         # ...
 

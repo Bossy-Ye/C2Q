@@ -32,7 +32,7 @@ class VQDAlgorithm(BaseAlgorithm):
         self.reps = reps
         self.resulted_circuit = None
 
-    def generate_quantum_code(self):
+    def run(self):
         """
         Generate and run the quantum code to find the n_eigenvectors using VQD.
         Try to apply two-local ansatz

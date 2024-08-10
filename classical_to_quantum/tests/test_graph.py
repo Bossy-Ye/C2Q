@@ -5,7 +5,7 @@ import qiskit
 from applications.graph.grover_applications.triangle_finding import TriangleFinding
 from classical_to_quantum.applications.graph.ising_applications.tspp import TspP
 from classical_to_quantum.applications.graph.ising_applications.max_cut import MaxCut
-
+from classical_to_quantum.applications.graph.ising_applications.cliquep import CliqueP
 from classical_to_quantum.applications.graph.ising_applications.vertex_coverp import VertexCoverp
 
 
@@ -20,7 +20,7 @@ class MyGraphTest(unittest.TestCase):
         tri = TriangleFinding("/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/graph_cases/Gset/G3")
         res = tri.search()
         print(res)
-        str = tri.export_to_qasm3()
+        str = tri.export_to_qasm()
         print(str)
         tri.plot_res()
         self.assertEqual(True, True)  # add assertion here
@@ -35,6 +35,9 @@ class MyGraphTest(unittest.TestCase):
         maxcut = MaxCut("/Users/mac/workspace/quantum-journey2/classical_to_quantum/graph_cases/Gset/G7.txt")
         maxcut.run(verbose=True)
         maxcut.plot_res()
+
+    def test_clique(self):
+        clique = CliqueP("/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/graph_cases/Gset/G2")
 
 
 if __name__ == '__main__':

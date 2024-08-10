@@ -28,7 +28,7 @@ class VQEAlgorithm(BaseAlgorithm):
         self.n_qubits = n_qubits
         self.reps = reps
 
-    def generate_quantum_code(self, verbose=False):
+    def run(self, verbose=False):
         """
         Generate and run the quantum code to find the minimum eigenvalue using VQE.
         Try to apply two-local ansatz

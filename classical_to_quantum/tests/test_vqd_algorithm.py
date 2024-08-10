@@ -10,7 +10,7 @@ class TestVQDAlgorithm(unittest.TestCase):
                                               ("YY", 3), ("ZZ", -3)])
         vqe = VQDAlgorithm(observable, 2, n_eigenvectors=3,
                            run_as_classical=True)
-        vqe.generate_quantum_code()
+        vqe.run()
         print(vqe.export_to_qasm())
 
 

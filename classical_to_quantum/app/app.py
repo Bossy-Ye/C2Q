@@ -1,5 +1,7 @@
 import tempfile
 
+import qiskit
+from qiskit import qasm2
 from flask import Flask, render_template, request, jsonify
 from qiskit.visualization import circuit_drawer
 import qiskit.qasm3 as qasm3
@@ -105,7 +107,7 @@ def process_graph():
     qasm_code = problem_instance.generate_qasm()
 
     # Generate a QuantumCircuit from QASM code
-    circuit = qasm3.loads(qasm_code)
+    circuit = qiskit.qasm2.loads(qasm_code)
 
     # Generate circuit diagram as an image
     img = circuit_drawer(circuit.decompose(), output='mpl')

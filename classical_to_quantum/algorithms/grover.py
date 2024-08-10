@@ -21,20 +21,19 @@ from qiskit.primitives import Sampler
 class GroverWrapper(BaseAlgorithm):
     def __init__(self,
                  oracle: QuantumCircuit,
-                 iteration = None,
+                 iteration=None,
                  state_preparation: QuantumCircuit = None):
         super().__init__()
         self.operator = None
         self.oracle = oracle
         self.iteration = iteration
         self.grover = Grover(iterations=iteration, sampler=Sampler())
-        Grover()
         if oracle is not None:
             self.problem = AmplificationProblem(oracle,
                                                 state_preparation=state_preparation,
                                                 is_good_state=oracle.evaluate_bitstring)
 
-    def generate_quantum_code(self, verbose=False):
+    def run(self, verbose=False):
         self.operator = GroverOperator(oracle=self.oracle).decompose()
         result = self.grover.amplify(self.problem)
         if verbose:

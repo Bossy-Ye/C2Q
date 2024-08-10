@@ -8,7 +8,7 @@ class QAOAlgorithm(BaseAlgorithm):
                  ):
         super().__init__(run_as_classical, run_as_quantum)
 
-    def generate_quantum_code(self):
+    def run(self):
         """
         Generate and run the quantum code to find the n_eigenvectors using VQD.
         Try to apply two-local ansatz

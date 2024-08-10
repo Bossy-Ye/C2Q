@@ -12,7 +12,7 @@ class MaxCut(Ising):
     def plot_res(self, transmission=False):
         super().plot_res(transmission)
 
-# maxcut = MaxCut('/Users/mac/workspace/quantum-journey2/classical_to_quantum/graph_cases/Gset/G7.txt')
+# maxcut = MaxCut('/Users/mac/workspace/quantum-journey2/classical_to_quantum/graph_cases/Gset/G7')
 # maxcut.run(verbose=True)
 # maxcut.show_results()
 # maxcut.run_search_parameters()

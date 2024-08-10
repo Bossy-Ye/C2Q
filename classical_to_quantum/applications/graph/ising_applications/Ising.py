@@ -3,6 +3,7 @@ from classical_to_quantum.applications.graph.graph_problem import *
 
 class Ising(GraphProblem):
     def __init__(self, filepath):
+        self.result = None
         self.solution = None
         self.is_executed_search = None
         self.state_vector = None
@@ -31,10 +32,12 @@ class Ising(GraphProblem):
                           callback=log.update,
                           ansatz=self.ansatz)
         result = veq.compute_minimum_eigenvalue(self.qubitOp)
+        self.result = result
         self.is_executed = True
         self.state_vector = result.eigenstate
         self.nodes_results = self.interpret(self.problem.sample_most_likely(self.state_vector))
-
+        if verbose:
+            print(result)
         if verbose:
             print(f'eigenvalue {result.eigenvalue}')
             print(f'vertices {self.nodes_results}')
@@ -61,13 +64,13 @@ class Ising(GraphProblem):
                 ansatz = TwoLocal(rotation_blocks=['ry', 'rz'], entanglement_blocks="cz",
                                   reps=2, entanglement="linear", num_qubits=self.qubitOp.num_qubits)
                 log = OptimizerLog()
-                self.sampler = Sampler()
-                self.veq = SamplingVQE(sampler=self.sampler, optimizer=optimizer,
+                sampler = Sampler()
+                veq = SamplingVQE(sampler=sampler, optimizer=optimizer,
                                        callback=log.update, aggregation=alpha,
                                        ansatz=ansatz)
 
-                result = self.veq.compute_minimum_eigenvalue(self.qubitOp)
-
+                result = veq.compute_minimum_eigenvalue(self.qubitOp)
+                #self.result = result
                 if verbose:
                     print(f'eigenvalue {result.eigenvalue} alpha {alpha}')
 
@@ -122,7 +125,15 @@ class Ising(GraphProblem):
         return optimal
 
     def generate_qasm(self):
-        return qasm3.dumps(self.ansatz)
+        if not self.is_executed:
+            raise ValueError("Not executed")
+
+        optimized_params = self.result.optimal_point
+        bound_ansatz = self.ansatz.assign_parameters(optimized_params)
+
+        # Convert the bound ansatz circuit to QASM format
+        qasm_code = qasm2.dumps(bound_ansatz)
+        return qasm_code
 
     def plot_search_res(self):
         pylab.rcParams["figure.figsize"] = (12, 8)

@@ -44,7 +44,6 @@ class QASMGenerator:
         self.parser.parse_code(classical_code)
         self.parser.evaluate_problem_type()
         self.problem_type = self.parser.problem_type
-        print(self.parser.evaluation())
         if verbose:
             print(f'problem type: {self.parser.problem_type} data: {self.parser.data}')
         if self.problem_type == ProblemType.EIGENVALUE:
@@ -52,7 +51,7 @@ class QASMGenerator:
             algorithm = VQEAlgorithm(self.observable,
                                      qubit_num(len(self.parser.data[0])),
                                      reps=2)
-            algorithm.generate_quantum_code()
+            algorithm.run(verbose=verbose)
             return algorithm.export_to_qasm()
         if self.problem_type == ProblemType.MACHINELEARNING:
             local_vars = {}
@@ -72,7 +71,7 @@ class QASMGenerator:
                 qmlk.show_result()
             return qmlk.generate_qasm3()
         if self.problem_type == ProblemType.CNF:
-            dimacs = generate_dimacs(self.parser.variables.get("cnf_formula"))
+            dimacs = generate_dimacs(self.parser.data)
             fp = tempfile.NamedTemporaryFile(mode="w+t", delete=False)
             fp.write(dimacs)
             file_name = fp.name
@@ -85,7 +84,7 @@ class QASMGenerator:
             finally:
                 os.remove(file_name)
             wrapper = GroverWrapper(oracle)
-            wrapper.generate_quantum_code(verbose=True)
+            wrapper.run(verbose=verbose)
             return wrapper.export_to_qasm()
         else:
             raise ValueError("Unsupported problem type")
