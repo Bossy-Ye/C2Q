@@ -121,7 +121,7 @@ class Ising(GraphProblem):
                 print('Layer:', reps + 1, ' Best Value:', result.eigenvalue)
         return optimal
 
-    def generate_qasm3(self):
+    def generate_qasm(self):
         return qasm3.dumps(self.ansatz)
 
     def plot_search_res(self):

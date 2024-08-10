@@ -1,0 +1,12 @@
+qiskit~=1.1.1
+matplotlib~=3.9.0
+flask~=3.0.3
+werkzeug~=3.0.3
+openai~=1.40.1
+numpy~=1.23.5
+networkx~=2.8.8
+setuptools~=70.1.0
+scipy~=1.13.0
+tsplib95~=0.7.1
+docplex~=2.27.239
+scikit-learn~=1.5.1

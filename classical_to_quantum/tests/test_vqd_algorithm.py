@@ -11,7 +11,7 @@ class TestVQDAlgorithm(unittest.TestCase):
         vqe = VQDAlgorithm(observable, 2, n_eigenvectors=3,
                            run_as_classical=True)
         vqe.generate_quantum_code()
-        print(vqe.export_to_qasm3())
+        print(vqe.export_to_qasm())
 
 
 if __name__ == '__main__':

@@ -20,12 +20,14 @@ from qiskit.primitives import Sampler
 
 class GroverWrapper(BaseAlgorithm):
     def __init__(self,
-                 oracle: PhaseOracle,
+                 oracle: QuantumCircuit,
+                 iteration = None,
                  state_preparation: QuantumCircuit = None):
         super().__init__()
         self.operator = None
         self.oracle = oracle
-        self.grover = Grover(sampler=Sampler())
+        self.iteration = iteration
+        self.grover = Grover(iterations=iteration, sampler=Sampler())
         Grover()
         if oracle is not None:
             self.problem = AmplificationProblem(oracle,
@@ -39,7 +41,7 @@ class GroverWrapper(BaseAlgorithm):
             print(result)
         return result
 
-    def export_to_qasm3(self):
+    def export_to_qasm(self):
         if self.operator is None:
             raise ValueError("Grover operator has not been generated yet. Call generate_quantum_code() first.")
         qasm_str = qasm3.dumps(self.operator)

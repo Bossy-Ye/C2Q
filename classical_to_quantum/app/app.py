@@ -102,7 +102,7 @@ def process_graph():
 
     #max_cut = MaxCut(file_path)
     problem_instance.run(verbose=True)
-    qasm_code = problem_instance.generate_qasm3()
+    qasm_code = problem_instance.generate_qasm()
 
     # Generate a QuantumCircuit from QASM code
     circuit = qasm3.loads(qasm_code)

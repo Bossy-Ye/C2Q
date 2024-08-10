@@ -105,6 +105,6 @@ class VQEAlgorithm(BaseAlgorithm):
 
             session.close()
 
-    def export_to_qasm3(self):
+    def export_to_qasm(self):
         return qasm3.dumps(self.ansatz.assign_parameters(self.result.x),
                            experimental=qasm3.ExperimentalFeatures.SWITCH_CASE_V1)

@@ -64,7 +64,7 @@ class VQDAlgorithm(BaseAlgorithm):
             result = vqd.compute_eigenvalues(operator=self.observable)
             self.resulted_circuit = result.optimal_circuits
 
-    def export_to_qasm3(self):
+    def export_to_qasm(self):
         qasm3_strings = [qasm3.dumps(circuit) for circuit in self.resulted_circuit]
         merged_qasm3 = '\n'.join(qasm3_strings)
         return merged_qasm3

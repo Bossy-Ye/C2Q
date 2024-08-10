@@ -1,6 +1,9 @@
 import math
 
 import numpy as np
+import qiskit
+from qiskit.circuit.library import GroverOperator
+from qiskit_algorithms import AmplificationProblem, Grover
 
 from classical_to_quantum.applications.graph.graph_problem import GraphProblem
 from qiskit.circuit import QuantumRegister, ClassicalRegister, QuantumCircuit
@@ -8,6 +11,7 @@ from qiskit_aer import Aer
 from qiskit import transpile
 from qiskit.visualization import plot_histogram
 from qiskit import qasm3
+from qiskit import qasm2
 from qiskit.primitives import Sampler
 
 
@@ -116,6 +120,7 @@ def triangle_oracle(edges, nodes_qubits, edge_anc, ancilla, neg_base):
 
     return qc
 
+
 def cnz(qc, num_control, node, anc):
     """Construct a multi-controlled Z gate
 
@@ -179,6 +184,7 @@ def grover(n_nodes, stat_prep, inv_stat_prep, edges):
     qc.measure(nodes_qubits, class_bits)
     return qc
 
+
 new_node_id = 0
 
 
@@ -186,6 +192,9 @@ class TriangleFinding(GraphProblem):
 
     def __init__(self, file_path):
         super().__init__(file_path)
+        self.circuit = None
+        self.grover = None
+        self.operator = None
         node_map = {}
 
         def get_new_node_id(old_node):
@@ -206,30 +215,55 @@ class TriangleFinding(GraphProblem):
             new_v = get_new_node_id(v)
             self.edges.append((new_u, new_v))
 
+        # define oracle and prep circuits
         n_nodes = self.num_nodes
+        self.iteration = math.comb(n_nodes, 3)
+        nodes_qubits = QuantumRegister(n_nodes, name='nodes')
+        edge_anc = QuantumRegister(2, name='edge_anc')
+        ancilla = QuantumRegister(n_nodes - 2, name='cccx_diff_anc')
+        neg_base = QuantumRegister(1, name='check_qubits')
+
+        self.oracle = triangle_oracle(self.edges, nodes_qubits, edge_anc, ancilla, neg_base)
         sub_qbits = QuantumRegister(n_nodes)
-        sub_cir = QuantumCircuit(sub_qbits, name="state_prep")
-        sub_cir, sub_qbits = wn(sub_cir, sub_qbits)
-        sub_cir.x(sub_qbits)
-        #sub_cir.h(sub_qbits)
-        stat_prep = sub_cir.to_instruction()
-        inv_stat_prep = sub_cir.inverse().to_instruction()
-        self.qc = grover(n_nodes, stat_prep, inv_stat_prep, self.edges)
+        prep = QuantumCircuit(sub_qbits, name="state_prep")
+        prep, sub_qbits = wn(prep, sub_qbits)
+        prep.x(sub_qbits)
+        self.prep = prep
+
+        def check_valid_triangle(state):
+            nodes = []
+            for i, value in enumerate(state):
+                if value == '1':
+                    nodes.append(self.num_nodes - 1 - i)
+            if len(nodes) != 3:
+                return False
+            a, b, c = nodes
+            edge_set = set()
+            for edge in self.edges:
+                edge_set.add(tuple(sorted(edge)))
+
+            # Check if all three edges of the triangle are present
+            return (
+                    tuple(sorted([a, b])) in edge_set and
+                    tuple(sorted([b, c])) in edge_set and
+                    tuple(sorted([c, a])) in edge_set
+            )
+
+        self.problem = AmplificationProblem(self.oracle,
+                                            state_preparation=prep,
+                                            objective_qubits=list(range(self.num_nodes)),
+                                            is_good_state=check_valid_triangle
+                                            )
 
     def search(self):
         # Simulate and plot results
-        qasm_simulator = Aer.get_backend('qasm_simulator')
-        transpiled_qc = transpile(self.qc, qasm_simulator)
-        # Execute circuit and show results
-        result = qasm_simulator.run(transpiled_qc, shots=100000).result()
+        self.grover = Grover(iterations=self.iteration, sampler=Sampler())
+        self.circuit = self.grover.construct_circuit(self.problem,
+                                                     self.iteration,
+                                                     )
+        results = self.grover.amplify(self.problem)
+        return results
 
-        res = result.get_counts(transpiled_qc)
-
-        return res
-
-    def export_to_qasm3(self):
-        return qasm3.dumps(self.qc)
-
-
-
-
+    def export_to_qasm(self):
+        qasm_str = qiskit.qasm2.dumps(self.circuit)
+        return qasm_str

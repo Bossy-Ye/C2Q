@@ -8,5 +8,5 @@ class BaseAlgorithm:
     def generate_quantum_code(self):
         raise NotImplementedError("Subclasses should implement this method")
 
-    def export_to_qasm3(self):
+    def export_to_qasm(self):
         raise NotImplementedError("Subclasses should implement this method")

@@ -1,5 +1,4 @@
 from classical_to_quantum.applications.graph.gset import *
-from qiskit import qasm3
 from classical_to_quantum.applications.graph.ising_applications.Ising import Ising
 
 

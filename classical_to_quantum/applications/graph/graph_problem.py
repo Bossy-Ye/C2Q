@@ -1,15 +1,9 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 import os
-
-import numpy as np
-
-from classical_to_quantum.applications.graph.optimization_solver import *
 from classical_to_quantum.applications.graph.gset import *
-from classical_to_quantum.applications.tools import OptimizerLog
-from qiskit.circuit import QuantumCircuit
 import networkx as nx
-import pylab
+from qiskit import qasm2
 
 
 class GraphProblem:
@@ -25,7 +19,7 @@ class GraphProblem:
     def run(self):
         raise NotImplementedError("not implemented yet")
 
-    def generate_qasm3(self):
+    def generate_qasm(self):
         raise NotImplementedError("not implemented yet")
 
     def plot_res(self, transmission=False):

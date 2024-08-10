@@ -16,6 +16,6 @@ class QAOAlgorithm(BaseAlgorithm):
             dict: The result containing the eigenvalue and optimal parameters.
             Or None if ====
         """
-    def export_to_qasm3(self):
+    def export_to_qasm(self):
         return
 

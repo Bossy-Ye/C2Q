@@ -53,7 +53,7 @@ class QASMGenerator:
                                      qubit_num(len(self.parser.data[0])),
                                      reps=2)
             algorithm.generate_quantum_code()
-            return algorithm.export_to_qasm3()
+            return algorithm.export_to_qasm()
         if self.problem_type == ProblemType.MACHINELEARNING:
             local_vars = {}
             exec(classical_code, {}, local_vars)
@@ -86,7 +86,7 @@ class QASMGenerator:
                 os.remove(file_name)
             wrapper = GroverWrapper(oracle)
             wrapper.generate_quantum_code(verbose=True)
-            return wrapper.export_to_qasm3()
+            return wrapper.export_to_qasm()
         else:
             raise ValueError("Unsupported problem type")
 

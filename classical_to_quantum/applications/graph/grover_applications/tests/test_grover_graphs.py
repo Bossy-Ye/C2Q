@@ -3,6 +3,7 @@ from classical_to_quantum.applications.graph.grover_applications.graph_color imp
 from qiskit.quantum_info import Statevector
 from classical_to_quantum.applications.graph.grover_applications.triangle_finding import *
 
+
 def print_amplitudes(statevector, relevant_bits=None):
     num = 0
     # Get the number of qubits
@@ -24,6 +25,7 @@ def print_amplitudes(statevector, relevant_bits=None):
             print(f"|{relevant_bits}>: {amplitude}")
     print(num)
 
+
 def print_negative_amplitudes(statevector):
     # Get the number of qubits
     num_qubits = statevector.num_qubits
@@ -34,6 +36,17 @@ def print_negative_amplitudes(statevector):
             # Format the basis state as a binary string with leading zeros
             basis_state = format(index, f'0{num_qubits}b')
             print(f"|{basis_state}>: {amplitude}")
+
+
+def print_all_amplitudes(statevector):
+    # Get the number of qubits
+    num_qubits = statevector.num_qubits
+
+    # Iterate through each basis state
+    for index, amplitude in enumerate(statevector):
+        # Format the basis state as a binary string with leading zeros
+        basis_state = format(index, f'0{num_qubits}b')
+        print(f"|{basis_state}>: {amplitude}")
 
 
 class MyTestCase(unittest.TestCase):
@@ -65,12 +78,17 @@ class MyTestCase(unittest.TestCase):
         edge_anc = QuantumRegister(2, name='edge_anc')
         ancilla = QuantumRegister(n_nodes - 2, name='cccx_diff_anc')
         neg_base = QuantumRegister(1, name='check_qubits')
-        prep = QuantumCircuit(n_nodes+2+n_nodes-2+1)
-        prep.h(tri.graph().nodes)
-        oracle = triangle_oracle(tri.edges,nodes_qubits, edge_anc, ancilla, neg_base)
+        sub_qbits = QuantumRegister(n_nodes)
+        next_qubits = QuantumRegister(5)
+        prep = QuantumCircuit(sub_qbits, next_qubits,  name="state_prep")
+        prep, sub_qbits = wn(prep, sub_qbits)
+        prep.x(sub_qbits)
+
+        oracle = triangle_oracle(tri.edges, nodes_qubits, edge_anc, ancilla, neg_base)
         state = Statevector(prep)
+        print(oracle.num_qubits, prep.num_qubits)
         state = state.evolve(oracle)
-        print(oracle)
+        print_all_amplitudes(state)
 
     def test_equality_checker(self):
         qc = create_equality_checker_circuit(2)
