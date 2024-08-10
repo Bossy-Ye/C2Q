@@ -4,17 +4,12 @@ from classical_to_quantum.algorithms.base_algorithm import BaseAlgorithm
 from qiskit.circuit.library import TwoLocal, NLocal
 from qiskit import QuantumCircuit, qasm2
 import numpy as np
-from qiskit.primitives import StatevectorEstimator as Estimator, StatevectorEstimator
-from qiskit.primitives import StatevectorSampler as Sampler
 # SciPy minimizer routine
 from scipy.optimize import minimize
 import time
-from qiskit_ibm_runtime import SamplerV2 as Sampler
-from qiskit_ibm_runtime import EstimatorV2 as Estimator
-from qiskit_ibm_runtime import Session, Options
-from qiskit_ibm_runtime import QiskitRuntimeService
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit import qasm3
+from qiskit.primitives import Estimator
 
 
 class VQEAlgorithm(BaseAlgorithm):

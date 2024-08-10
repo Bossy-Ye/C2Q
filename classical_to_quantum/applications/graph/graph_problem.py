@@ -38,6 +38,9 @@ class GraphProblem:
         #
         draw_graph(self._graph, special_nodes=self.nodes_results, transmission=transmission)
 
+    def plot_graph(self):
+        raise NotImplementedError("not implemented yet")
+
     def show_results(self):
         """
         intermediate results

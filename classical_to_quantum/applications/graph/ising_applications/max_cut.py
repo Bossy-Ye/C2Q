@@ -1,9 +1,10 @@
-from openqaoa import QAOA, create_device
+import qiskit.qasm2
+from openqaoa import create_device
 
 from classical_to_quantum.applications.graph.gset import *
 from classical_to_quantum.applications.graph.ising_applications.Ising import Ising
 from openqaoa.problems import MaximumCut
-
+from openqaoa import QAOA
 
 class MaxCut(Ising):
     def __init__(self, file_path):
@@ -12,7 +13,6 @@ class MaxCut(Ising):
         self.maxcut_qubo = self.problem.qubo
         qaoa = QAOA()
 
-        self.qubitOp, offset = self.qp.to_ising()
         # optionally configure the following properties of the model
 
         # device
@@ -37,8 +37,16 @@ class MaxCut(Ising):
 
         self.is_executed = True
         result = self.qaoa.result
+        if verbose:
+            print(result.optimized)
         return result
 
+    def generate_qasm(self):
+        variational_params = self.qaoa.optimizer.variational_params
+        optimized_angles = self.qaoa.result.optimized['angles']
+        variational_params.update_from_raw(optimized_angles)
+        optimized_circuit = self.qaoa.backend.qaoa_circuit(variational_params)
+        return qiskit.qasm2.dumps(optimized_circuit)
     @staticmethod
     def random_instance(self):
         return MaximumCut.random_instance()
@@ -46,12 +54,13 @@ class MaxCut(Ising):
     def plot_res(self, transmission=False):
         super().plot_res(transmission)
 
-# maxcut = MaxCut('/Users/mac/workspace/quantum-journey2/classical_to_quantum/graph_cases/Gset/G7')
-# maxcut.run(verbose=True)
+
+maxcut = MaxCut('/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/graph_cases/Gset/G0')
+maxcut.run(verbose=True)
 # maxcut.show_results()
 # maxcut.run_search_parameters()
 # maxcut.show_search_results()
 # maxcut.plot_search_res()
 # draw_graph(maxcut.graph(), transmission=True)
 # maxcut.plot_res()
-# print(maxcut.generate_qasm3())
+print(maxcut.generate_qasm())
