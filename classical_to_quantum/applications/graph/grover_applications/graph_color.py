@@ -1,3 +1,4 @@
+from qiskit import qasm2
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from classical_to_quantum.applications.graph.graph_problem import GraphProblem
 from classical_to_quantum.algorithms.grover import GroverWrapper
@@ -9,13 +10,37 @@ variable_qubits = [0, 1, 2, 3, 4, 5, 6, 7]
 check_qubits = [8, 9, 10, 11, 12, 13]
 
 disagree_list = [[[0, 1], [2, 3]],
-                  [[0, 1], [4, 5]],
-                  [[0, 1], [6, 7]],
-                  [[2, 3], [4, 5]],
-                  [[2, 3], [6, 7]],
-                  [[4, 5], [6, 7]]
+                 [[0, 1], [4, 5]],
+                 [[0, 1], [6, 7]],
+                 [[2, 3], [4, 5]],
+                 [[2, 3], [6, 7]],
+                 [[4, 5], [6, 7]]
                  ]
 output_qubit = 14
+
+
+def generate_qubit_mapping(nodes, edges):
+    # Step 1: Map Nodes to Variable Qubits
+    variable_qubits = []
+    for node in nodes:
+        variable_qubits.extend([2 * node, 2 * node + 1])
+
+    # Step 2: Map Edges to Check Qubits
+    check_qubits = list(range(8, 8 + len(edges)))
+
+    # Step 3: Generate the Disagree List
+    disagree_list = []
+    for i, edge in enumerate(edges):
+        node1, node2 = edge
+        disagree_list.append([
+            [2 * node1, 2 * node1 + 1],
+            [2 * node2, 2 * node2 + 1]
+        ])
+
+    # Step 4: Assign the Output Qubit
+    output_qubit = len(nodes) * 2 + len(edges)  # Assuming output qubit is the next available qubit
+
+    return variable_qubits, check_qubits, disagree_list, output_qubit
 
 
 def create_equality_checker_circuit(n):
@@ -58,15 +83,6 @@ def graph_color_prep(variable_qubits):
         prep.h(i)
 
     return prep
-
-
-def graph_oracle():
-    num_vars = len(variable_qubits)
-    num_checks = len(check_qubits)
-    num_outputs = 1
-    orcale = QuantumCircuit(num_vars + num_checks + num_outputs)
-    orcale.h(output_qubit)
-    orcale.x(output_qubit)
 
 
 def disagree_check(qc: QuantumCircuit, qubits_a, qubits_b, check_qubit):
@@ -159,15 +175,44 @@ def graph_color_oracle(disagree_list, variable_qubits, check_qubits, output_qubi
 
 
 def check_disagree_list_general(state, disagree_list):
-    for i in range(len(disagree_list)):
-        if (state[disagree_list[i][0][0]] == state[disagree_list[i][1][0]]
-                and state[disagree_list[i][0][1]] == state[disagree_list[i][1][1]]):
+    n = len(state) - 1
+    for i in range(len(disagree_list) - 1, -1, -1):
+        if (state[n - disagree_list[i][0][0]] == state[n - disagree_list[i][1][0]]
+                and state[n - disagree_list[i][0][1]] == state[n - disagree_list[i][1][1]]):
             return False
 
     return True
 
 
-class GraphColorGrover(GraphProblem):
+class GraphColor(GraphProblem):
     def __init__(self, file_path):
         super().__init__(file_path=file_path)
+        self.circuit = None
+        variable_qubits, check_qubits, disagree_list, output_qubit = generate_qubit_mapping(self.graph().nodes,
+                                                                                            self.graph().edges)
+        print("Variable Qubits:", variable_qubits)
+        print("Check Qubits:", check_qubits)
+        print("Disagree List:", disagree_list)
+        print("Output Qubit:", output_qubit)
+        prep = graph_color_prep(variable_qubits)
+        oracle = graph_color_oracle(disagree_list, variable_qubits, check_qubits, output_qubit)
 
+        # DEFINE THE AmplificationProblem
+        def check_disagreement(state): return check_disagree_list_general(state, disagree_list)
+        self.iteration = 1
+        self.grover_wrapper = GroverWrapper(oracle=oracle,
+                                            iteration=self.iteration,
+                                            state_preparation=prep,
+                                            is_good_state=check_disagreement,
+                                            objective_qubits=variable_qubits
+                                            )
+
+    def search(self):
+        result = self.grover_wrapper.run()
+        self.circuit = self.grover_wrapper.grover.construct_circuit(self.grover_wrapper.problem,
+                                                                    self.iteration)
+        return result
+
+    def export_to_qasm(self):
+        qasm_str = qasm2.dumps(self.circuit)
+        return qasm_str

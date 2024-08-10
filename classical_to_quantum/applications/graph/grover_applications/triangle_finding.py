@@ -13,6 +13,7 @@ from qiskit.visualization import plot_histogram
 from qiskit import qasm3
 from qiskit import qasm2
 from qiskit.primitives import Sampler
+from classical_to_quantum.algorithms.grover import GroverWrapper
 
 
 # We used the W state implementation from W state in reference 6
@@ -249,21 +250,19 @@ class TriangleFinding(GraphProblem):
                     tuple(sorted([c, a])) in edge_set
             )
 
-        self.problem = AmplificationProblem(self.oracle,
-                                            state_preparation=prep,
-                                            objective_qubits=list(range(self.num_nodes)),
-                                            is_good_state=check_valid_triangle
+        self.grover_wrapper = GroverWrapper(oracle=self.oracle,
+                                            iteration=self.iteration,
+                                            state_preparation=self.prep,
+                                            is_good_state=check_valid_triangle,
+                                            objective_qubits=list(range(self.num_nodes))
                                             )
 
     def search(self):
-        # Simulate and plot results
-        self.grover = Grover(iterations=self.iteration, sampler=Sampler())
-        self.circuit = self.grover.construct_circuit(self.problem,
-                                                     self.iteration,
-                                                     )
-        results = self.grover.amplify(self.problem)
-        return results
+        result = self.grover_wrapper.run()
+        self.circuit = self.grover_wrapper.grover.construct_circuit(self.grover_wrapper.problem,
+                                                                    self.iteration)
+        return result
 
     def export_to_qasm(self):
-        qasm_str = qiskit.qasm2.dumps(self.circuit)
+        qasm_str = qasm2.dumps(self.circuit)
         return qasm_str

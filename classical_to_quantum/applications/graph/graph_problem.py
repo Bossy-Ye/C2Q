@@ -26,6 +26,9 @@ class GraphProblem:
     def run(self):
         raise NotImplementedError("not implemented yet")
 
+    def run_on_quantum(self):
+        raise NotImplementedError("not implemented yet")
+
     def generate_qasm(self):
         raise NotImplementedError("not implemented yet")
 
@@ -36,7 +39,12 @@ class GraphProblem:
         draw_graph(self._graph, special_nodes=self.nodes_results, transmission=transmission)
 
     def show_results(self):
-        #print intermediate procedures
+        """
+        intermediate results
+        Returns
+        -------
+
+        """
         raise NotImplementedError("not implemented yet")
 
     def graph(self) -> nx.Graph:

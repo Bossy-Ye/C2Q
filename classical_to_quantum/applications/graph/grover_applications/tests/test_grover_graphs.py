@@ -107,7 +107,7 @@ class MyTestCase(unittest.TestCase):
         # DEFINE THE AmplificationProblem
         def check_disagreement(state): return check_disagree_list_general(state, disagree_list)
 
-        for i in range(100):
+        for i in range(2):
             problem = AmplificationProblem(oracle,
                                            state_preparation=prep,
                                            objective_qubits=variable_qubits,

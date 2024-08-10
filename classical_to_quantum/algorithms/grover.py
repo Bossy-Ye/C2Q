@@ -22,23 +22,33 @@ class GroverWrapper(BaseAlgorithm):
     def __init__(self,
                  oracle: QuantumCircuit,
                  iteration=None,
-                 state_preparation: QuantumCircuit = None):
+                 state_preparation: QuantumCircuit = None,
+                 is_good_state=None,
+                 objective_qubits=None
+                 ):
         super().__init__()
+        self.grover = None
+        if isinstance(oracle, PhaseOracle):
+            is_good_state = oracle.evaluate_bitstring
         self.operator = None
         self.oracle = oracle
         self.iteration = iteration
-        self.grover = Grover(iterations=iteration, sampler=Sampler())
+
         if oracle is not None:
             self.problem = AmplificationProblem(oracle,
                                                 state_preparation=state_preparation,
-                                                is_good_state=oracle.evaluate_bitstring)
+                                                is_good_state=is_good_state,
+                                                objective_qubits=objective_qubits)
 
     def run(self, verbose=False):
-        self.operator = GroverOperator(oracle=self.oracle).decompose()
+        self.grover = Grover(iterations=self.iteration, sampler=Sampler())
         result = self.grover.amplify(self.problem)
         if verbose:
             print(result)
         return result
+
+    def run_on_quantum(self):
+        return None
 
     def export_to_qasm(self):
         if self.operator is None:
