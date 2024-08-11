@@ -24,6 +24,33 @@ different types of problems will be required. And also a translator that gives r
 ### Limitedness
 Inherent complexity to translate original problem into CNF...
 
+### Translating Classical Problems into Quantum
+
+1. **Problem Formulation and Data Representation**
+   - **Classical**: We aim to analyze the given classical code by extracting its Abstract Syntax Tree (AST), traversing it to identify the type of problem being solved and fetching input data
+   - **Quantum**: Convert input data into quantum format (with qubits)
+2. **Algorithm Selection**
+   - **Classical**: Choose an appropriate classical algorithm (e.g., sorting, searching, optimization).
+   - **Quantum**: Identify or design a quantum algorithm (e.g., Grover's algorithm for searching, Shor's algorithm for factoring) that can solve the problem more efficiently using quantum principles.
+3. **State Initialization**
+   - **Classical**: Initialize the data in a particular state or configuration.
+   - **Quantum**: Prepare an initial quantum state, often starting from |0⟩, |1⟩, or a superposition state.
+4. **Circuit Design**
+   - **Classical**: Some parts of the algorithm are ran classically, for example: gradient decent in QAOA
+   - **Quantum**: Design a quantum circuit that implements the quantum algorithm. This involves choosing quantum gates (e.g., Hadamard, CNOT, T-gate) that manipulate qubits according to the problem’s requirements. This part is automated.
+5. **Execution**
+   - **Local**: Run the circuit with local simulator
+   - **Quantum**: Execute the quantum circuit on a remote quantum computer.
+6. **Interpretation of Results**
+   - **Quantum**: Interpret the measured quantum state to understand the solution. 
+
+### What I am trying to do first
+- **Graph problems**: perhaps easy to understand
+  - qaoa (partially done based on openqaoa)
+  - grover (oracle for each problem needed)
+- **Parser**
+- **Generator**
+- **Interpreter**
 
 
 
