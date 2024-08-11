@@ -9,7 +9,7 @@ from scipy.optimize import minimize
 import time
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit import qasm3
-from qiskit.primitives import Estimator
+from qiskit.primitives import StatevectorEstimator
 
 
 class VQEAlgorithm(BaseAlgorithm):

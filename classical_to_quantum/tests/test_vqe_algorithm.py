@@ -1,10 +1,3 @@
-# tests/test_parser.py
-
-import unittest
-from classical_to_quantum.parser import ProblemParser
-from classical_to_quantum.codegen import *
-import codegen
-import ast
 from classical_to_quantum.qasm_generate import QASMGenerator
 classical_code = """
 import numpy as np

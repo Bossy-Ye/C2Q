@@ -3,36 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Graph Problem</title>
+    <title>Graph Problem Solver</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <div id="container">
-        <h1>Graph Problem</h1>
+        <h1>Graph Problem Solver</h1>
 
-        <h2>Select Problem Type</h2>
-        <select id="problem_type" name="problem_type">
-            <option value="maxcut">MaxCut</option>
-            <option value="clique">Clique</option>
-            <option value="partition">Partition</option>
-            <option value="tsp">TSP</option>
-            <option value="vertex_cover">Vertex Cover</option>
-        </select>
-        <!-- Form to upload file -->
-        <form id="gset_form" enctype="multipart/form-data" method="post">
-            <h2>Upload GSET or Other Supported File</h2>
-            <input type="file" id="gset_file" name="gset_file" accept=".gset,.txt,.csv">
-            <button type="submit">Upload</button>
-        </form>
+        <!-- Graph Problems Section -->
+        <div id="graph_problems">
+            <h2>Supported Graph Problems</h2>
+            <h3>Solvable by Grover's Algorithm</h3>
+            <ul id="grover_problems">
+                <li>
+                    <span>Maximum Cut</span>
+                    <button type="button" onclick="submitProblem('MaximumCut', 'grover')">Submit and Run with Grover</button>
+                </li>
+                <li>
+                    <span>Vertex Cover</span>
+                    <button type="button" onclick="submitProblem('VertexCover', 'grover')">Submit and Run with Grover</button>
+                </li>
+                <!-- Add more problems here as needed -->
+            </ul>
 
-        <!-- Form to input data manually -->
+            <h3>Solvable by QAOA</h3>
+            <ul id="qaoa_problems">
+                <li>
+                    <span>Clique</span>
+                    <button type="button" onclick="submitProblem('Clique', 'qaoa')">Submit and Run with QAOA</button>
+                </li>
+                <li>
+                    <span>Partition</span>
+                    <button type="button" onclick="submitProblem('Partition', 'qaoa')">Submit and Run with QAOA</button>
+                </li>
+                <li>
+                    <span>TSP</span>
+                    <button type="button" onclick="submitProblem('TSP', 'qaoa')">Submit and Run with QAOA</button>
+                </li>
+                <!-- Add more problems here as needed -->
+            </ul>
+        </div>
+
+        <!-- Manual Data Input Form -->
         <form id="manual_form" method="post">
             <h2>Or Input Data Manually</h2>
-            <textarea id="gset_data" name="gset_data" rows="10" cols="50"></textarea>
-            <button type="submit">Submit</button>
+            <p>Note: Please ensure the data is in GSET format. Here is a sample format:</p>
+            <pre>
+N E
+i0 j0 w_i0j0
+i1 j1 w_i1j1
+i2 j2 w_i2j2
+
+Example:
+5 7
+1 2 1
+1 3 1
+2 3 1
+2 4 1
+3 4 1
+4 5 1
+1 5 1
+            </pre>
+            <textarea id="gset_data" name="gset_data" rows="10" cols="50" placeholder="Paste your GSET formatted data here..."></textarea>
+            <button type="button" id="submit_qaoa_manual" onclick="submitManualForm('qaoa')">Submit and Run with QAOA</button>
+            <button type="button" id="submit_grover_manual" onclick="submitManualForm('grover')">Submit and Run with Grover</button>
         </form>
 
-        <h2>QASM 3.0 Code</h2>
+        <h2>QASM 2.0 Code</h2>
         <pre id="qasm_code"></pre>
 
         <h2>Circuit Diagram</h2>
@@ -43,30 +80,12 @@
     </div>
 
     <script>
-        document.getElementById('gset_form').onsubmit = function(event) {
-            event.preventDefault();
-            const formData = new FormData(this);
-            formData.append('problem_type', document.getElementById('problem_type').value);
-            fetch('/graph_problem', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    alert(data.error);
-                } else {
-                    document.getElementById('qasm_code').textContent = data.qasm_code;
-                    document.getElementById('circuit_image').src = data.circuit_image;
-                    document.getElementById('graph_image').src = data.graph_image;
-                }
-            });
-        };
+        function submitProblem(problemType, algorithm) {
+            // Create form data for the selected problem and algorithm
+            const formData = new FormData();
+            formData.append('problem_type', problemType);
+            formData.append('algorithm', algorithm);
 
-        document.getElementById('manual_form').onsubmit = function(event) {
-            event.preventDefault();
-            const formData = new FormData(this);
-            formData.append('problem_type', document.getElementById('problem_type').value);
             fetch('/graph_problem', {
                 method: 'POST',
                 body: formData
@@ -81,7 +100,27 @@
                     document.getElementById('graph_image').src = data.graph_image;
                 }
             });
-        };
+        }
+
+        function submitManualForm(algorithm) {
+            const formData = new FormData(document.getElementById('manual_form'));
+            formData.append('algorithm', algorithm);
+
+            fetch('/graph_problem', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    document.getElementById('qasm_code').textContent = data.qasm_code;
+                    document.getElementById('circuit_image').src = data.circuit_image;
+                    document.getElementById('graph_image').src = data.graph_image;
+                }
+            });
+        }
     </script>
 </body>
 </html>

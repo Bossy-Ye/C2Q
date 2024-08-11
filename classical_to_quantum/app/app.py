@@ -1,18 +1,14 @@
 import tempfile
 
 import qiskit
-from qiskit import qasm2
+import qiskit.qasm as qasm
 from flask import Flask, render_template, request, jsonify
+from qiskit.visualization import
 from qiskit.visualization import circuit_drawer
-import qiskit.qasm3 as qasm3
 from io import BytesIO
 import base64
-
-from applications.graph.ising_applications.max_cut import MaxCut
-from applications.graph.ising_applications.cliquep import CliqueP
-from applications.graph.ising_applications.partition import Partition
-from applications.graph.ising_applications.tspp import TspP
-from applications.graph.ising_applications.vertex_coverp import VertexCoverp
+from qiskit import qasm
+from applications.graph.Ising import Ising
 from classical_to_quantum.qasm_generate import QASMGenerator
 import os
 from werkzeug.utils import secure_filename
@@ -55,7 +51,7 @@ def generate_circuit():
     qasm_code = generator.qasm_generate(classical_code, verbose=True)
 
     # Convert QASM 3.0 code to QuantumCircuit
-    circuit = qasm3.loads(qasm_code)
+    circuit = qasm.loads(qasm_code)
 
     # Transpile the circuit for visualization
     transpiled_circuit = circuit.decompose()
@@ -93,22 +89,12 @@ def process_graph():
             file_path = temp_file.name
     if not file_path:
         return jsonify({'error': 'No valid input provided'}), 400
-    problem_class_map = {
-        'maxcut': MaxCut,
-        'clique': CliqueP,
-        'partition': Partition,
-        'tsp': TspP,
-        'vertex_cover': VertexCoverp
-    }
-    problem_instance = problem_class_map[graph_problem_type](file_path)
-
-    #max_cut = MaxCut(file_path)
+    problem_instance = Ising(input_data=file_path,
+                             class_name=graph_problem_type)
     problem_instance.run(verbose=True)
-    qasm_code = problem_instance.generate_qasm()
-
+    circuit, qasm_code = problem_instance.generate_qasm()
     # Generate a QuantumCircuit from QASM code
-    circuit = qiskit.qasm2.loads(qasm_code)
-
+    # circuit = qiskit.qasm2.loads(qasm_code)
     # Generate circuit diagram as an image
     img = circuit_drawer(circuit.decompose(), output='mpl')
 
@@ -118,8 +104,9 @@ def process_graph():
     buf.seek(0)
     circuit_img_str = base64.b64encode(buf.getvalue()).decode('utf-8')
     buf.close()
+    plt.close()
 
-    problem_instance.plot_res(transmission=True)
+    problem_instance.plot_graph_solution()
     buf = BytesIO()
     plt.savefig(buf, format='png')
     buf.seek(0)

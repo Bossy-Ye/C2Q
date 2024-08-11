@@ -1,5 +1,4 @@
 import numpy as np
-import qiskit.qasm3
 
 from classical_to_quantum.parser import ProblemParser, ProblemType
 from classical_to_quantum.algorithms.vqe_algorithm import VQEAlgorithm

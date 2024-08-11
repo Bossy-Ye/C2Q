@@ -1,4 +1,3 @@
-from qiskit._accelerate import qasm3
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
 from qiskit.primitives import Sampler
 from qiskit.quantum_info import Statevector, state_fidelity
@@ -72,8 +71,8 @@ class QMLKernel:
         score = self._model.score(self._test_kernel, self._test_labels)
         print(f"kernel test score: {score}")
 
-    def generate_qasm3(self):
-        return qasm3.dumps(self._feature_map.decompose().assign_parameters(self._train_data[0]))
+    def generate_qasm(self):
+        return qasm2.dumps(self._feature_map.decompose().assign_parameters(self._train_data[0]))
 
     def plot_data(self):
         unique_labels = np.unique(np.concatenate((self._train_labels, self._test_labels)))

@@ -32,13 +32,15 @@ class_mapping = {
 
 
 class Ising(GraphProblem):
-    def __init__(self, filepath, class_name):
-        self.result = None
+    def __init__(self, input_data, class_name):
         self.is_executed = None
         self.qaoa = None
-        super().__init__(file_path=filepath)
-        self.problem = class_mapping[class_name]()
-        self.maxcut_qubo = self.problem.qubo
+        self.opt_result = None
+        self.classical_solution = None
+
+        super().__init__(input_data)
+        self.problem = class_mapping[class_name](self.graph())
+        self.qubo = self.problem.qubo
         qaoa = QAOA()
 
         # device
@@ -60,21 +62,38 @@ class Ising(GraphProblem):
     def plot_graph(self):
         plot_graph(self.graph())
 
+    def plot_results(self):
+        if not self.is_executed:
+            raise NotExecutedError
+        self.opt_result.plot_cost()
+
+    def plot_graph_solution(self):
+        if not self.is_executed:
+            raise NotExecutedError
+        solution = self.opt_result.most_probable_states.get('solutions_bitstrings')
+        g = self.graph()
+        pos = nx.spring_layout(g)
+        nx.draw_networkx_nodes(g, pos, nodelist=[idx for idx, bit in enumerate(solution[0]) if bit == '1'],
+                               node_color="tab:red")
+        nx.draw_networkx_nodes(g, pos, nodelist=[idx for idx, bit in enumerate(solution[0]) if bit == '0'],
+                               node_color="tab:blue")
+        nx.draw_networkx_edges(g, pos)
+
     def run(self, verbose=False):
-        self.qaoa.compile(self.maxcut_qubo)
+        self.qaoa.compile(self.qubo)
         self.qaoa.optimize()
 
         self.is_executed = True
-        result = self.qaoa.result
+        self.opt_result = self.qaoa.result
         if verbose:
-            print(result.optimized)
-        return result
+            print(self.opt_result.optimized)
+        return self.opt_result
 
     def generate_qasm(self):
         if not self.is_executed:
-            raise ValueError("not executed yet")
+            raise NotExecutedError
         variational_params = self.qaoa.optimizer.variational_params
         optimized_angles = self.qaoa.result.optimized['angles']
         variational_params.update_from_raw(optimized_angles)
         optimized_circuit = self.qaoa.backend.qaoa_circuit(variational_params)
-        return qiskit.qasm2.dumps(optimized_circuit)
+        return optimized_circuit, qiskit.qasm2.dumps(optimized_circuit)

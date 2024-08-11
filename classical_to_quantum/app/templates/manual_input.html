@@ -9,12 +9,13 @@
 <body>
     <div id="container">
         <h1>Input Classical Code Manually</h1>
+        <p>Please input the classical code with only one function. Example format:</p>
+        <pre>
+function_name(parameters) {
+    // Function body
+}
+        </pre>
         <textarea id="classical_code" placeholder="Enter classical code here..."></textarea>
-        <select id="problem_type">
-            <option value="example_type_1">Example Type 1</option>
-            <option value="example_type_2">Example Type 2</option>
-            <!-- Add more problem types as needed -->
-        </select>
         <button onclick="generateCircuit()">Generate Circuit</button>
         <h2>QASM 3.0 Code</h2>
         <pre id="qasm_code"></pre>
@@ -24,18 +25,21 @@
     <script>
         function generateCircuit() {
             const classicalCode = document.getElementById('classical_code').value;
-            const problemType = document.getElementById('problem_type').value;
             fetch('/generate_circuit', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ classical_code: classicalCode, problem_type: problemType })
+                body: JSON.stringify({ classical_code: classicalCode })
             })
             .then(response => response.json())
             .then(data => {
                 document.getElementById('qasm_code').textContent = data.qasm_code;
                 document.getElementById('circuit_image').src = data.circuit_image;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while generating the circuit.');
             });
         }
     </script>

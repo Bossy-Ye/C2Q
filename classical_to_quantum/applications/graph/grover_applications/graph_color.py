@@ -186,7 +186,7 @@ def check_disagree_list_general(state, disagree_list):
 
 class GraphColor(GraphProblem):
     def __init__(self, file_path):
-        super().__init__(file_path=file_path)
+        super().__init__(input_data=file_path)
         self.circuit = None
         variable_qubits, check_qubits, disagree_list, output_qubit = generate_qubit_mapping(self.graph().nodes,
                                                                                             self.graph().edges)

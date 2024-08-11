@@ -35,7 +35,7 @@ def read_gset_file(filepath):
     return elist, num_nodes, num_edges
 
 
-def draw_graph(G, colors=None, pos=None, special_nodes=None, transmission=False):
+def draw_graph(G, colors=None, pos=None, special_nodes=None):
     if colors is None:
         colors = 'lightblue'
     if pos is None:
@@ -64,9 +64,6 @@ def draw_graph(G, colors=None, pos=None, special_nodes=None, transmission=False)
     # Draw edge labels if they exist
     edge_labels = nx.get_edge_attributes(G, "weight")
     nx.draw_networkx_edge_labels(G, pos=pos, edge_labels=edge_labels)
-
-    if not transmission:
-        plt.show()
     # Convert graph to base64 string
 
 
