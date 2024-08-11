@@ -3,7 +3,6 @@ import tempfile
 import qiskit
 import qiskit.qasm as qasm
 from flask import Flask, render_template, request, jsonify
-from qiskit.visualization import
 from qiskit.visualization import circuit_drawer
 from io import BytesIO
 import base64

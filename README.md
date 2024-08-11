@@ -1,29 +1,29 @@
 # Classi|Q> Project!!!
-# Repo was changed from 8.8 2024
-© Copyright IBM 2017, 2024.
-This project took Qiskit project as a reference, thanks to IBM.
-# Translation Framework
-This project uses the Qiskit library for quantum computing.
+Trying to bridge the gap between classic and quantum, for those who are not familiar with quantum computing.
+This project is both practical and educational. 
 
 ## License
-
-This project includes code and documentation from the Qiskit library, which is licensed under the Apache License 2.0. A copy of this license is included in the `LICENSE` file.
+This project takes Qiskit open source project as a reference, thanks to community.
+A copy of this license is included in the `LICENSE` file.
 
 ## Attribution
-
-Parts of this project are based on code and documentation from the Qiskit project:
 - Qiskit: https://qiskit.org/
 - License: http://www.apache.org/licenses/LICENSE-2.0
-
-### Modifications
-
-The following changes were made to the original Qiskit documentation and provided examples:
--
+- Author: Boshuai Ye, email: boshuaiye@gmail.com
 ### Workflow of Classi|Q>
 ![alt text](./assets/workflow.png "Title")
 
+### How we translate classical problem into quantum???
+We aim to analyze the given classical code by extracting its Abstract Syntax Tree (AST), traversing it to identify the type of problem being solved, and then capturing the original data. 
+The next step is to convert this input data into a format suitable for 
+quantum computation. Currently, we are focusing on converting NP problems 
+to CNF (Conjunctive Normal Form) and utilizing the Quantum Approximate 
+Optimization Algorithm (QAOA). For these cases, oracles tailored to 
+different types of problems will be required. And also a translator that gives readable output.
+
+### Limitedness
+Inherent complexity to translate original problem into CNF...
 
 
-developed in another machine
-TO TEST
-TO TEST PULL REQUEST
+
+

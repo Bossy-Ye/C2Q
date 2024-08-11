@@ -117,6 +117,7 @@ def decompose_into_pauli1(matrix):
         ('Z', alpha_z)
     ])
 
+
 def get_evolved_state(circuit: QuantumCircuit, statevector: Statevector, verbose=False):
     final_statevector = statevector.evolve(circuit)
     amplitudes = final_statevector.probabilities_dict()

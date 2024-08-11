@@ -1,26 +1,31 @@
 # classical_to_quantum/algorithms/vqe_algorithm.py
+from qiskit_aer.primitives import Sampler, Estimator
 
 from classical_to_quantum.algorithms.base_algorithm import BaseAlgorithm
 from qiskit.circuit.library import TwoLocal, NLocal
 from qiskit import QuantumCircuit, qasm2
-import numpy as np
-# SciPy minimizer routine
-from scipy.optimize import minimize
-import time
-from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-from qiskit import qasm3
-from qiskit.primitives import StatevectorEstimator
+from qiskit_algorithms.optimizers import SPSA
+from qiskit_algorithms import SamplingVQE, VQE
 
 
 class VQEAlgorithm(BaseAlgorithm):
-    def __init__(self, observable: object, n_qubits,
+    def __init__(self,
+                 observable,
+                 n_qubits,
                  reps=3):
         super().__init__()
         self.result = None
-        self.ansatz = None
+        self.ansatz = TwoLocal(n_qubits,
+                               rotation_blocks=["ry", "rz"],
+                               entanglement_blocks="cz",
+                               reps=reps)
         self.observable = observable
         self.n_qubits = n_qubits
         self.reps = reps
+        self.vqe = VQE(estimator=Estimator(),
+                       ansatz=self.ansatz,
+                       optimizer=SPSA(maxiter=100))
+        self.is_executed = False
 
     def run(self, verbose=False):
         """
@@ -29,49 +34,11 @@ class VQEAlgorithm(BaseAlgorithm):
         Returns:
             dict: The result containing the eigenvalue and optimal parameters.
         """
-
-        def cost_func_vqe(params, ansatz, hamiltonian, estimator):
-            """Return estimate of energy from estimator
-
-            Parameters:
-                params (ndarray): Array of ansatz parameters
-                ansatz (QuantumCircuit): Parameterized ansatz circuit
-                hamiltonian (SparsePauliOp): Operator representation of Hamiltonian
-                estimator (Estimator): Estimator primitive instance
-
-            Returns:
-                float: Energy estimate
-            """
-            pub = (ansatz, hamiltonian, params)
-            cost = estimator.run([pub]).result()[0].data.evs
-
-            return cost
-
-        reference_circuit = QuantumCircuit(self.n_qubits)
-        reference_circuit.x(0)
-        variational_form = TwoLocal(
-            self.n_qubits,
-            rotation_blocks=["rz", "ry"],
-            entanglement_blocks="cx",
-            entanglement="linear",
-            reps=self.reps,
-        )
-
-        ansatz = reference_circuit.compose(variational_form)
-
-        ansatz.decompose().draw('mpl')
-        self.ansatz = ansatz
-        self.circuit = ansatz
-        # classical estimator below
-        estimator = StatevectorEstimator()
-
-        x0 = np.ones(len(ansatz.parameters))
-        result = minimize(cost_func_vqe, x0,
-                            args=(ansatz, self.observable, estimator),
-                            method="COBYLA")
-        self.result = result
+        self.result = self.vqe.compute_minimum_eigenvalue(operator=self.observable)
+        self.is_executed = True
         if verbose:
             print(self.result)
+        return self.result
 
     def export_to_qasm(self):
-        return qasm2.dumps(self.ansatz.assign_parameters(self.result.x))
+        return qasm2.dumps(self.ansatz.assign_parameters(self.result.optimal_point))
