@@ -1,5 +1,5 @@
 import unittest
-from quantum_adder import quantum_add
+from quantum_arithmetic import quantum_add
 from qiskit.primitives import Sampler
 
 

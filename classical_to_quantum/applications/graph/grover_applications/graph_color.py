@@ -6,17 +6,17 @@ from qiskit_algorithms import Grover, AmplificationProblem
 from qiskit_aer.primitives import Sampler
 from qiskit.visualization import plot_histogram
 
-variable_qubits = [0, 1, 2, 3, 4, 5, 6, 7]
-check_qubits = [8, 9, 10, 11, 12, 13]
-
-disagree_list = [[[0, 1], [2, 3]],
-                 [[0, 1], [4, 5]],
-                 [[0, 1], [6, 7]],
-                 [[2, 3], [4, 5]],
-                 [[2, 3], [6, 7]],
-                 [[4, 5], [6, 7]]
-                 ]
-output_qubit = 14
+# variable_qubits = [0, 1, 2, 3, 4, 5, 6, 7]
+# check_qubits = [8, 9, 10, 11, 12, 13]
+#
+# disagree_list = [[[0, 1], [2, 3]],
+#                  [[0, 1], [4, 5]],
+#                  [[0, 1], [6, 7]],
+#                  [[2, 3], [4, 5]],
+#                  [[2, 3], [6, 7]],
+#                  [[4, 5], [6, 7]]
+#                  ]
+# output_qubit = 14
 
 
 def generate_qubit_mapping(nodes, edges):
@@ -185,15 +185,16 @@ def check_disagree_list_general(state, disagree_list):
 
 
 class GraphColor(GraphProblem):
-    def __init__(self, file_path):
+    def __init__(self, file_path, verbose=False):
         super().__init__(input_data=file_path)
         self.circuit = None
         variable_qubits, check_qubits, disagree_list, output_qubit = generate_qubit_mapping(self.graph().nodes,
                                                                                             self.graph().edges)
-        print("Variable Qubits:", variable_qubits)
-        print("Check Qubits:", check_qubits)
-        print("Disagree List:", disagree_list)
-        print("Output Qubit:", output_qubit)
+        if verbose:
+            print("Variable Qubits:", variable_qubits)
+            print("Check Qubits:", check_qubits)
+            print("Disagree List:", disagree_list)
+            print("Output Qubit:", output_qubit)
         prep = graph_color_prep(variable_qubits)
         oracle = graph_color_oracle(disagree_list, variable_qubits, check_qubits, output_qubit)
 

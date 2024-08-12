@@ -104,7 +104,7 @@ def quantum_subtract(left, right, n_bits):
     adder = VBERippleCarryAdder(num_state_qubits=n_bits)
     num_qubits = len(adder.qubits)
     if left * right < 0:
-        qc = QuantumCircuit(num_qubits, n_bits+1)
+        qc = QuantumCircuit(num_qubits, n_bits + 1)
     else:
         qc = QuantumCircuit(num_qubits, n_bits)
     # Initialize the input qubits
@@ -128,7 +128,7 @@ def quantum_subtract(left, right, n_bits):
     result = sampler.run(circuits=qc, shots=1024).result()
     result = list(result.quasi_dists[0].keys())[0]
     if left * right < 0:
-        result = complement_binary_list_to_decimal(decimal_to_complement_binary_list(result, n_bits+1))
+        result = complement_binary_list_to_decimal(decimal_to_complement_binary_list(result, n_bits + 1))
     else:
         result = complement_binary_list_to_decimal(decimal_to_complement_binary_list(result, n_bits))
     return qc.decompose().decompose(), result
@@ -144,6 +144,7 @@ def quantum_subtract(left, right, n_bits):
 
 def permutations(list):
     result = []
+
     def f(start):
         if start == len(list):
             result.append(list[:])
@@ -151,5 +152,6 @@ def permutations(list):
             list[start], list[i] = list[i], list[start]
             f(i + 1)
             list[start], list[i] = list[i], list[start]
+
     f(0)
     return result

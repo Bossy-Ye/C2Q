@@ -8,7 +8,7 @@ setup(
     long_description_content_type='text/markdown',
     author="Boshuai Ye",
     author_email="boshuaiye@gmail.com",
-    url="https://github.com/yourusername/yourproject",
+    url="https://github.com/Bossy-Ye/ClassiQ",
     packages=find_packages(),  # Automatically find packages in the directory
     install_requires=[
         "required_package1",
@@ -21,9 +21,6 @@ setup(
     ],
     python_requires='>=3.6',
     entry_points={
-        'console_scripts': [
-            'your_command=your_module:main_function',
-        ],
     },
     include_package_data=True,
     package_data={

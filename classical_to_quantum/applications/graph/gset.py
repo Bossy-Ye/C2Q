@@ -5,15 +5,6 @@ import networkx as nx
 import urllib.request
 import networkx as nx
 import numpy as np
-from qiskit_algorithms.optimizers import SPSA
-from qiskit.circuit.library import TwoLocal
-from qiskit_algorithms import QAOA
-from qiskit.primitives import Sampler
-from qiskit_algorithms import SamplingVQE, NumPyMinimumEigensolver
-from qiskit_optimization.algorithms import MinimumEigenOptimizer
-from qiskit_optimization.applications import Maxcut, Tsp
-from qiskit import qasm3
-from qiskit_algorithms.utils import algorithm_globals
 import matplotlib.pyplot as plt
 
 

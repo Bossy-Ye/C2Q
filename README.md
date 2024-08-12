@@ -45,6 +45,7 @@ Inherent complexity to translate original problem into CNF...
    - **Quantum**: Interpret the measured quantum state to understand the solution. 
 
 ### What I am trying to do first
+- **Basic arithmetic operation**: +, -, *, / are implemented with quantum unitary gates
 - **Graph problems**: perhaps easy to understand
   - qaoa (partially done based on openqaoa)
   - grover (oracle for each problem needed)
