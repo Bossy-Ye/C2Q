@@ -4,9 +4,13 @@ from pysat.formula import CNF
 import matplotlib.pyplot as plt
 # Example CNF Formula using PySAT
 from qiskit.circuit.library import OR
+from qiskit.primitives import Sampler
 from qiskit.quantum_info import Statevector
+from qiskit_algorithms import AmplificationProblem, Grover
+
 from utils import get_evolved_state
 from graph_oracle import cnf_to_quantum_oracle
+
 
 def cnf_to_oracle_with_or(cnf_formula):
     num_vars = cnf_formula.nv  # Number of variables
@@ -85,4 +89,17 @@ circuit = QuantumCircuit(9)
 circuit.h([0, 1, 2, 3, 4])
 state = Statevector(circuit)
 oracle = cnf_to_quantum_oracle(cnf)
-get_evolved_state(oracle, state, verbose=True)
+
+
+def fun(state):
+    return True
+
+
+problem = AmplificationProblem(oracle,
+                               state_preparation=circuit,
+                               is_good_state=fun,
+                               objective_qubits=[0, 1, 2, 3, 4])
+grover = Grover(sampler=Sampler(),
+                iterations=2)
+result = grover.amplify(problem)
+print(result)

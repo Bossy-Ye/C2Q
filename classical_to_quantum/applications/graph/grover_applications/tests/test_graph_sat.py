@@ -195,10 +195,19 @@ class MyTestCase(unittest.TestCase):
     def test_grover_wrapper(self):
         # Define the CNF formula
         test_cases = [
-            (CNF(from_clauses=[[1, 2], [-2], [3, -2]]), ['001', '101']),
+            (CNF(from_clauses=[[-1, -2, -3],
+                               [1, -2, 3],
+                               [1, 2, -3],
+                               [1, -2, -3],
+                               [-1, 2, 3]]), ['000', '011', '101']),
+            (CNF(from_clauses=[[1, -2], [-1, 3], [2]]), ['111']),  # Test Case 1
+
+            (CNF(from_clauses=[[1, 2], [2, 3]]), ['010', '110', '111', '101', '011']),  # Test Case 2
+            (CNF(from_clauses=[[1, 2, -3], [-1, 2, -4], [1, -2, 3, 5]]),
+             ['01011', '10101', '00000', '00110', '01110', '11111']),
+            (CNF(from_clauses=[[1], [-1, -2], [-1, 2, -3], [3, 4]]), ['1001']),
         ]
         # Convert the CNF formula to a quantum oracle
-
         for cnf_formula, expected_states in test_cases:
             print(f'-----------{cnf_formula}-----------------')
             solutions = solve_all_cnf_solutions(cnf_formula)
@@ -208,19 +217,21 @@ class MyTestCase(unittest.TestCase):
             N = 2 ** cnf_formula.nv
             sin_theta = (2 * math.sqrt(M * (N - M))) / N
             theta = math.asin(sin_theta)
-            R = math.ceil(math.acos(math.sqrt(M / N)) / theta)
+            R = math.floor(math.acos(math.sqrt(M / N)) / theta) + 1
+            iterations = [R,R+1]
+            optimal_num_iterations = math.floor(
+                math.pi / (4 * math.asin(math.sqrt(len(expected_states) / 2 ** cnf_formula.nv)))
+            )
             prev = QuantumCircuit(oracle.num_qubits)
             prev.h(range(cnf_formula.nv))
             def fun(state): return True
             grover = GroverWrapper(oracle=oracle,
-                                   iteration=R,
+                                   iteration=iterations,
                                    state_preparation=prev,
                                    objective_qubits=list(range(cnf_formula.nv)),
                                    is_good_state=fun
                                    )
             grover.run(verbose=True)
-            print(grover.export_to_qasm())
-            print(grover.circuit.decompose().decompose())
 
 
 if __name__ == '__main__':

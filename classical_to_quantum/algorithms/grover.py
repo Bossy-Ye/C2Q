@@ -32,13 +32,15 @@ class GroverWrapper(BaseAlgorithm):
                                          reflection_qubits=objective_qubits)
         self.circuit = state_preparation
 
-        self.circuit.compose(self._grover_op.power(iteration),
+        self.circuit.compose(self._grover_op.power(iteration[0]),
                              inplace=True)
         self.problem = AmplificationProblem(oracle,
                                             state_preparation=state_preparation,
                                             is_good_state=is_good_state,
                                             objective_qubits=objective_qubits)
-        self.grover = Grover(sampler=Sampler(), iterations=iteration)
+        self.grover = Grover(sampler=Sampler(),
+                             )
+
 
     def run(self, verbose=False):
         result = self.grover.amplify(self.problem)
