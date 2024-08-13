@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from qiskit.circuit.library import OR
 from qiskit.quantum_info import Statevector
 from utils import get_evolved_state
-
+from graph_oracle import cnf_to_quantum_oracle
 
 def cnf_to_oracle_with_or(cnf_formula):
     num_vars = cnf_formula.nv  # Number of variables
@@ -81,7 +81,8 @@ cnf = CNF(from_clauses=[
 ])
 
 # Create the circuit and check the last bit
-state = Statevector.from_label("000000010")
-circuit = cnf_to_oracle_with_or(cnf)
-print(circuit)
-get_evolved_state(circuit, state, verbose=True)
+circuit = QuantumCircuit(9)
+circuit.h([0, 1, 2, 3, 4])
+state = Statevector(circuit)
+oracle = cnf_to_quantum_oracle(cnf)
+get_evolved_state(oracle, state, verbose=True)

@@ -119,6 +119,8 @@ def triangle_oracle(edges, nodes_qubits, edge_anc, ancilla, neg_base):
     qc.ccx(nodes_qubits[edges[0][0]], nodes_qubits[edges[0][1]], edge_anc[0])
     qc.barrier()
 
+    qc.h(neg_base[0])
+    qc.x(neg_base[0])
     return qc
 
 

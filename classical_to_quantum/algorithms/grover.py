@@ -1,3 +1,4 @@
+import qiskit
 from qiskit.circuit import QuantumCircuit
 
 # input_3sat_instance = """
@@ -21,27 +22,25 @@ from qiskit.primitives import Sampler
 class GroverWrapper(BaseAlgorithm):
     def __init__(self,
                  oracle: QuantumCircuit,
-                 iteration=None,
-                 state_preparation: QuantumCircuit = None,
-                 is_good_state=None,
-                 objective_qubits=None
+                 iteration,
+                 state_preparation: QuantumCircuit,
+                 is_good_state,
+                 objective_qubits
                  ):
         super().__init__()
-        self.grover = None
-        if isinstance(oracle, PhaseOracle):
-            is_good_state = oracle.evaluate_bitstring
-        self.operator = None
-        self.oracle = oracle
-        self.iteration = iteration
+        self._grover_op = GroverOperator(oracle,
+                                         reflection_qubits=objective_qubits)
+        self.circuit = state_preparation
 
-        if oracle is not None:
-            self.problem = AmplificationProblem(oracle,
-                                                state_preparation=state_preparation,
-                                                is_good_state=is_good_state,
-                                                objective_qubits=objective_qubits)
+        self.circuit.compose(self._grover_op.power(iteration),
+                             inplace=True)
+        self.problem = AmplificationProblem(oracle,
+                                            state_preparation=state_preparation,
+                                            is_good_state=is_good_state,
+                                            objective_qubits=objective_qubits)
+        self.grover = Grover(sampler=Sampler(), iterations=iteration)
 
     def run(self, verbose=False):
-        self.grover = Grover(iterations=self.iteration, sampler=Sampler())
         result = self.grover.amplify(self.problem)
         if verbose:
             print(result)
@@ -51,7 +50,7 @@ class GroverWrapper(BaseAlgorithm):
         return None
 
     def export_to_qasm(self):
-        if self.operator is None:
+        if self.circuit is None:
             raise ValueError("Grover operator has not been generated yet. Call generate_quantum_code() first.")
-        qasm_str = qasm3.dumps(self.operator)
+        qasm_str = qiskit.qasm2.dumps(self.circuit)
         return qasm_str

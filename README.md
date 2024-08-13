@@ -22,7 +22,8 @@ Optimization Algorithm (QAOA). For these cases, oracles tailored to
 different types of problems will be required. And also a translator that gives readable output.
 
 ### Limitedness
-Inherent complexity to translate original problem into CNF...
+1. ***Inherent complexity to translate original problem into CNF***...
+2. ***Not all problems have a quantum counterpart...*** 
 
 ### Translating Classical Problems into Quantum
 
@@ -48,10 +49,13 @@ Inherent complexity to translate original problem into CNF...
 - **Basic arithmetic operation**: +, -, *, / are implemented with quantum unitary gates
 - **Graph problems**: perhaps easy to understand
   - qaoa (partially done based on openqaoa)
+    - Visualization
+    - Support different file format e.g., gset, tsplib 
   - grover (oracle for each problem needed)
+    - Convert
+    - How to choose an optimal iterations numer wisely???
 - **Parser**
 - **Generator**
 - **Interpreter**
-
 
 

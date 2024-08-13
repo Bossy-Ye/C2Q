@@ -64,6 +64,7 @@ def cnf_to_quantum_circuit(cnf_formula):
 
     # Uncompute the OR gates by applying them in reverse order
     for i, (or_gate, clause_qubits, output_qubit) in enumerate(reversed(or_gates)):
+        qc.barrier()
         for qubit_index in negations[-(i + 1)]:
             qc.x(qubit_index)
         qc.append(or_gate.inverse(), clause_qubits + [output_qubit])
@@ -71,7 +72,7 @@ def cnf_to_quantum_circuit(cnf_formula):
         # Apply X gates to revert any negated qubits back to their original state
         for qubit_index in negations[-(i + 1)]:
             qc.x(qubit_index)
-
+    qc.barrier()
     return qc
 
 
@@ -82,6 +83,7 @@ def cnf_to_quantum_oracle(cnf_formula):
     # Create an empty quantum circuit to hold the full oracle operations
     qc_tmp = QuantumCircuit(qc.num_qubits)
 
+    qc_tmp.barrier()
     # Prepare the final ancilla qubit in the |-> state
     qc_tmp.x(qc.num_qubits - 1)
     qc_tmp.h(qc.num_qubits - 1)
@@ -94,6 +96,7 @@ def cnf_to_quantum_oracle(cnf_formula):
     qc_tmp.h(qc.num_qubits - 1)
     qc_tmp.x(qc.num_qubits - 1)
 
+    qc_tmp.barrier()
     return qc_tmp
 
 
