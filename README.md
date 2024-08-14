@@ -54,10 +54,7 @@ different types of problems will be required. And also a translator that gives r
   - grover (oracle for each problem needed)
     - Convert it to SAT problem if it could be done.
     - Why **Sat**? Sat problem was the first problem proven to be NP-complete by Stephen Cook in 1971 (Cook’s theorem). This means that every problem in NP can be           reduced to SAT, making it a kind of "universal" problem for NP. Any problem in NP can be reduced to it in polynomial time. So study SAT counterpart of a graph problem has an empirical implication.
-    - How to choose an optimal iterations number wisely? We suppose the number of solutions is unknown, The formula for updating \( T \) is given by:
-
-\( T \leftarrow \lceil \frac{4}{5} T \rceil \)
- choose T=1 initially, then: \( T \leftarrow \lceil \frac{4}{5}T \rceil \) [^1]
+    - How to choose an optimal iterations number wisely? We suppose the number of solutions is unknown, The formula for updating T is given by: choose T=1 initially, then T = ceil(4\5 T) each iteration[^1]
 - **Parser**
 - **Generator**
 - **Interpreter**
