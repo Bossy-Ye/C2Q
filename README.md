@@ -1,6 +1,6 @@
 # Classi|Q> Project!!!
-Trying to bridge the gap between classical computing and quantum computing, especially in the context of **NP-complete problem**, for those who are not familiar with quantum computing.
-This project is both practical and educational.
+Trying to bridge the gap between classical computing and quantum computing, especially in the context of **NP-complete problem**, for those who are not familiar with quantum computing. This project is addressing both a theoretical and practical need
+
 
 ## License
 This project takes Qiskit open source project as a reference, thanks to community.
@@ -54,9 +54,11 @@ different types of problems will be required. And also a translator that gives r
   - grover (oracle for each problem needed)
     - Convert it to SAT problem if it could be done.
     - Why **Sat**? Sat problem was the first problem proven to be NP-complete by Stephen Cook in 1971 (Cook’s theorem). This means that every problem in NP can be           reduced to SAT, making it a kind of "universal" problem for NP. Any problem in NP can be reduced to it in polynomial time. So study SAT counterpart of a graph problem has an empirical implication.
-    - How to choose an optimal iterations numer wisely???
+    - How to choose an optimal iterations number wisely? We suppose the number of solutions is unknown, choose T=1 initially, then: \( T \leftarrow \lceil \frac{4}{5}T \rceil \)[^1]
 - **Parser**
 - **Generator**
 - **Interpreter**
+
+[^1]: Boyer, M., Brassard, G., Høyer, P., & Tapp, A. (1998). Tight bounds on quantum searching. Fortschritte Der Physik, 46(4–5), 493–505. https://doi.org/10.1002/(sici)1521-3978(199806)46:4/5
 
 
