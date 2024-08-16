@@ -220,7 +220,8 @@ class TriangleFinding(GraphProblem):
 
         # define oracle and prep circuits
         n_nodes = self.num_nodes
-        self.iteration = math.comb(n_nodes, 3)
+        N = 2**n_nodes
+        self.iterations = math.floor(math.pi / 4 * math.sqrt(N))
         nodes_qubits = QuantumRegister(n_nodes, name='nodes')
         edge_anc = QuantumRegister(2, name='edge_anc')
         ancilla = QuantumRegister(n_nodes - 2, name='cccx_diff_anc')
@@ -253,7 +254,7 @@ class TriangleFinding(GraphProblem):
             )
 
         self.grover_wrapper = GroverWrapper(oracle=self.oracle,
-                                            iteration=self.iteration,
+                                            iterations=self.iterations,
                                             state_preparation=self.prep,
                                             is_good_state=check_valid_triangle,
                                             objective_qubits=list(range(self.num_nodes))

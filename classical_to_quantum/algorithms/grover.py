@@ -22,25 +22,32 @@ from qiskit.primitives import Sampler
 class GroverWrapper(BaseAlgorithm):
     def __init__(self,
                  oracle: QuantumCircuit,
-                 iteration,
-                 state_preparation: QuantumCircuit,
+                 iterations,
                  is_good_state,
-                 objective_qubits
+                 state_preparation: QuantumCircuit = None,
+                 objective_qubits=None
                  ):
         super().__init__()
         self._grover_op = GroverOperator(oracle,
                                          reflection_qubits=objective_qubits)
-        self.circuit = state_preparation
-
-        self.circuit.compose(self._grover_op.power(iteration[0]),
+        if objective_qubits is None:
+            objective_qubits = list(range(oracle.num_qubits))
+        if state_preparation is None:
+            state_preparation = QuantumCircuit(oracle.num_qubits)
+            state_preparation.h(objective_qubits)
+        self.circuit = QuantumCircuit(oracle.num_qubits, len(objective_qubits))
+        print(oracle.num_qubits)
+        self.circuit.compose(state_preparation, inplace=True)
+        self.circuit.compose(self._grover_op.power(iterations),
                              inplace=True)
+        print(self.circuit)
+        self.circuit.measure(objective_qubits,
+                             objective_qubits)
         self.problem = AmplificationProblem(oracle,
                                             state_preparation=state_preparation,
                                             is_good_state=is_good_state,
                                             objective_qubits=objective_qubits)
-        self.grover = Grover(sampler=Sampler(),
-                             )
-
+        self.grover = Grover(sampler=Sampler())
 
     def run(self, verbose=False):
         result = self.grover.amplify(self.problem)
@@ -54,5 +61,7 @@ class GroverWrapper(BaseAlgorithm):
     def export_to_qasm(self):
         if self.circuit is None:
             raise ValueError("Grover operator has not been generated yet. Call generate_quantum_code() first.")
-        qasm_str = qiskit.qasm2.dumps(self.circuit)
-        return qasm_str
+        qasm = self.circuit.qasm()
+        #TODO error with c3sqrtx
+        #qasm = qasm.replace("c3sqrtx", "c3sx")
+        return qasm

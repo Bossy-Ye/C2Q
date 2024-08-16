@@ -68,7 +68,7 @@ class QASMGenerator:
             if verbose:
                 qmlk.plot_data()
                 qmlk.show_result()
-            return qmlk.generate_qasm3()
+            return qmlk.generate_qasm()
         if self.problem_type == ProblemType.CNF:
             dimacs = generate_dimacs(self.parser.data)
             fp = tempfile.NamedTemporaryFile(mode="w+t", delete=False)
@@ -82,7 +82,7 @@ class QASMGenerator:
                 print(ex)
             finally:
                 os.remove(file_name)
-            wrapper = GroverWrapper(oracle)
+            wrapper = GroverWrapper(oracle, iterations=2, is_good_state=oracle.evaluate_bitstring)
             wrapper.run(verbose=verbose)
             return wrapper.export_to_qasm()
         else:

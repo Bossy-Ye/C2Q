@@ -1,13 +1,17 @@
 import ast
 
+import networkx as nx
 import numpy as np
 from enum import Enum
+from classical_to_quantum.classiq_exceptions import *
 
 ml_dic = ['SVC']
 eigenvalue_keywords = ["matrix", "observable", "eigvals", "eigvalsh", "eigh"]
 ml_keywords = ["SVC", "RandomForest", "MLP", "LinearRegression", 'SVM']
 cnf_keywords = ["cnf", "sat"]
-
+graph_keywords = ["graph", "networkx", "nx", "adjacency", "nodes", "edges", "shortest_path", "dijkstra"]
+clique_keywords = ["clique"]
+maxcut_keywords = ["maxcut"]
 
 def extract_matrix(node):
     matrix = []
@@ -65,12 +69,15 @@ class ProblemParser:
         self.visitor.visit(ast.parse(code))
 
     def evaluate_problem_type(self):
-        """ Evaluate the problem type based on parsed data """
-        # Check if specific variables indicate a problem type
+        """ Evaluate the problem type based on parsed data and also fetch data"""
+        if self.visitor is None:
+            raise NotParsedError
         # Check variables for problem type
         for var_name in self.visitor.variables:
             if var_name in eigenvalue_keywords:
                 self._set_problem_type(ProblemType.EIGENVALUE)
+            elif var_name in graph_keywords:
+                self._set_problem_type(ProblemType.GRAPH)
 
         # Check function definitions for problem type
         for func in self.visitor.functions:
@@ -80,6 +87,8 @@ class ProblemParser:
                 self._set_problem_type(ProblemType.MACHINELEARNING)
             elif any(keyword in func['name'].lower() for keyword in cnf_keywords):
                 self._set_problem_type(ProblemType.CNF)
+            elif any(keyword in func['name'].lower() for keyword in graph_keywords):
+                self._set_problem_type(ProblemType.GRAPH)
 
                 # Check main logic for problem type
                 for node in self.visitor.main_logic:
@@ -93,7 +102,10 @@ class ProblemParser:
                                 self._set_problem_type(ProblemType.MACHINELEARNING)
                             elif any(keyword in func_name.lower() for keyword in cnf_keywords):
                                 self._set_problem_type(ProblemType.CNF)
-
+                            elif any(keyword in func_name.lower() for keyword in graph_keywords):
+                                self._set_problem_type(ProblemType.GRAPH)
+        if self.problem_type == ProblemType.GRAPH:
+            self._determine_specific_graph_problem()
         # Extract corresponding data based on the detected problem type
         self.extract_data()
 
@@ -102,10 +114,22 @@ class ProblemParser:
             return "No specific problem type detected."
         return f"Detected Problem Type: {self.problem_type.name}"
 
+    def _determine_specific_graph_problem(self):
+        """Determine the specific graph problem type if it's a graph problem."""
+        # Check for clique-related keywords
+        if any(keyword in self.visitor.variables or keyword in self.visitor.calls for keyword in clique_keywords):
+            self.problem_type = ProblemType.GRAPH
+            self.specific_graph_problem = "Clique Problem"
+        # Check for max-cut-related keywords
+        elif any(keyword in self.visitor.variables or keyword in self.visitor.calls for keyword in maxcut_keywords):
+            self.problem_type = ProblemType.GRAPH
+            self.specific_graph_problem = "Max-Cut Problem"
+        # Add other specific graph problem checks here
+
     def evaluation(self):
         """ Evaluate the parsed code and provide a summary """
-        if not self.visitor:
-            return "No code has been parsed yet."
+        if self.visitor is None:
+            raise NotParsedError
 
         # Ensure only one problem type is detected
         problem_type_report = self.evaluate_problem_type()
@@ -156,7 +180,16 @@ class ProblemParser:
         else:
             report.append("No variables found.")
 
-        # 6. Problem Type Detected
+        # 6. Summary of Function Calls
+        if self.visitor.calls:
+            report.append("\nFunction Calls:")
+            for call in self.visitor.calls:
+                args = ", ".join(call['args'])
+                report.append(f" - {call['func_name']}({args})")
+        else:
+            report.append("No function calls found.")
+
+        # 7. Problem Type Detected
         report.append(f"\n{problem_type_report}")
 
         # Join the report into a single string
@@ -182,15 +215,23 @@ class ProblemParser:
             elif observable is not None:
                 self.data = observable
         elif self.problem_type == ProblemType.MACHINELEARNING:
-            # If it's a MACHINELEARNING problem, you might look for specific variables (e.g., training data)
-            # Example: `self.data = self.visitor.variables.get('training_data')`
+            # TODO
             pass
         elif self.problem_type == ProblemType.CNF:
             # For CNF problems, look for the relevant CNF formula representation
-            self.data = (self.visitor.variables.get('cnf') or self.visitor.variables.get('3sat') or self.visitor.variables.get('cnf_formula') or
+            self.data = (self.visitor.variables.get('cnf') or self.visitor.variables.get(
+                '3sat') or self.visitor.variables.get('cnf_formula') or
                          self.visitor.variables.get('formula'))
+        elif self.problem_type == ProblemType.GRAPH:
+            # Extract relevant graph data, such as nodes and edges
+            graph_data = {'nodes': self.visitor.variables.get('nodes', []),
+                          'edges': self.visitor.variables.get('edges', [])}
+            G = nx.Graph()
+            G.add_edges_from(graph_data.get("edges"))
+            print(G.edges)
+            print(G.nodes)
         # Add other cases for GRAPH, FACTOR, etc.
-        # ...
+        # TODO
 
 
 class MyVisitor(ast.NodeVisitor):
@@ -200,6 +241,7 @@ class MyVisitor(ast.NodeVisitor):
         self.imports = []
         self.main_logic = []
         self.variables = {}
+        self.calls = []
         self.assign_dispatch_table = {
             ast.Name: self.handle_assign_name,
             ast.Tuple: self.handle_assign_tuple,
@@ -231,18 +273,25 @@ class MyVisitor(ast.NodeVisitor):
         handler(node)
 
     def visit_Call(self, node):
-        # if isinstance(node.func, ast.Attribute):
-        #     if node.func.attr in {'eigvals', 'eigvalsh', 'eigh'}:
-        #         self.problem_type = ProblemType.EIGENVALUE
-        #     if node.func.attr == 'factor':
-        #         self.problem_type = ProblemType.FACTOR
-        # if isinstance(node.func, ast.Name):
-        #     func_name = node.func.id
-        #     if func_name in ml_dic:
-        #         self.problem_type = ProblemType.MACHINELEARNING
-        #     if 'cnf' in func_name.lower() or 'sat' in func_name.lower():
-        #         self.problem_type = ProblemType.CNF
+        # Capture details about the function call
+        call_info = {
+            'func_name': self._get_function_name(node.func),
+            'args': [ast.dump(arg) for arg in node.args]
+        }
+        self.calls.append(call_info)
         self.generic_visit(node)
+
+    def _get_function_name(self, node):
+        """Helper method to extract the function name from a call node."""
+        if isinstance(node, ast.Name):
+            return node.id
+        elif isinstance(node, ast.Attribute):
+            value = self._get_function_name(node.value)
+            if isinstance(value, str):
+                return f"{value}.{node.attr}"
+            else:
+                return node.attr
+        return "<unknown>"
 
     def visit_FunctionDef(self, node):
         docstring = ast.get_docstring(node)

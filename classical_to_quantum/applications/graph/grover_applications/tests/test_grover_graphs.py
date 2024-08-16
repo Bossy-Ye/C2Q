@@ -1,8 +1,16 @@
 import unittest
+
+import qiskit.qasm2
+
 from classical_to_quantum.applications.graph.grover_applications.graph_color import *
 from qiskit.quantum_info import Statevector
 from classical_to_quantum.applications.graph.grover_applications.triangle_finding import *
 from utils import *
+
+
+def func(state):
+    return True
+
 
 def print_amplitudes(statevector, relevant_bits=None):
     num = 0
@@ -84,25 +92,34 @@ class MyTestCase(unittest.TestCase):
         #self.assertEqual(True, False)  # add assertion here
 
     def test_graph_triangle_oracle(self):
-        tri = TriangleFinding(
-            "/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/graph_cases/Gset/G3")
+        tri = GraphProblem(
+            "/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/cases/Gset/G3")
         n_nodes = tri.num_nodes
-        N = math.comb(n_nodes, 3)
+        print(tri.elist)
+        N = 2 ** n_nodes
+        iterations = math.floor(math.pi / 4 * math.sqrt(N))
         nodes_qubits = QuantumRegister(n_nodes, name='nodes')
         edge_anc = QuantumRegister(2, name='edge_anc')
         ancilla = QuantumRegister(n_nodes - 2, name='cccx_diff_anc')
         neg_base = QuantumRegister(1, name='check_qubits')
         sub_qbits = QuantumRegister(n_nodes)
-        next_qubits = QuantumRegister(5)
+        next_qubits = QuantumRegister(n_nodes + 1)
         prep = QuantumCircuit(sub_qbits, next_qubits, name="state_prep")
-        prep, sub_qbits = wn(prep, sub_qbits)
-        prep.x(sub_qbits)
-
-        oracle = triangle_oracle(tri.edges, nodes_qubits, edge_anc, ancilla, neg_base)
-        state = Statevector(prep)
-        print(oracle.num_qubits, prep.num_qubits)
-        state = state.evolve(oracle)
-        print_all_amplitudes(state)
+        #prep, sub_qbits = wn(prep, sub_qbits)
+        #prep.x(sub_qbits)
+        prep.h(sub_qbits)
+        oracle = triangle_oracle(tri.elist, nodes_qubits, edge_anc, ancilla, neg_base)
+        print(prep.num_qubits, oracle.num_qubits)
+        grover = GroverWrapper(oracle=oracle,
+                               iterations=iterations,
+                               state_preparation=prep,
+                               is_good_state=func,
+                               objective_qubits=list(range(n_nodes)))
+        grover.run(verbose=True)
+        # state = Statevector(prep)
+        # print(oracle.num_qubits, prep.num_qubits)
+        # state = state.evolve(oracle)
+        # print_all_amplitudes(state)
 
     def test_equality_checker(self):
         qc = QuantumCircuit(8)
@@ -129,8 +146,24 @@ class MyTestCase(unittest.TestCase):
         print(results)
         self.assertEqual(True, True)
 
-    def test_coloring_graph_init(self):
-        return
+    def test_coloring_graph_grover_wrapper(self):
+        prep = graph_color_prep(variable_qubits)
+        oracle = graph_color_oracle(disagree_list, variable_qubits, check_qubits, output_qubit)
+
+        # DEFINE THE AmplificationProblem
+        def check_disagreement(state): return check_disagree_list_general(state, disagree_list)
+
+        grover = GroverWrapper(oracle=oracle,
+                               iterations=1,
+                               is_good_state=check_disagreement,
+                               objective_qubits=variable_qubits)
+        str = grover.export_to_qasm()
+        sampler = Sampler()
+        circuit = grover.circuit
+        res = sampler.run(circuit).result()
+        print(str)
+        circuit = qiskit.qasm2.loads(str)
+        print(circuit)
 
 
 if __name__ == '__main__':

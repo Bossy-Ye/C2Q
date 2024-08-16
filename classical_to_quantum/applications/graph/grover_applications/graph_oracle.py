@@ -1,6 +1,7 @@
 from itertools import combinations
 
 import networkx as nx
+import qiskit.qasm2
 from matplotlib import pyplot as plt
 from pysat.formula import CNF
 from qiskit.circuit.library import PhaseOracle
@@ -134,219 +135,62 @@ def graph_coloring_to_sat(graph: nx.Graph, num_colors: int) -> CNF:
     return cnf
 
 
-def graph_coloring_to_dimacs(graph: nx.Graph, num_colors: int) -> str:
+def independent_set_to_sat(graph: nx.Graph) -> CNF:
     """
-    Converts a graph coloring problem into a DIMACS-CNF 3-SAT formatted string.
-
-    Parameters:
-    - graph (nx.Graph): A NetworkX graph.
-    - num_colors (int): Number of colors available for coloring the graph.
-
-    Returns:
-    - str: A string formatted in DIMACS-CNF 3-SAT format.
-    """
-    variables = {}
-    clauses = []
-    counter = 1
-
-    # Step 1: Create variables x_{v,c} for each vertex v and each color c
-    for v in graph.nodes():
-        for c in range(1, num_colors + 1):
-            variables[(v, c)] = counter
-            counter += 1
-
-    # Step 2: Add constraints that each vertex must have at least one color
-    for v in graph.nodes():
-        clause = [variables[(v, c)] for c in range(1, num_colors + 1)]
-        clauses.append(clause)
-
-    # Step 3: Add constraints that no two adjacent vertices share the same color
-    for u, v in graph.edges():
-        for c in range(1, num_colors + 1):
-            clauses.append([-variables[(u, c)], -variables[(v, c)]])
-
-    # Convert the clauses to DIMACS format
-    dimacs_str = "c example DIMACS-CNF 3-SAT\n"
-    dimacs_str += f"p cnf {counter - 1} {len(clauses)}\n"
-    for clause in clauses:
-        dimacs_str += " ".join(map(str, clause)) + " 0\n"
-    return dimacs_str
-
-
-import networkx as nx
-
-
-def maxcut_to_3sat(graph: nx.Graph) -> str:
-    """
-    Converts a Max-Cut problem into a 3-SAT problem in DIMACS-CNF format.
+    Converts an Independent Set problem into a SAT problem in CNF format.
 
     Parameters:
     - graph (nx.Graph): A NetworkX graph.
 
     Returns:
-    - str: A string formatted in DIMACS-CNF 3-SAT format.
+    - CNF: A CNF object representing the SAT problem.
     """
-    variables = {}
-    clauses = []
-    counter = 1
+    cnf = CNF()
+    n = len(graph.nodes)
 
-    # Step 1: Create a boolean variable for each vertex
-    for v in graph.nodes():
-        variables[v] = counter
-        counter += 1
+    # Variables: x_i where i is the vertex index
+    var = lambda i: i + 1  # Variables indexed from 1
 
-    # Step 2: Add constraints for each edge to ensure the vertices are in different sets
+    # Clause 1: For every edge (u, v), add a clause that at least one of them must not be in the independent set
     for u, v in graph.edges():
-        u_var = variables[u]
-        v_var = variables[v]
+        cnf.append([-var(u), -var(v)])
 
-        # For 3-SAT, we need to convert each 2-SAT clause into 3-SAT by adding a dummy variable
-        dummy_var = counter
-        counter += 1
-
-        # (u_var OR v_var) -> (-u_var, -v_var, dummy_var)
-        clauses.append([-u_var, -v_var, dummy_var])
-        # (NOT u_var OR NOT v_var) -> (u_var, v_var, -dummy_var)
-        clauses.append([u_var, v_var, -dummy_var])
-
-    # Convert the clauses to DIMACS format
-    dimacs_str = "c Max-Cut to DIMACS-CNF 3-SAT\n"
-    dimacs_str += f"p cnf {counter - 1} {len(clauses)}\n"
-    for clause in clauses:
-        dimacs_str += " ".join(map(str, clause)) + " 0\n"
-
-    return dimacs_str
+    return cnf
 
 
-def independent_set_to_sat(graph: nx.Graph) -> str:
+def clique_to_sat(graph: nx.Graph, k: int) -> CNF:
     """
-    Converts a Minimum Independent Set problem into a SAT problem in DIMACS-CNF format.
+    Converts the k-Clique problem to a SAT problem.
 
     Parameters:
-    - graph (nx.Graph): A NetworkX graph.
+        graph (nx.Graph): The input graph.
+        k (int): The size of the clique to find.
 
     Returns:
-    - str: A string formatted in DIMACS-CNF SAT format.
+        CNF: The SAT formula in CNF representing the k-Clique problem.
     """
-    variables = {}
-    clauses = []
-    counter = 1
+    cnf = CNF()
+    n = len(graph.nodes)
 
-    # Step 1: Create a boolean variable for each vertex
-    for v in graph.nodes():
-        variables[v] = counter
-        counter += 1
+    # Variables: x_ij where i is the vertex index and j is the position in the clique
+    var = lambda i, j: i * k + j + 1  # Create unique variables
 
-    # Step 2: Add constraints for each edge to ensure no two adjacent vertices are both in the independent set
-    for u, v in graph.edges():
-        u_var = variables[u]
-        v_var = variables[v]
+    # Clause 1: Each position in the clique must be occupied by at least one vertex
+    for j in range(k):
+        cnf.append([var(i, j) for i in range(n)])
 
-        # Add the SAT clause (u OR v)
-        clauses.append([-u_var, -v_var])
+    # Clause 2: No vertex can occupy more than one position in the clique
+    for i in range(n):
+        for j in range(k):
+            for jp in range(j + 1, k):
+                cnf.append([-var(i, j), -var(i, jp)])
 
-    # Convert the clauses to DIMACS format
-    dimacs_str = "c Minimum Independent Set to DIMACS-CNF SAT\n"
-    dimacs_str += f"p cnf {counter - 1} {len(clauses)}\n"
-    for clause in clauses:
-        dimacs_str += " ".join(map(str, clause)) + " 0\n"
+    # Clause 3: No two vertices in the clique can be non-adjacent
+    for i in range(n):
+        for ip in range(i + 1, n):
+            if not graph.has_edge(i, ip):
+                for j in range(k):
+                    cnf.append([-var(i, j), -var(ip, j)])
 
-    return dimacs_str
+    return cnf
 
-
-def clique_to_dimacs(graph: nx.Graph, k: int) -> str:
-    """
-    Converts a Clique problem into a DIMACS-CNF SAT formatted string.
-
-    Parameters:
-    - graph (nx.Graph): A NetworkX graph representing the problem.
-    - k (int): The size of the clique to find.
-
-    Returns:
-    - str: A string in DIMACS-CNF SAT format.
-    """
-    variables = {}
-    clauses = []
-    counter = 1
-
-    # Step 1: Create variables x_{iv} where i is the position in the clique (1 to k) and v is a vertex in V
-    for i in range(1, k + 1):
-        for v in graph.nodes():
-            variables[(i, v)] = counter
-            counter += 1
-
-    # Step 2: Ensure that each position in the clique is occupied by at least one vertex
-    for i in range(1, k + 1):
-        clause = [variables[(i, v)] for v in graph.nodes()]
-        clauses.append(clause)
-
-    # Step 3: Ensure that the i-th and j-th positions in the clique are occupied by different vertices
-    for i in range(1, k):
-        for j in range(i + 1, k + 1):
-            for v in graph.nodes():
-                clauses.append([-variables[(i, v)], -variables[(j, v)]])
-
-    # Step 4: Ensure that any two vertices in the clique are connected
-    for i in range(1, k):
-        for j in range(i + 1, k + 1):
-            for v in graph.nodes():
-                for u in graph.nodes():
-                    if v != u and not graph.has_edge(v, u):
-                        clauses.append([-variables[(i, v)], -variables[(j, u)]])
-
-    # Convert the clauses to DIMACS format
-    dimacs_str = "c DIMACS-CNF format for the Clique problem\n"
-    dimacs_str += f"p cnf {counter - 1} {len(clauses)}\n"
-    for clause in clauses:
-        dimacs_str += " ".join(map(str, clause)) + " 0\n"
-
-    return dimacs_str
-
-
-def vertex_cover_to_dimacs(graph: nx.Graph, k: int) -> str:
-    """
-    Converts a Vertex Cover problem into a DIMACS-CNF SAT formatted string.
-
-    Parameters:
-    - graph (nx.Graph): A NetworkX graph representing the problem.
-    - k (int): The size of the vertex cover to find.
-
-    Returns:
-    - str: A string in DIMACS-CNF SAT format.
-    """
-    variables = {}
-    clauses = []
-    counter = 1
-
-    # Step 1: Create variables x_{iv} where i is the position in the cover (1 to k) and v is a vertex in V
-    for i in range(1, k + 1):
-        for v in graph.nodes():
-            variables[(i, v)] = counter
-            counter += 1
-
-    # Step 2: Ensure that each position in the cover is occupied by at least one vertex
-    for i in range(1, k + 1):
-        clause = [variables[(i, v)] for v in graph.nodes()]
-        clauses.append(clause)
-
-    # Step 3: Ensure that no two positions in the cover are occupied by the same vertex
-    for v in graph.nodes():
-        for i in range(1, k):
-            for j in range(i + 1, k + 1):
-                clauses.append([-variables[(i, v)], -variables[(j, v)]])
-
-    # Step 4: Ensure that every edge is covered by at least one vertex in the cover
-    for u, v in graph.edges():
-        clause = []
-        for i in range(1, k + 1):
-            clause.append(variables[(i, u)])
-            clause.append(variables[(i, v)])
-        clauses.append(clause)
-
-    # Convert the clauses to DIMACS format
-    dimacs_str = "c DIMACS-CNF format for the Vertex Cover problem\n"
-    dimacs_str += f"p cnf {counter - 1} {len(clauses)}\n"
-    for clause in clauses:
-        dimacs_str += " ".join(map(str, clause)) + " 0\n"
-
-    return dimacs_str

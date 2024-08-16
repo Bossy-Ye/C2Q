@@ -11,7 +11,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_maxcut_init(self):
         maxcut = Ising(
-            "/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/graph_cases/Gset/G0",
+            "/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/cases/Gset/G0",
             "MaximumCut")
         try:
             maxcut.plot_results()
@@ -23,7 +23,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_maxcut(self):
         maxcut = Ising(
-            "/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/graph_cases/Gset/G7",
+            "/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/cases/Gset/G7",
             "MaximumCut")
         maxcut.run()
         maxcut.plot_graph_solution()
@@ -31,7 +31,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_MIS(self):
         MIS = Ising(
-            "/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/graph_cases/Gset/G9",
+            "/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/cases/Gset/G9",
             "MIS")
         MIS.run()
         MIS.plot_graph_solution()

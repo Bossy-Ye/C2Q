@@ -160,37 +160,6 @@ class MyTestCase(unittest.TestCase):
             grover = Grover(sampler=Sampler(), iterations=R)
             result = grover.amplify(problem)
             print(result)
-    def test_clique_grover(self):
-        # Example usage:
-        G = nx.Graph()
-        G.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4)])
-        k = 3
-
-        dimacs_string = clique_to_dimacs(G, 3)
-        print(dimacs_string)
-
-        import os
-        import tempfile
-        from qiskit.exceptions import MissingOptionalLibraryError
-        from qiskit.circuit.library.phase_oracle import PhaseOracle
-        from classical_to_quantum.algorithms.grover import GroverWrapper
-
-        fp = tempfile.NamedTemporaryFile(mode='w+t', delete=False)
-        fp.write(dimacs_string)
-        file_name = fp.name
-        fp.close()
-        oracle = None
-        try:
-            oracle = PhaseOracle.from_dimacs_file(file_name)
-        except ImportError as ex:
-            print(ex)
-        finally:
-            os.remove(file_name)
-
-        grover = GroverWrapper(oracle,
-                               is_good_state=oracle.evaluate_bitstring,
-                               iteration=1)
-        grover.run(verbose=True)
 
     def test_grover_wrapper(self):
         # Define the CNF formula
@@ -218,7 +187,7 @@ class MyTestCase(unittest.TestCase):
             sin_theta = (2 * math.sqrt(M * (N - M))) / N
             theta = math.asin(sin_theta)
             R = math.floor(math.acos(math.sqrt(M / N)) / theta) + 1
-            iterations = [R,R+1]
+            iterations = R
             optimal_num_iterations = math.floor(
                 math.pi / (4 * math.asin(math.sqrt(len(expected_states) / 2 ** cnf_formula.nv)))
             )
@@ -226,7 +195,7 @@ class MyTestCase(unittest.TestCase):
             prev.h(range(cnf_formula.nv))
             def fun(state): return True
             grover = GroverWrapper(oracle=oracle,
-                                   iteration=iterations,
+                                   iterations=iterations,
                                    state_preparation=prev,
                                    objective_qubits=list(range(cnf_formula.nv)),
                                    is_good_state=fun

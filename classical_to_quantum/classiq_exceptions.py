@@ -37,3 +37,12 @@ class NotExecutedError(Exception):
                  message="The required operation has not been executed yet. Please execute the necessary steps first."):
         self.message = message
         super().__init__(self.message)
+
+
+class NotParsedError(Exception):
+    """Exception raised when an operation is attempted before parsing the code."""
+
+    def __init__(self,
+                 message="The code has not been parsed yet."):
+        self.message = message
+        super().__init__(self.message)

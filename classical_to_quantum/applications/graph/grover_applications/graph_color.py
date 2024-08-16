@@ -202,7 +202,7 @@ class GraphColor(GraphProblem):
         def check_disagreement(state): return check_disagree_list_general(state, disagree_list)
         self.iteration = 1
         self.grover_wrapper = GroverWrapper(oracle=oracle,
-                                            iteration=self.iteration,
+                                            iterations=self.iteration,
                                             state_preparation=prep,
                                             is_good_state=check_disagreement,
                                             objective_qubits=variable_qubits

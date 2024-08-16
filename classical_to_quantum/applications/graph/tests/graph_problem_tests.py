@@ -10,10 +10,9 @@ class MyTestCase(unittest.TestCase):
 
     def test_graph_problem_init_from_file(self):
         graph_problem = GraphProblem(
-            "/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/graph_cases/Gset/G0")
+            "/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/cases/Gset/G0")
         self.assertEqual(graph_problem.num_edges, 5)
         self.assertEqual(graph_problem.num_nodes, 4)
-        print(graph_problem.w())
         graph_problem.plot_graph()
 
     def test_graph_init_from_networkx(self):
@@ -27,7 +26,7 @@ class MyTestCase(unittest.TestCase):
     def test_graph_init_file_exception(self):
         try:
             graph_problem = GraphProblem(
-                "/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/graph_cases/Gset/G0")
+                "/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/cases/Gset/G0")
         except FileNotFoundError as e:
             self.assertEqual(e, FileNotFoundError)
 
