@@ -6,6 +6,7 @@ from qiskit_algorithms import Grover, AmplificationProblem
 from qiskit_aer.primitives import Sampler
 from qiskit.visualization import plot_histogram
 
+
 # variable_qubits = [0, 1, 2, 3, 4, 5, 6, 7]
 # check_qubits = [8, 9, 10, 11, 12, 13]
 #
@@ -200,6 +201,7 @@ class GraphColor(GraphProblem):
 
         # DEFINE THE AmplificationProblem
         def check_disagreement(state): return check_disagree_list_general(state, disagree_list)
+
         self.iteration = 1
         self.grover_wrapper = GroverWrapper(oracle=oracle,
                                             iterations=self.iteration,
@@ -208,10 +210,12 @@ class GraphColor(GraphProblem):
                                             objective_qubits=variable_qubits
                                             )
 
-    def search(self):
+    def search(self, verbose):
         result = self.grover_wrapper.run()
         self.circuit = self.grover_wrapper.grover.construct_circuit(self.grover_wrapper.problem,
                                                                     self.iteration)
+        if verbose:
+            print(result)
         return result
 
     def export_to_qasm(self):

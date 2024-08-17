@@ -16,6 +16,7 @@ import pylab
 from qiskit import qasm2
 from classical_to_quantum.classiq_exceptions import *
 
+
 class GraphProblem:
     def __init__(self, input_data: str | networkx.classes.graph.Graph):
         if isinstance(input_data, str):
@@ -36,7 +37,8 @@ class GraphProblem:
             raise InvalidInputError(type(input_data))
 
     def run(self):
-        raise NotImplementedError("not implemented yet")
+        pass
+        #raise NotImplementedError("not implemented yet")
 
     def run_on_quantum(self):
         raise NotImplementedError("not implemented yet")
@@ -70,4 +72,3 @@ class GraphProblem:
 
     def graph(self) -> nx.Graph:
         return self._graph
-

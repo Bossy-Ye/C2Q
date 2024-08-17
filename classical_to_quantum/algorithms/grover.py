@@ -36,11 +36,9 @@ class GroverWrapper(BaseAlgorithm):
             state_preparation = QuantumCircuit(oracle.num_qubits)
             state_preparation.h(objective_qubits)
         self.circuit = QuantumCircuit(oracle.num_qubits, len(objective_qubits))
-        print(oracle.num_qubits)
         self.circuit.compose(state_preparation, inplace=True)
         self.circuit.compose(self._grover_op.power(iterations),
                              inplace=True)
-        print(self.circuit)
         self.circuit.measure(objective_qubits,
                              objective_qubits)
         self.problem = AmplificationProblem(oracle,

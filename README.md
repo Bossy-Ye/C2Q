@@ -56,6 +56,7 @@ different types of problems will be required. And also a translator that gives r
     - Why **Sat**? Sat problem was the first problem proven to be NP-complete by Stephen Cook in 1971 (Cook’s theorem). This means that every problem in NP can be           reduced to SAT, making it a kind of "universal" problem for NP. Any problem in NP can be reduced to it in polynomial time. So study SAT counterpart of a graph problem has an empirical implication.
     - How to choose an optimal iterations number wisely? We suppose the number of solutions is unknown, The formula for updating T is given by: choose T=1 initially, then T = ceil(4\5 T) each iteration[^1]
 - **Parser**
+  - try to make assignment direct instead of intermediate result, for example: `matrix = np.array([[8, 2], [4, 6]])` instead of `matrix = np.array([[4, 1], [2, 3]])+np.array([[4, 1], [2, 3]])`
 - **Generator**
 - **Interpreter**
 

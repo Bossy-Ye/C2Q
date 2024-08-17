@@ -46,3 +46,11 @@ class NotParsedError(Exception):
                  message="The code has not been parsed yet."):
         self.message = message
         super().__init__(self.message)
+
+
+class NotSupportedParserAstError(Exception):
+    """Exception raised when a kind of grammar is not supported by parser."""
+    def __init__(self,
+                 message="The parser is not supported for this kind of grammar."):
+        self.message = message
+        super().__init__(self.message)
