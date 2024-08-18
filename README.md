@@ -65,6 +65,44 @@ different types of problems will be required. And also a translator that gives r
 ## Maximum Independent Set
 ### Code
 ```python 
+independent_set_code = """
+import itertools
+
+def is_independent_set(graph, subset):
+    # Check if the subset is an independent set
+    for i in range(len(subset)):
+        for j in range(i + 1, len(subset)):
+            if graph[subset[i]][subset[j]] == 1:
+                return False
+    return True
+
+def find_max_independent_set(graph):
+    n = len(graph)
+    nodes = list(range(n))
+    max_independent_set = []
+
+    # Check all possible subsets
+    for size in range(1, n + 1):
+        for subset in itertools.combinations(nodes, size):
+            if is_independent_set(graph, subset):
+                if len(subset) > len(max_independent_set):
+                    max_independent_set = subset
+
+    return max_independent_set
+
+# Example usage:
+# Adjacency matrix representation of the graph
+graph = [
+    [0, 1, 0, 0, 0],
+    [1, 0, 1, 1, 0],
+    [0, 1, 0, 0, 1],
+    [0, 1, 0, 0, 1],
+    [0, 0, 1, 1, 0]
+]
+
+max_independent_set = find_max_independent_set(graph)
+print("Maximum Independent Set:", max_independent_set)
+"""
 parser.parse_code(independent_set_code)
 print(parser.problem_type, parser.specific_graph_problem, parser.data)
 generator = QASMGenerator()
