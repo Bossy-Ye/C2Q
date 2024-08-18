@@ -144,6 +144,7 @@ class QASMGenerator:
                                            objective_qubits=list(range(problem.num_nodes)))
                     res = grover.run(verbose=True)
         else:
+
             raise ValueError("Unsupported problem type")
 
     def run_locally(self):
