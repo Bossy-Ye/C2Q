@@ -64,11 +64,14 @@ different types of problems will be required. And also a translator that gives r
 # Example
 ## Maximum Independent Set
 ### Code
-`parser.parse_code(independent_set_code)`
-`print(parser.problem_type, parser.specific_graph_problem, parser.data)`
-`generator = QASMGenerator()`
-`qasm_code = generator.qasm_generate(classical_code=independent_set_code, verbose=False)`
-`print(qasm_code)`
+```python 
+parser.parse_code(independent_set_code)
+print(parser.problem_type, parser.specific_graph_problem, parser.data)
+generator = QASMGenerator()
+qasm_code = generator.qasm_generate(classical_code=independent_set_code, verbose=False)
+print(qasm_code)
+```
+
 ### Results
 #### Grover algorithm generated
 ![img.png](assets/grover_results_IS.png)
