@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import numpy as np
 
 from applications.graph.grover_applications.graph_oracle import independent_set_to_sat, cnf_to_quantum_oracle
@@ -121,28 +122,31 @@ class QASMGenerator:
                 os.remove(file_name)
             wrapper = GroverWrapper(oracle, iterations=2, is_good_state=oracle.evaluate_bitstring)
             wrapper.run(verbose=verbose)
-            return wrapper.export_to_qasm()
+            return {'grover': wrapper.export_to_qasm()}
         if self.problem_type == ProblemType.GRAPH:
+            qasm_codes = {}
             if verbose:
                 print(f'-------graph problem type:{self.parser.specific_graph_problem}-------')
             algorithms = algorithms_mapping.get(self.parser.specific_graph_problem)
             for algorithm in algorithms:
-                print(algorithm)
                 if issubclass(algorithm, Ising):
-                    print("111111")
                     problem = Ising(self.parser.data, self.parser.specific_graph_problem)
-                    print(problem.graph().edges)
                     problem.run(verbose=verbose)
+                    if verbose:
+                        problem.plot_graph_solution()
+                        plt.show()
+                    _, qasm_codes['qaoa'] = problem.generate_qasm()
                 elif issubclass(algorithm, GraphProblem):
                     problem = GraphProblem(self.parser.data)
-                    print(problem.graph().edges)
                     independent_set_cnf = independent_set_to_sat(problem.graph())
                     independent_set_oracle = cnf_to_quantum_oracle(independent_set_cnf)
 
                     grover = GroverWrapper(oracle=independent_set_oracle,
                                            iterations=2,
                                            objective_qubits=list(range(problem.num_nodes)))
-                    res = grover.run(verbose=True)
+                    res = grover.run(verbose=verbose)
+                    qasm_codes['grover'] = problem.generate_qasm()
+                return qasm_codes
         else:
             raise ValueError("Unsupported problem type")
 
