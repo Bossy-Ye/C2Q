@@ -1,19 +1,11 @@
 from __future__ import annotations
 
-import matplotlib.pyplot as plt
-import networkx as nx
 import os
 
-import networkx.classes.graph
-import numpy as np
-
-from classical_to_quantum.applications.graph.optimization_solver import *
-from classical_to_quantum.applications.graph.gset import *
-from classical_to_quantum.applications.tools import OptimizerLog
-from qiskit.circuit import QuantumCircuit
 import networkx as nx
-import pylab
-from qiskit import qasm2
+import networkx.classes.graph
+
+from classical_to_quantum.applications.graph.gset import *
 from classical_to_quantum.classiq_exceptions import *
 
 
@@ -72,3 +64,10 @@ class GraphProblem:
 
     def graph(self) -> nx.Graph:
         return self._graph
+
+
+def addition(left, right):
+    return left + right
+
+
+

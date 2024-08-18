@@ -7,13 +7,16 @@ from classical_to_quantum.classiq_exceptions import *
 import operator
 
 ml_dic = ['SVC']
-eigenvalue_keywords = ["matrix", "observable", "eigvals", "eigvalsh", "eigh"]
+eigenvalue_keywords = ["observable", "eigvals", "eigvalsh", "eigh", "eigenvalues"]
 ml_keywords = ["SVC", "RandomForest", "MLP", "LinearRegression", 'SVM']
 cnf_keywords = ["cnf", "sat"]
-graph_keywords = ["graph", "networkx", "nx", "nodes", "edges"]
+graph_keywords = ["graph", "networkx", "nx", "nodes", "edges",
+                  "distance_matrix", "maximum cut", "tsp",
+                  "vertex cover", "path", "distance"]
 clique_keywords = ["clique"]
 maxcut_keywords = ["maxcut", "max_cut", "maximum cut"]
-independent_set_keywords = ["independent set"]
+independent_set_keywords = ["independent_set"]
+tsp_keywords = ["tsp", "distance"]
 
 verbose = False
 
@@ -83,6 +86,7 @@ class ProblemType(Enum):
     GRAPH = 3
     CNF = 4
     FACTOR = 5
+    ARITHMETICS = 6
 
 
 def handle_constant(node):
@@ -102,6 +106,7 @@ class ProblemParser:
         self.visitor = MyVisitor()
         self.source_code = code
         self.visitor.visit(ast.parse(code))
+        self.evaluate_problem_type()
 
     def evaluate_problem_type(self):
         """ Evaluate the problem type based on parsed data and also fetch data"""
@@ -164,14 +169,27 @@ class ProblemParser:
     def _determine_specific_graph_problem(self):
         """Determine the specific graph problem type if it's a graph problem."""
         # Check for clique-related keywords
-        if any(keyword in self.visitor.variables or keyword in self.visitor.calls for keyword in clique_keywords):
+        if any(any(keyword in var for keyword in clique_keywords) for var in self.visitor.variables) or \
+                any(any(keyword in call for keyword in clique_keywords) for call in self.visitor.calls):
             self.problem_type = ProblemType.GRAPH
             self.specific_graph_problem = "Clique Problem"
+
         # Check for max-cut-related keywords
-        elif any(keyword in self.visitor.variables or keyword in self.visitor.calls for keyword in maxcut_keywords):
+        elif any(any(keyword in var for keyword in maxcut_keywords) for var in self.visitor.variables) or \
+                any(any(keyword in call for keyword in maxcut_keywords) for call in self.visitor.calls):
             self.problem_type = ProblemType.GRAPH
             self.specific_graph_problem = "Max-Cut Problem"
-        # Add other specific graph problem checks here
+
+        # Check for independent_set keywords
+        elif any(any(keyword in var for keyword in independent_set_keywords) for var in self.visitor.variables) or \
+                any(any(keyword in call for keyword in independent_set_keywords) for call in self.visitor.calls):
+            self.problem_type = ProblemType.GRAPH
+            self.specific_graph_problem = "MIS"
+        # Check for tsp keywords
+        elif any(any(keyword in var for keyword in tsp_keywords) for var in self.visitor.variables) or \
+                any(any(keyword in call for keyword in tsp_keywords) for call in self.visitor.calls):
+            self.problem_type = ProblemType.GRAPH
+            self.specific_graph_problem = "TSP Problem"
 
     def evaluation(self):
         """ Evaluate the parsed code and provide a summary """
@@ -273,6 +291,8 @@ class ProblemParser:
             # List of possible variable names for nodes and edges
             possible_edge_names = ['edges', 'elists', 'edge', 'Edge']
             possible_node_names = ['nodes', 'nodelist', 'node', 'Node']
+            possible_adj_matrix_names = ['adjacency_matrix', 'adj_matrix', 'adjacent_matrix',
+                                         'graph', 'matrix', 'distance_matrix']
 
             # Extract graph data
             graph_data = {}
@@ -287,7 +307,11 @@ class ProblemParser:
                 if nodes:
                     graph_data['nodes'] = nodes
                     break
-
+            for adj_matrix_name in possible_adj_matrix_names:
+                adj_matrix = self.visitor.variables.get(adj_matrix_name)
+                if adj_matrix:
+                    graph_data['adjacency_matrix'] = adj_matrix
+                    break
             # If edges were found, construct the graph
             if 'edges' in graph_data:
                 if verbose:
@@ -295,7 +319,17 @@ class ProblemParser:
                 G = nx.Graph()
                 G.add_edges_from(graph_data.get("edges"))
                 self.data = G  # Store the graph in self.data if needed
-
+                return  # Return if edges found
+            # If adjacency matrix was found, construct the graph using the matrix
+            elif 'adjacency_matrix' in graph_data:
+                if verbose:
+                    print(graph_data)
+                adj_matrix = np.array(graph_data['adjacency_matrix'])
+                G = nx.from_numpy_array(adj_matrix)
+                if verbose:
+                    print(f'Is weighted?{nx.is_weighted(G)}')
+                self.data = G  # Store the graph in self.data if needed.
+                return  # Return if matrix found
             # Add additional checks or data extraction for other graph-related needs
             # TODO: Add other cases for GRAPH, FACTOR, etc.
 

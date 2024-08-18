@@ -8,7 +8,6 @@ from qiskit.circuit.library import PhaseOracle
 
 import numpy as np
 from qiskit import QuantumCircuit, Aer, execute
-from pysat.formula import CNF
 import matplotlib.pyplot as plt
 # Example CNF Formula using PySAT
 from qiskit.circuit.library import OR

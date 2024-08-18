@@ -1,5 +1,6 @@
 import numpy as np
 
+from applications.graph.grover_applications.graph_oracle import independent_set_to_sat, cnf_to_quantum_oracle
 from classical_to_quantum.parser import ProblemParser, ProblemType
 from classical_to_quantum.algorithms.vqe_algorithm import VQEAlgorithm
 from classical_to_quantum.applications.quantum_machine_learning.quantum_kernel_ml import QMLKernel
@@ -15,6 +16,30 @@ from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.circuit.library.phase_oracle import PhaseOracle
 from qiskit_aer import Aer
 from qiskit import transpile
+from openqaoa.problems import *
+from classical_to_quantum.applications.graph.grover_applications.graph_color import GraphColor
+from classical_to_quantum.applications.graph.graph_problem import GraphProblem
+from classical_to_quantum.applications.graph.Ising import Ising
+
+algorithms_mapping = {
+    "Knapsack": [Knapsack],
+    "SlackFreeKnapsack": [SlackFreeKnapsack],
+    "MaximumCut": [MaximumCut],
+    "MinimumVertexCover": [MinimumVertexCover],
+    "NumberPartition": [NumberPartition],
+    "ShortestPath": [ShortestPath],
+    "TSP": [TSP],
+    "TSP_LP": [TSP_LP],
+    "PortfolioOptimization": [PortfolioOptimization],
+    "MIS": [Ising, GraphProblem],
+    "BinPacking": [BinPacking],
+    "VRP": [VRP],
+    "SK": [SK],
+    "BPSP": [BPSP],
+    "KColor": [Ising, GraphColor],
+    "FromDocplex2IsingModel": [FromDocplex2IsingModel],
+    "QUBO": [QUBO]
+}
 
 
 def generate_dimacs(cnf_formula):
@@ -39,6 +64,18 @@ class QASMGenerator:
         self.parser = None
 
     def qasm_generate(self, classical_code, verbose=False):
+        """
+
+        Parameters
+        ----------
+        classical_code
+        verbose: if True, run on local simulator and print and plot readable results
+
+        Returns
+        -------
+
+        """
+        self.__init__()
         self.parser = ProblemParser()
         self.parser.parse_code(classical_code)
         self.parser.evaluate_problem_type()
@@ -85,10 +122,34 @@ class QASMGenerator:
             wrapper = GroverWrapper(oracle, iterations=2, is_good_state=oracle.evaluate_bitstring)
             wrapper.run(verbose=verbose)
             return wrapper.export_to_qasm()
+        if self.problem_type == ProblemType.GRAPH:
+            if verbose:
+                print(f'-------graph problem type:{self.parser.specific_graph_problem}-------')
+            algorithms = algorithms_mapping.get(self.parser.specific_graph_problem)
+            for algorithm in algorithms:
+                print(algorithm)
+                if issubclass(algorithm, Ising):
+                    print("111111")
+                    problem = Ising(self.parser.data, self.parser.specific_graph_problem)
+                    print(problem.graph().edges)
+                    problem.run(verbose=verbose)
+                elif issubclass(algorithm, GraphProblem):
+                    problem = GraphProblem(self.parser.data)
+                    print(problem.graph().edges)
+                    independent_set_cnf = independent_set_to_sat(problem.graph())
+                    independent_set_oracle = cnf_to_quantum_oracle(independent_set_cnf)
+
+                    grover = GroverWrapper(oracle=independent_set_oracle,
+                                           iterations=2,
+                                           objective_qubits=list(range(problem.num_nodes)))
+                    res = grover.run(verbose=True)
         else:
             raise ValueError("Unsupported problem type")
 
-    def run_qasm(self, str, primitive: str = 'sampler'):
+    def run_locally(self):
+        pass
+
+    def run_qasm_simulator(self, str, primitive: str = 'sampler'):
         seed = int(np.random.randint(1, 1000000))
         circuit = qasm2.loads(str)
         pm = generate_preset_pass_manager(optimization_level=1)
@@ -116,6 +177,3 @@ class QASMGenerator:
 # cnf_formula = [[1, -2], [2, 3, -1]]
 # dimacs_string = generate_dimacs(cnf_formula)
 # print(dimacs_string)
-
-
-

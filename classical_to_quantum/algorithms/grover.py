@@ -1,6 +1,5 @@
 import qiskit
 from qiskit.circuit import QuantumCircuit
-
 # input_3sat_instance = """
 # p cnf 3 5
 # -1 -2 -3 0
@@ -15,7 +14,7 @@ from qiskit_algorithms import AmplificationProblem
 from classical_to_quantum.algorithms.base_algorithm import BaseAlgorithm
 from qiskit.circuit.library import PhaseOracle, GroverOperator
 from qiskit_algorithms import AmplificationProblem, Grover
-from qiskit import qasm3
+from qiskit import qasm2
 from qiskit.primitives import Sampler
 
 
@@ -23,7 +22,7 @@ class GroverWrapper(BaseAlgorithm):
     def __init__(self,
                  oracle: QuantumCircuit,
                  iterations,
-                 is_good_state,
+                 is_good_state = None,
                  state_preparation: QuantumCircuit = None,
                  objective_qubits=None
                  ):
@@ -35,6 +34,10 @@ class GroverWrapper(BaseAlgorithm):
         if state_preparation is None:
             state_preparation = QuantumCircuit(oracle.num_qubits)
             state_preparation.h(objective_qubits)
+        if is_good_state is None:
+            def func(state):
+                return True
+            is_good_state = func
         self.circuit = QuantumCircuit(oracle.num_qubits, len(objective_qubits))
         self.circuit.compose(state_preparation, inplace=True)
         self.circuit.compose(self._grover_op.power(iterations),

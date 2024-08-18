@@ -1,14 +1,10 @@
 import qiskit
 from openqaoa import create_device
-from qiskit.algorithms import NumPyMinimumEigensolver
-from qiskit.algorithms.minimum_eigensolvers import SamplingVQE
-from qiskit.algorithms.optimizers import COBYLA
-from qiskit.utils import algorithm_globals
-
 from classical_to_quantum.applications.graph.graph_problem import *
 from openqaoa.utilities import plot_graph
 from openqaoa.problems import *
 from openqaoa import QAOA
+from qiskit import IBMQ
 
 class_mapping = {
     "Knapsack": Knapsack,
@@ -32,31 +28,38 @@ class_mapping = {
 
 
 class Ising(GraphProblem):
-    def __init__(self, input_data, class_name):
+    def __init__(self, input_data, class_name, as_real=False):
         self.is_executed = None
         self.qaoa = None
         self.opt_result = None
         self.classical_solution = None
 
         super().__init__(input_data)
-        self.problem = class_mapping[class_name](self.graph())
+        if class_name == 'MinimumVertexCover':
+            self.problem = class_mapping[class_name](G=self.graph(), field=1.0, penalty=10)
+        elif class_name == 'TSP':
+            G = nx.Graph()
+            G.add_weighted_edges_from(self.elist)
+            self.problem = class_mapping[class_name](G=G, A=2.0, B=1.0)
+        else:
+            self.problem = class_mapping[class_name](G=self.graph())
+
         self.qubo = self.problem.qubo
         qaoa = QAOA()
-
+        qaoa.set_circuit_properties(p=3, init_type='ramp')
         # device
-        qiskit_device = create_device(location='local', name='qiskit.statevector_simulator')
+        qiskit_device = create_device(location='local', name='qiskit.shot_simulator')
         qaoa.set_device(qiskit_device)
-
-        # circuit properties
-        qaoa.set_circuit_properties(p=2, param_type='standard', init_type='rand', mixer_hamiltonian='x')
-
-        # backend properties (already set by default)
-        qaoa.set_backend_properties(prepend_state=None, append_state=None)
-
-        # classical optimizer properties
+        #
+        # # circuit properties
+        # qaoa.set_circuit_properties(p=2, param_type='standard', init_type='rand', mixer_hamiltonian='x')
+        #
+        # # backend properties (already set by default)
+        # qaoa.set_backend_properties(prepend_state=None, append_state=None)
+        #
+        # # classical optimizer properties
         qaoa.set_classical_optimizer(method='nelder-mead', maxiter=200, tol=0.001,
-                                     optimization_progress=True, cost_progress=True, parameter_log=True)
-
+                                      optimization_progress=True, cost_progress=True, parameter_log=True)
         self.qaoa = qaoa
 
     def plot_graph(self):
