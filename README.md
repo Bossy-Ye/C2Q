@@ -61,6 +61,20 @@ different types of problems will be required. And also a translator that gives r
    - Based on results from parser and select corresponding algorithms... 
 - **Interpreter**
 
+# Example
+## Maximum Independent Set
+### Code
+`parser.parse_code(independent_set_code)`
+`print(parser.problem_type, parser.specific_graph_problem, parser.data)`
+`generator = QASMGenerator()`
+`qasm_code = generator.qasm_generate(classical_code=independent_set_code, verbose=False)`
+`print(qasm_code)`
+### Results
+
+![img.png](assets/grover_results_IS.png)
+![img.png](assets/grover_circuits_IS.png)
+
+
 [^1]: Boyer, M., Brassard, G., Høyer, P., & Tapp, A. (1998). Tight bounds on quantum searching. Fortschritte Der Physik, 46(4–5), 493–505. https://doi.org/10.1002/(sici)1521-3978(199806)46:4/5
 
 
