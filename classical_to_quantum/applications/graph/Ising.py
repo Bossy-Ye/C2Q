@@ -41,6 +41,9 @@ class Ising(GraphProblem):
             G = nx.Graph()
             G.add_weighted_edges_from(self.elist)
             self.problem = class_mapping[class_name](G=G, A=2.0, B=1.0)
+        elif class_name == 'KColor':
+            # 4 colors now
+            self.problem = class_mapping[class_name](G=self.graph(), k=4)
         else:
             self.problem = class_mapping[class_name](G=self.graph())
 

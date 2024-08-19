@@ -52,7 +52,7 @@ class MyTestCase(unittest.TestCase):
         circuit, str = SK.generate_qasm()
         print(circuit)
         print(str)
-        qc = qiskit.qasm2.loads(str, custom_instructions=qasm2.LEGACY_CUSTOM_INSTRUCTIONS )
+        qc = qiskit.qasm2.loads(str, custom_instructions=qasm2.LEGACY_CUSTOM_INSTRUCTIONS)
         print(qc)
 
     def test_vertex_cover(self):
@@ -76,10 +76,21 @@ class MyTestCase(unittest.TestCase):
         print(result)
 
     def test_tsp(self):
-        tsp = Ising("/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/cases/Gset/G0",
-                    "TSP")
+        tsp = Ising(
+            "/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/cases/Gset/G0",
+            "TSP")
         res = tsp.run()
         print(res)
+
+    def test_4_color(self):
+        coloring = Ising(
+            "/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/cases/Gset/G1",
+            "KColor")
+        result = coloring.run()
+        solutions = result.most_probable_states.get('solutions_bitstrings')
+        print(solutions)
+        coloring.problem.plot_solution(solutions[0])
+        plt.show()
 
 
 if __name__ == '__main__':
