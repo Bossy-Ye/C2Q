@@ -79,7 +79,6 @@ class QASMGenerator:
         self.__init__()
         self.parser = ProblemParser()
         self.parser.parse_code(classical_code)
-        self.parser.evaluate_problem_type()
         self.problem_type = self.parser.problem_type
         if verbose:
             print(f'problem type: {self.parser.problem_type} data: {self.parser.data}')
@@ -126,9 +125,11 @@ class QASMGenerator:
         if self.problem_type == ProblemType.GRAPH:
             qasm_codes = {}
             if verbose:
-                print(f'-------graph problem type:{self.parser.specific_graph_problem}-------')
+                print(f'-------graph problem type:{self.parser.specific_graph_problem}--------')
             algorithms = algorithms_mapping.get(self.parser.specific_graph_problem)
+            print(algorithms)
             for algorithm in algorithms:
+                print(algorithm)
                 if issubclass(algorithm, Ising):
                     problem = Ising(self.parser.data, self.parser.specific_graph_problem)
                     problem.run(verbose=verbose)
@@ -140,13 +141,12 @@ class QASMGenerator:
                     problem = GraphProblem(self.parser.data)
                     independent_set_cnf = independent_set_to_sat(problem.graph())
                     independent_set_oracle = cnf_to_quantum_oracle(independent_set_cnf)
-
                     grover = GroverWrapper(oracle=independent_set_oracle,
                                            iterations=2,
                                            objective_qubits=list(range(problem.num_nodes)))
                     res = grover.run(verbose=verbose)
-                    qasm_codes['grover'] = problem.generate_qasm()
-                return qasm_codes
+                    qasm_codes['grover'] = grover.export_to_qasm()
+            return qasm_codes
         else:
             raise ValueError("Unsupported problem type")
 
