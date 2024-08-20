@@ -7,9 +7,10 @@ import networkx.classes.graph
 
 from classical_to_quantum.applications.graph.gset import *
 from classical_to_quantum.classiq_exceptions import *
+from abc import ABC, abstractmethod
 
 
-class GraphProblem:
+class GraphProblem(ABC):
     def __init__(self, input_data: str | networkx.classes.graph.Graph):
         if isinstance(input_data, str):
             if not os.path.exists(input_data):
@@ -28,9 +29,8 @@ class GraphProblem:
         else:
             raise InvalidInputError(type(input_data))
 
-    def run(self):
-        pass
-        #raise NotImplementedError("not implemented yet")
+    def run(self, verbose=False):
+        raise NotImplementedError("not implemented yet")
 
     def run_on_quantum(self):
         raise NotImplementedError("not implemented yet")
@@ -68,6 +68,3 @@ class GraphProblem:
 
 def addition(left, right):
     return left + right
-
-
-

@@ -1,4 +1,5 @@
 import ast
+import re
 
 import networkx as nx
 import numpy as np
@@ -18,6 +19,8 @@ maxcut_keywords = ["maxcut", "max_cut", "maximum cut"]
 independent_set_keywords = ["independent_set"]
 tsp_keywords = ["tsp", "distance"]
 coloring_keywords = ["coloring", "colored", "color"]
+arithmetic_keywords = ["addition", "subtraction", "multiplication", "sum", "minus"]
+
 verbose = False
 
 
@@ -95,6 +98,7 @@ def handle_constant(node):
 
 class ProblemParser:
     def __init__(self):
+        self.arithmetic_arguments = None
         self.visitor = None
         self.problem_type = None
         self.source_code = None
@@ -129,6 +133,8 @@ class ProblemParser:
                 self._set_problem_type(ProblemType.CNF)
             elif any(keyword in func['name'].lower() for keyword in graph_keywords):
                 self._set_problem_type(ProblemType.GRAPH)
+            elif any(keyword in func['name'].lower() for keyword in arithmetic_keywords):
+                self._set_problem_type(ProblemType.ARITHMETICS)
 
         # Check main logic for problem type
         for node in self.visitor.main_logic:
@@ -155,8 +161,34 @@ class ProblemParser:
             elif 'sat' in imp or 'cnf' in imp:
                 self._set_problem_type(ProblemType.CNF)
 
+        # Check function calls for arithmetic operations
+        for call in self.visitor.calls:
+            if call['func_name'] in ['addition', 'subtraction', 'multiplication', 'division']:
+                self._set_problem_type(ProblemType.ARITHMETICS)
+                print(f'{call}-----------')
+                arguments_string = call.get('args')
+                if len(arguments_string) != 2:
+                    raise ValueError("Basic arithmetic problems require two only two operands")
+
+                def extract_variable_names_from_strings(name_strings):
+                    variable_names = []
+                    for name_string in name_strings:
+                        # Use regex to find the content between "id='" and "',"
+                        match = re.search(r"id='(.*?)'", name_string)
+                        if match:
+                            variable_names.append(match.group(1))
+                    return variable_names
+
+                arguments = extract_variable_names_from_strings(arguments_string)
+
+                self.arithmetic_arguments = arguments
+                break
+
         if self.problem_type == ProblemType.GRAPH:
             self._determine_specific_graph_problem()
+        elif self.problem_type == ProblemType.ARITHMETICS:
+            self._determine_arithmetic_operation()
+
 
         # Extract corresponding data based on the detected problem type
         self.extract_data()
@@ -165,6 +197,35 @@ class ProblemParser:
         if not self.problem_type:
             return "No specific problem type detected."
         return f"Detected Problem Type: {self.problem_type.name}"
+
+    def _determine_arithmetic_operation(self):
+        """Determine the specific arithmetic operation type based on the variables or function calls."""
+        # Check for addition-related keywords or operations
+        if any(isinstance(var, ast.BinOp) and isinstance(var.op, ast.Add) for var in self.visitor.variables.values()) or \
+                any(call['func_name'] == 'addition' for call in self.visitor.calls):
+            self.problem_type = ProblemType.ARITHMETICS
+            self.specific_arithmetic_operation = "Addition"
+
+        # Check for subtraction-related keywords or operations
+        elif any(isinstance(var, ast.BinOp) and isinstance(var.op, ast.Sub) for var in
+                 self.visitor.variables.values()) or \
+                any(call['func_name'] == 'subtraction' for call in self.visitor.calls):
+            self.problem_type = ProblemType.ARITHMETICS
+            self.specific_arithmetic_operation = "Subtraction"
+
+        # Check for multiplication-related keywords or operations
+        elif any(isinstance(var, ast.BinOp) and isinstance(var.op, ast.Mult) for var in
+                 self.visitor.variables.values()) or \
+                any(call['func_name'] == 'multiplication' for call in self.visitor.calls):
+            self.problem_type = ProblemType.ARITHMETICS
+            self.specific_arithmetic_operation = "Multiplication"
+
+        # Check for division-related keywords or operations
+        elif any(isinstance(var, ast.BinOp) and isinstance(var.op, ast.Div) for var in
+                 self.visitor.variables.values()) or \
+                any(call['func_name'] == 'division' for call in self.visitor.calls):
+            self.problem_type = ProblemType.ARITHMETICS
+            self.specific_arithmetic_operation = "Division"
 
     def _determine_specific_graph_problem(self):
         """Determine the specific graph problem type if it's a graph problem."""
@@ -335,6 +396,10 @@ class ProblemParser:
                     print(f'Is weighted?{nx.is_weighted(G)}')
                 self.data = G  # Store the graph in self.data if needed.
                 return  # Return if matrix found
+        elif self.problem_type == ProblemType.ARITHMETICS:
+            data = {"left": self.visitor.variables.get(self.arithmetic_arguments[0]),
+                    "right": self.visitor.variables.get(self.arithmetic_arguments[1])}
+            self.data = data
             # Add additional checks or data extraction for other graph-related needs
             # TODO: Add other cases for GRAPH, FACTOR, etc.
 

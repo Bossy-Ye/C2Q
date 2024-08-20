@@ -1,7 +1,56 @@
+import numpy as np
 from qiskit.circuit.library import CDKMRippleCarryAdder
 from qiskit.circuit import QuantumCircuit
 from qiskit.primitives import Sampler
 from qiskit.circuit.library import VBERippleCarryAdder
+import pennylane as qml
+import matplotlib.pyplot as plt
+from classical_to_quantum.utils import *
+
+
+def add_k_fourier(k, wires):
+    for j in range(len(wires)):
+        qml.RZ(k * np.pi / 2 ** j, wires=wires[j])
+
+
+def quantum_mul(m, k, verbose = False):
+    wires_m = list(range(minimum_bits_required(m)))
+    wires_k = list(range(len(wires_m), minimum_bits_required(k) + len(wires_m)))
+    # m and k codification
+    wires_solution = list(
+        range(len(wires_m) + len(wires_k), len(wires_m) + len(wires_k) + max(len(wires_m), len(wires_k)) * 2))
+    dev = qml.device("qiskit.aer", wires=wires_m + wires_k + wires_solution, shots=1)
+
+    @qml.qnode(dev)
+    def mul(m, k):
+        qml.BasisEmbedding(m, wires=wires_m)
+        qml.BasisEmbedding(k, wires=wires_k)
+
+        # Apply multiplication
+        multiplication(wires_m, wires_k, wires_solution)
+
+        return qml.sample(wires=wires_solution)
+    if verbose:
+        qml.draw_mpl(mul, show_all_wires=True)(m, k)
+        plt.show()
+    transpiled_circuit = qml.transforms.transpile(mul, coupling_map=[(0, 2), (1, 2), (2, 3), (2, 4)])
+    return mul(m, k)
+
+def multiplication(wires_m, wires_k, wires_solution):
+    # prepare sol-qubits to counting
+    qml.QFT(wires=wires_solution)
+
+    # add m to the counter
+    for i in range(len(wires_k)):
+        for j in range(len(wires_m)):
+            coeff = 2 ** (len(wires_m) + len(wires_k) - i - j - 2)
+            qml.ctrl(add_k_fourier, control=[wires_k[i], wires_m[j]])(coeff, wires_solution)
+
+    # return to computational basis
+    qml.adjoint(qml.QFT)(wires=wires_solution)
+
+
+print(f"The ket representation of the multiplication of 3 and 7 is {quantum_mul(11, 7, verbose=True)}")
 
 
 def decimal_to_binary_list(num, n_bits):
@@ -88,6 +137,7 @@ def quantum_add(left, right, n_bits):
     sampler = Sampler()
     result = sampler.run(circuits=qc, shots=1024).result()
     result = list(result.quasi_dists[0].keys())[0]
+    print(result)
     if left * right > 0:
         result = complement_binary_list_to_decimal(decimal_to_complement_binary_list(result, n_bits + 1))
     else:

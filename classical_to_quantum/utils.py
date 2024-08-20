@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.quantum_info import Statevector
@@ -129,3 +131,22 @@ def get_evolved_state(circuit: QuantumCircuit, statevector: Statevector, verbose
             print(f"{state}: {amplitude}")
             print(f"Probability: {probability}")
     return final_statevector, amplitudes
+
+
+def minimum_bits_required(n):
+    """
+    Calculate the minimum number of bits required to represent the integer `n` in binary.
+
+    Parameters:
+    n (int): The integer for which to calculate the minimum number of bits.
+
+    Returns:
+    int: The minimum number of bits required to represent `n`.
+    """
+    if n < 0:
+        raise ValueError("The number must be non-negative.")
+    elif n == 0:
+        return 1  # Special case: 0 requires at least 1 bit to represent it (0 in binary)
+    else:
+        # Use the logarithm base 2 to find the highest bit and add 1 to cover all bits
+        return math.floor(math.log2(n)) + 1

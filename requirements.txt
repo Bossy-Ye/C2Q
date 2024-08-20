@@ -1,0 +1,11 @@
+qiskit~=0.45.3
+matplotlib~=3.9.2
+flask~=3.0.3
+werkzeug~=3.0.3
+networkx~=3.2.1
+numpy~=1.26.4
+setuptools~=70.2.0
+rustworkx~=0.15.1
+docplex~=2.25.236
+PennyLane~=0.37.0
+scikit-learn~=1.5.1

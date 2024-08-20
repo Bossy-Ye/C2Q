@@ -260,10 +260,10 @@ class TriangleFinding(GraphProblem):
                                             objective_qubits=list(range(self.num_nodes))
                                             )
 
-    def search(self):
+    def run(self, verbose: bool = False):
         result = self.grover_wrapper.run()
         self.circuit = self.grover_wrapper.grover.construct_circuit(self.grover_wrapper.problem,
-                                                                    self.iteration)
+                                                                    1)
         return result
 
     def export_to_qasm(self):

@@ -116,6 +116,10 @@ print(qasm_code)
 ![img.png](assets/grover_circuits_IS.png)
 #### QAOA generated
 
+### Future improvements
+- Utilize Pennylane to enhance visualization of ease coding[^2]
+- Support more qubits, thus more complex circuits...
 
 [^1]: Boyer, M., Brassard, G., Høyer, P., & Tapp, A. (1998). Tight bounds on quantum searching. Fortschritte Der Physik, 46(4–5), 493–505. https://doi.org/10.1002/(sici)1521-3978(199806)46:4/5
 
+[^2]: Ville Bergholm, Josh Izaac, Maria Schuld, Christian Gogolin, M. Sohaib Alam, Shahnawaz Ahmed, Juan Miguel Arrazola, Carsten Blank, Alain Delgado, Soran Jahangiri, Keri McKiernan, Johannes Jakob Meyer, Zeyue Niu, Antal Száva, and Nathan Killoran. PennyLane: Automatic differentiation of hybrid quantum-classical computations. 2018. arXiv:1811.04968

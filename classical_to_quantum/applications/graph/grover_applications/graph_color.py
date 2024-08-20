@@ -210,7 +210,7 @@ class GraphColor(GraphProblem):
                                             objective_qubits=variable_qubits
                                             )
 
-    def search(self, verbose):
+    def run(self, verbose=False):
         result = self.grover_wrapper.run()
         self.circuit = self.grover_wrapper.grover.construct_circuit(self.grover_wrapper.problem,
                                                                     self.iteration)
