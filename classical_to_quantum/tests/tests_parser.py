@@ -17,7 +17,7 @@ cnf_code = data['test_cases']['cnf']
 addition_code = data['test_cases']['addition']
 independent_set_code = data['test_cases']['independent set']
 tsp_code = data['test_cases']['tsp']
-
+coloring_code = data['test_cases']['coloring']
 
 parser = ProblemParser()
 parser.parse_code(clique_code)
@@ -42,12 +42,23 @@ print(parser.problem_type, parser.specific_graph_problem, parser.data)
 parser.parse_code(addition_code)
 print(parser.problem_type, parser.specific_graph_problem, parser.data)
 
-# parser.parse_code(independent_set_code)
-# print(independent_set_code)
-# print(parser.problem_type, parser.specific_graph_problem, parser.data)
-generator = QASMGenerator()
-qasm_code = generator.qasm_generate(classical_code=independent_set_code, verbose=False)
-print(qasm_code.get('grover'))
+parser.parse_code(independent_set_code)
+print(independent_set_code)
+print(parser.problem_type, parser.specific_graph_problem, parser.data)
+# generator = QASMGenerator()
+# qasm_code = generator.qasm_generate(classical_code=independent_set_code, verbose=False)
+# print(qasm_code.get('grover'))
 
 parser.parse_code(tsp_code)
 print(parser.problem_type, parser.specific_graph_problem, parser.data)
+
+parser.parse_code(coloring_code)
+print(parser.problem_type, parser.specific_graph_problem, parser.data)
+from classical_to_quantum.applications.graph.Ising import Ising
+coloring = Ising(parser.data, 'KColor')
+result = coloring.run(verbose=True)
+from classical_to_quantum.applications.graph.ising_auxiliary import *
+solutions = result.most_probable_states.get('solutions_bitstrings')
+print(solutions[0])
+
+plot_first_valid_coloring_solutions(solutions, coloring)

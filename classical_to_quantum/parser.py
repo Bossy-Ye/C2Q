@@ -17,7 +17,7 @@ clique_keywords = ["clique"]
 maxcut_keywords = ["maxcut", "max_cut", "maximum cut"]
 independent_set_keywords = ["independent_set"]
 tsp_keywords = ["tsp", "distance"]
-
+coloring_keywords = ["coloring", "colored", "color"]
 verbose = False
 
 
@@ -190,6 +190,11 @@ class ProblemParser:
                 any(any(keyword in call for keyword in tsp_keywords) for call in self.visitor.calls):
             self.problem_type = ProblemType.GRAPH
             self.specific_graph_problem = "TSP Problem"
+        # Check for coloring keywords
+        elif any(any(keyword in var for keyword in coloring_keywords) for var in self.visitor.variables) or \
+                any(any(keyword in call for keyword in coloring_keywords) for call in self.visitor.calls):
+            self.problem_type = ProblemType.GRAPH
+            self.specific_graph_problem = "KColor"
 
     def evaluation(self):
         """ Evaluate the parsed code and provide a summary """

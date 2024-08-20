@@ -1,10 +1,12 @@
 import unittest
 
+import networkx
 import qiskit.qasm2
 
 from classical_to_quantum.applications.graph.grover_applications.graph_color import *
 from qiskit.quantum_info import Statevector
 from classical_to_quantum.applications.graph.grover_applications.triangle_finding import *
+from classical_to_quantum.applications.graph.grover_applications.graph_oracle import *
 from utils import *
 
 
@@ -157,6 +159,7 @@ class MyTestCase(unittest.TestCase):
                                iterations=1,
                                is_good_state=check_disagreement,
                                objective_qubits=variable_qubits)
+        grover.run(verbose=True)
         str = grover.export_to_qasm()
         sampler = Sampler()
         circuit = grover.circuit
@@ -164,6 +167,26 @@ class MyTestCase(unittest.TestCase):
         print(str)
         circuit = qiskit.qasm2.loads(str)
         print(circuit)
+
+    def test_clique_grover(self):
+        G = networkx.Graph()
+        G.add_edges_from([(0, 1), (0, 2), (1, 2), (2, 3)])
+        print(G.edges)
+        cnf = clique_to_sat(G, 3)
+        oracle = cnf_to_quantum_oracle(cnf)
+        print(oracle)
+        def func(state): return True
+        prep = QuantumCircuit(cnf.nv)
+        prep.h(list(range(cnf.nv)))
+        grover = GroverWrapper(oracle=oracle,
+                               iterations=1,
+                               state_preparation=prep,
+                               is_good_state=func,
+                               objective_qubits=list(range(cnf.nv)))
+        try:
+            grover.run(verbose=True)
+        except Exception as e:
+            print(e)
 
 
 if __name__ == '__main__':
