@@ -195,7 +195,9 @@ class MyTestCase(unittest.TestCase):
     def test_triangle_graph_grover(self):
         triangle = TriangleFinding(
             "/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/cases/Gset/G8")
+
         result = triangle.run(verbose=True)
+
         from classical_to_quantum.applications.graph.grover_applications.grover_auxiliary import get_top_measurements, \
             plot_triangle_finding
         top_measurements = get_top_measurements(result, 0.001, num=20)

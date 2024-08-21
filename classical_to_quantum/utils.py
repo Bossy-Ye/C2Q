@@ -150,3 +150,32 @@ def minimum_bits_required(n):
     else:
         # Use the logarithm base 2 to find the highest bit and add 1 to cover all bits
         return math.floor(math.log2(n)) + 1
+
+
+def generate_dimacs(cnf_formula):
+    num_vars = max(abs(var) for clause in cnf_formula for var in clause)
+    num_clauses = len(cnf_formula)
+
+    # Start with the problem line
+    dimacs_str = f"p cnf {num_vars} {num_clauses}\n"
+
+    # Add each clause
+    for clause in cnf_formula:
+        dimacs_str += ' '.join(map(str, clause)) + ' 0\n'
+
+    return dimacs_str
+
+
+def adjacency_matrix_from_adj_dict(adj_dict):
+    # Get the number of nodes by finding the maximum key in the dictionary
+    num_nodes = max(adj_dict.keys()) + 1
+
+    # Initialize the adjacency matrix with zeros
+    adj_matrix = np.zeros((num_nodes, num_nodes))
+
+    # Fill the adjacency matrix with weights
+    for i in adj_dict:
+        for j in adj_dict[i]:
+            adj_matrix[i][j] = adj_dict[i][j].get('weight', 1.0)  # Default weight to 1.0 if not provided
+
+    return adj_matrix

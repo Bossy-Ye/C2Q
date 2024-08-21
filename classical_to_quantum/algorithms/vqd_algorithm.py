@@ -7,7 +7,7 @@ from qiskit.circuit.library import TwoLocal, NLocal
 from qiskit import QuantumCircuit, qasm2
 from qiskit_algorithms.optimizers import SPSA
 from qiskit_algorithms import VQD
-
+from qiskit_algorithms.state_fidelities import ComputeUncompute
 
 class VQDAlgorithm(BaseAlgorithm):
     def __init__(self,
@@ -23,7 +23,9 @@ class VQDAlgorithm(BaseAlgorithm):
         self.observable = observable
         self.n_qubits = n_qubits
         self.reps = reps
+
         self.vqe = VQD(estimator=Estimator(),
+                       fidelity=ComputeUncompute(Sampler()),
                        ansatz=self.ansatz,
                        optimizer=SPSA(maxiter=100))
         self.is_executed = False
@@ -42,4 +44,6 @@ class VQDAlgorithm(BaseAlgorithm):
         return self.result
 
     def export_to_qasm(self):
-        return qasm2.dumps(self.ansatz.assign_parameters(self.result.optimal_point))
+        if self.is_executed is False:
+            raise ValueError("VQD algorithm has not been executed yet.")
+        return qasm2.dumps(self.ansatz.bind_parameters(self.result.optimal_points[0]))

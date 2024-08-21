@@ -23,7 +23,14 @@ from classical_to_quantum.applications.graph.grover_applications.graph_color imp
 from classical_to_quantum.applications.graph.graph_problem import GraphProblem
 from classical_to_quantum.applications.graph.Ising import Ising
 from classical_to_quantum.applications.graph.grover_applications.triangle_finding import TriangleFinding
+from classical_to_quantum.applications.arithmetic.quantum_arithmetic import *
+from classical_to_quantum.utils import *
 
+arithmetic_mapping = {
+    "Addition": [quantum_add],
+    "Subtraction": [quantum_subtract],
+    "Multiplication": [quantum_multiplication]
+}
 algorithms_mapping = {
     "Knapsack": [Knapsack],
     "SlackFreeKnapsack": [SlackFreeKnapsack],
@@ -31,7 +38,7 @@ algorithms_mapping = {
     "MinimumVertexCover": [MinimumVertexCover],
     "NumberPartition": [NumberPartition],
     "ShortestPath": [ShortestPath],
-    "TSP": [TSP],
+    "TSP": [Ising],
     "TSP_LP": [TSP_LP],
     "PortfolioOptimization": [PortfolioOptimization],
     "MIS": [Ising, GraphProblem],
@@ -44,20 +51,6 @@ algorithms_mapping = {
     "QUBO": [QUBO],
     "Triangle": [TriangleFinding]
 }
-
-
-def generate_dimacs(cnf_formula):
-    num_vars = max(abs(var) for clause in cnf_formula for var in clause)
-    num_clauses = len(cnf_formula)
-
-    # Start with the problem line
-    dimacs_str = f"p cnf {num_vars} {num_clauses}\n"
-
-    # Add each clause
-    for clause in cnf_formula:
-        dimacs_str += ' '.join(map(str, clause)) + ' 0\n'
-
-    return dimacs_str
 
 
 class QASMGenerator:
@@ -139,6 +132,13 @@ class QASMGenerator:
                         problem.plot_graph_solution()
                         plt.show()
                     _, qasm_codes['qaoa'] = problem.generate_qasm()
+                elif issubclass(algorithm, TriangleFinding):
+                    problem = TriangleFinding(self.parser.data)
+                    res = problem.run(verbose=verbose)
+                    if verbose:
+                        top_measurements = get_top_measurements(res, 0.001, num=20)
+                        plot_triangle_finding(problem.graph(), top_measurements)
+                    qasm_codes['grover'] = problem.export_to_qasm()
                 elif issubclass(algorithm, GraphProblem):
                     problem = GraphProblem(self.parser.data)
                     independent_set_cnf = independent_set_to_sat(problem.graph())
@@ -148,17 +148,16 @@ class QASMGenerator:
                                            objective_qubits=list(range(problem.num_nodes)))
                     res = grover.run(verbose=verbose)
                     qasm_codes['grover'] = grover.export_to_qasm()
-                elif issubclass(algorithm, TriangleFinding):
-                    problem = TriangleFinding(self.parser.data)
-                    res = problem.run(verbose=verbose)
-                    print("hi")
-                    if verbose:
-                        top_measurements = get_top_measurements(res, 0.001, num=20)
-                        plot_triangle_finding(problem.graph(), top_measurements)
-                    qasm_codes['grover'] = problem.export_to_qasm()
+
             return qasm_codes
         elif self.problem_type == ProblemType.ARITHMETICS:
-            self.parser.data
+            left = self.parser.data.get('left')
+            right = self.parser.data.get('right')
+            operation = arithmetic_mapping.get(self.parser.specific_arithmetic_operation)
+            res, circuit = operation[0](left, right)
+            if verbose: print(f'quantum {self.parser.specific_arithmetic_operation} result: {res}')
+            return qasm2.dumps(circuit)
+
         else:
             raise ValueError("Unsupported problem type")
 

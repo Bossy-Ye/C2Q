@@ -165,7 +165,6 @@ class ProblemParser:
         for call in self.visitor.calls:
             if call['func_name'] in ['addition', 'subtraction', 'multiplication', 'division']:
                 self._set_problem_type(ProblemType.ARITHMETICS)
-                print(f'{call}-----------')
                 arguments_string = call.get('args')
                 if len(arguments_string) != 2:
                     raise ValueError("Basic arithmetic problems require only two operands")
@@ -249,7 +248,7 @@ class ProblemParser:
         elif any(any(keyword in var for keyword in tsp_keywords) for var in self.visitor.variables) or \
                 any(any(keyword in call for keyword in tsp_keywords) for call in self.visitor.calls):
             self.problem_type = ProblemType.GRAPH
-            self.specific_graph_problem = "TSP Problem"
+            self.specific_graph_problem = "TSP"
         # Check for coloring keywords
         elif any(any(keyword in var for keyword in coloring_keywords) for var in self.visitor.variables) or \
                 any(any(keyword in call for keyword in coloring_keywords) for call in self.visitor.calls):
@@ -383,20 +382,14 @@ class ProblemParser:
                     break
             # If edges were found, construct the graph
             if 'edges' in graph_data:
-                if verbose:
-                    print(graph_data)
                 G = nx.Graph()
                 G.add_edges_from(graph_data.get("edges"))
                 self.data = G  # Store the graph in self.data if needed
                 return  # Return if edges found
             # If adjacency matrix was found, construct the graph using the matrix
             elif 'adjacency_matrix' in graph_data:
-                if verbose:
-                    print(graph_data)
                 adj_matrix = np.array(graph_data['adjacency_matrix'])
                 G = nx.from_numpy_array(adj_matrix)
-                if verbose:
-                    print(f'Is weighted?{nx.is_weighted(G)}')
                 self.data = G  # Store the graph in self.data if needed.
                 return  # Return if matrix found
         elif self.problem_type == ProblemType.ARITHMETICS:

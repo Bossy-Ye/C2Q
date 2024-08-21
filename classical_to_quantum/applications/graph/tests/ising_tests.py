@@ -5,7 +5,7 @@ from qiskit import qasm2
 from qiskit.primitives import Sampler
 
 from classical_to_quantum.applications.graph.Ising import *
-
+from classical_to_quantum.applications.graph.ising_auxiliary import *
 
 class MyTestCase(unittest.TestCase):
     def test_something(self):
@@ -77,10 +77,12 @@ class MyTestCase(unittest.TestCase):
 
     def test_tsp(self):
         tsp = Ising(
-            "/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/cases/Gset/G0",
+            "/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/cases/Gset/G4",
             "TSP")
-        res = tsp.run()
-        print(res)
+        res = tsp.run(verbose=True)
+        solutions = res.most_probable_states.get('solutions_bitstrings')
+        print(solutions)
+        print(get_tsp_solution(solutions))
 
     def test_4_color(self):
         coloring = Ising(

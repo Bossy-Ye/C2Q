@@ -41,4 +41,4 @@ class VQEAlgorithm(BaseAlgorithm):
         return self.result
 
     def export_to_qasm(self):
-        return qasm2.dumps(self.ansatz.assign_parameters(self.result.optimal_point))
+        return qasm2.dumps(self.ansatz.bind_parameters(self.result.optimal_point))

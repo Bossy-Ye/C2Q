@@ -28,6 +28,7 @@ class GraphProblem(ABC):
             self.elist = self._graph.edges
         else:
             raise InvalidInputError(type(input_data))
+            # Ensure the graph is weighted
 
     def run(self, verbose=False):
         raise NotImplementedError("not implemented yet")

@@ -44,5 +44,3 @@ accuracy = accuracy_score(y_test, y_pred)
 """
 generator=QASMGenerator()
 qasm = generator.qasm_generate(classical_code, verbose=True)
-result = generator.run_qasm(qasm)
-print(result)

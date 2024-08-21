@@ -1,5 +1,6 @@
 import math
 
+import networkx
 import numpy as np
 import qiskit
 from qiskit.circuit.library import GroverOperator
@@ -199,7 +200,6 @@ class TriangleFinding(GraphProblem):
         self.grover = None
         self.operator = None
         node_map = {}
-
         def get_new_node_id(old_node):
             global new_node_id
             if old_node not in node_map:
@@ -211,9 +211,11 @@ class TriangleFinding(GraphProblem):
         self.edges = []
         global new_node_id
         new_node_id = 0
-        for (u, v, w) in self.elist:
-            if w != 1.0:
-                raise ValueError(f"Edge ({u}, {v}) has a weight {w} which is not 1.0")
+        print(self.graph().edges)
+        print(self.elist)
+        for u, v in self.graph().edges:
+            # if w != 1.0:
+            #     raise ValueError(f"Edge ({u}, {v}) has a weight {w} which is not 1.0")
             new_u = get_new_node_id(u)
             new_v = get_new_node_id(v)
             self.edges.append((new_u, new_v))

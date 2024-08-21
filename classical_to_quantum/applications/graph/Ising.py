@@ -5,6 +5,7 @@ from openqaoa.utilities import plot_graph
 from openqaoa.problems import *
 from openqaoa import QAOA
 from qiskit import IBMQ
+from classical_to_quantum.utils import adjacency_matrix_from_adj_dict
 
 class_mapping = {
     "Knapsack": Knapsack,
@@ -38,9 +39,10 @@ class Ising(GraphProblem):
         if class_name == 'MinimumVertexCover':
             self.problem = class_mapping[class_name](G=self.graph(), field=1.0, penalty=10)
         elif class_name == 'TSP':
-            G = nx.Graph()
-            G.add_weighted_edges_from(self.elist)
-            self.problem = class_mapping[class_name](G=G, A=2.0, B=1.0)
+            #G = nx.Graph()
+            adj_matrix = adjacency_matrix_from_adj_dict(self.graph().adj)
+            #G.add_weighted_edges_from(self.elist)
+            self.problem = class_mapping[class_name](distance_matrix=adj_matrix.tolist(), A=2.0, B=1.0)
         elif class_name == 'KColor':
             # 4 colors now
             self.problem = class_mapping[class_name](G=self.graph(), k=4)
@@ -103,3 +105,5 @@ class Ising(GraphProblem):
         variational_params.update_from_raw(optimized_angles)
         optimized_circuit = self.qaoa.backend.qaoa_circuit(variational_params)
         return optimized_circuit, qiskit.qasm2.dumps(optimized_circuit)
+
+

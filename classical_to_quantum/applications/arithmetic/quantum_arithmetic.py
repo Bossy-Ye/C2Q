@@ -144,7 +144,8 @@ def complement_binary_list_to_decimal(bin_list):
     return decimal_value
 
 
-def quantum_add(left, right, n_bits):
+def quantum_add(left, right):
+    n_bits = max(left.bit_length(), right.bit_length())+1
     # Ensure both left and right have n_bits length
     left_list = decimal_to_complement_binary_list(left, n_bits)
     right_list = decimal_to_complement_binary_list(right, n_bits)
@@ -177,15 +178,15 @@ def quantum_add(left, right, n_bits):
     sampler = Sampler()
     result = sampler.run(circuits=qc, shots=1024).result()
     result = list(result.quasi_dists[0].keys())[0]
-    print(result)
     if left * right > 0:
         result = complement_binary_list_to_decimal(decimal_to_complement_binary_list(result, n_bits + 1))
     else:
         result = complement_binary_list_to_decimal(decimal_to_complement_binary_list(result, n_bits))
-    return qc.decompose().decompose(), result
+    return result, qc
 
 
-def quantum_subtract(left, right, n_bits):
+def quantum_subtract(left, right):
+    n_bits = max(left.bit_length(), right.bit_length())
     # Ensure both minuend and subtrahend have n_bits length
     minuend = decimal_to_complement_binary_list(left, n_bits)
     subtrahend = decimal_to_complement_binary_list(right, n_bits)
@@ -221,7 +222,7 @@ def quantum_subtract(left, right, n_bits):
         result = complement_binary_list_to_decimal(decimal_to_complement_binary_list(result, n_bits + 1))
     else:
         result = complement_binary_list_to_decimal(decimal_to_complement_binary_list(result, n_bits))
-    return qc.decompose().decompose(), result
+    return result, qc
 
 
 # qc, res = quantum_subtract(5, -16, 5)

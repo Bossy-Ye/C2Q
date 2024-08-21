@@ -1,3 +1,4 @@
+import numpy as np
 from matplotlib import pyplot as plt
 
 
@@ -36,3 +37,22 @@ def plot_first_valid_coloring_solutions(solutions, coloring_problem_ising):
 
     except Exception as e:
         print(f"Error plotting solutions: {e}")
+
+
+def get_tsp_solution(bitstrings):
+    # TODO Only take the first now
+    bitstring = bitstrings[0]
+
+    # Calculate n based on the length of the bitstring
+    n = int(np.sqrt(len(bitstring)))
+    solution = []
+
+    for p__ in range(n):
+        p_th_step = []
+        for i in range(n):
+            # Converting character to integer and checking if it's 1 (instead of 0.999)
+            if int(bitstring[i * n + p__]) == 1:
+                p_th_step.append(i)
+        solution.append(p_th_step)
+
+    return solution
