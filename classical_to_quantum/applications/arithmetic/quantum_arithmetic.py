@@ -1,5 +1,5 @@
 import numpy as np
-from qiskit.circuit.library import CDKMRippleCarryAdder
+from qiskit.circuit.library import CDKMRippleCarryAdder, RGQFTMultiplier
 from qiskit.circuit import QuantumCircuit
 from qiskit.primitives import Sampler
 from qiskit.circuit.library import VBERippleCarryAdder
@@ -13,13 +13,13 @@ def add_k_fourier(k, wires):
         qml.RZ(k * np.pi / 2 ** j, wires=wires[j])
 
 
-def quantum_mul(m, k, verbose = False):
+def quantum_mul_pennylane(m, k, verbose=False):
     wires_m = list(range(minimum_bits_required(m)))
     wires_k = list(range(len(wires_m), minimum_bits_required(k) + len(wires_m)))
     # m and k codification
     wires_solution = list(
         range(len(wires_m) + len(wires_k), len(wires_m) + len(wires_k) + max(len(wires_m), len(wires_k)) * 2))
-    dev = qml.device("qiskit.aer", wires=wires_m + wires_k + wires_solution, shots=1)
+    dev = qml.device("default.qubit", wires=wires_m + wires_k + wires_solution, shots=1)
 
     @qml.qnode(dev)
     def mul(m, k):
@@ -27,16 +27,17 @@ def quantum_mul(m, k, verbose = False):
         qml.BasisEmbedding(k, wires=wires_k)
 
         # Apply multiplication
-        multiplication(wires_m, wires_k, wires_solution)
+        multiplication_pennylane(wires_m, wires_k, wires_solution)
 
         return qml.sample(wires=wires_solution)
+
     if verbose:
         qml.draw_mpl(mul, show_all_wires=True)(m, k)
         plt.show()
-    transpiled_circuit = qml.transforms.transpile(mul, coupling_map=[(0, 2), (1, 2), (2, 3), (2, 4)])
     return mul(m, k)
 
-def multiplication(wires_m, wires_k, wires_solution):
+
+def multiplication_pennylane(wires_m, wires_k, wires_solution):
     # prepare sol-qubits to counting
     qml.QFT(wires=wires_solution)
 
@@ -50,7 +51,46 @@ def multiplication(wires_m, wires_k, wires_solution):
     qml.adjoint(qml.QFT)(wires=wires_solution)
 
 
-print(f"The ket representation of the multiplication of 3 and 7 is {quantum_mul(11, 7, verbose=True)}")
+def quantum_multiplication(A, B, verbose=False):
+    # Determine the number of qubits required
+    num_state_qubits = max(A.bit_length(), B.bit_length())
+    num_result_qubits = num_state_qubits * 2
+
+    # Create Quantum and Classical Registers
+    q = QuantumRegister(num_state_qubits * 2 + num_result_qubits, 'q')
+    c = ClassicalRegister(num_result_qubits, 'c')
+    circuit = QuantumCircuit(q, c)
+
+    # Set the bits for Operand A (from right to left)
+    for i in range(A.bit_length()):
+        if (A >> i) & 1:
+            circuit.x(q[i])
+
+    # Set the bits for Operand B (from right to left)
+    for i in range(B.bit_length()):
+        if (B >> i) & 1:
+            circuit.x(q[i + num_state_qubits])
+
+    # Create the RGQFTMultiplier circuit and compose it with the main circuit
+    multiplier_circuit = RGQFTMultiplier(num_state_qubits=num_state_qubits, num_result_qubits=num_result_qubits)
+    circuit = circuit.compose(multiplier_circuit)
+
+    # Measure the result
+    for i in range(num_result_qubits):
+        circuit.measure(q[i + num_state_qubits * 2], c[i])
+
+    # Print the circuit for verification
+    if verbose: print(circuit)
+
+    # Run the circuit using the Sampler
+    sampler = Sampler()
+    result = sampler.run(circuit).result()
+    # Extract the result from the Sampler output
+    result_counts = result.quasi_dists[0]
+    if verbose: print(f'sampling results: {result_counts}')
+    result_value = max(result_counts, key=result_counts.get)
+
+    return result_value, circuit
 
 
 def decimal_to_binary_list(num, n_bits):

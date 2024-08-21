@@ -7,7 +7,7 @@ import utils
 with open('/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/cases/classical_cases/cases.json',
           'r') as f:
     data = json.load(f)
-
+generator = QASMGenerator()
 # Access and execute the code for the clique problem
 clique_code = data['test_cases']['clique']
 maxcut_code = data['test_cases']['maximum cut']
@@ -18,6 +18,7 @@ addition_code = data['test_cases']['addition']
 independent_set_code = data['test_cases']['independent set']
 tsp_code = data['test_cases']['tsp']
 coloring_code = data['test_cases']['coloring']
+triangle_finding_code = data['test_cases']['triangle finding']
 
 parser = ProblemParser()
 parser.parse_code(clique_code)
@@ -42,7 +43,7 @@ print(parser.problem_type, parser.specific_graph_problem, parser.data)
 
 parser.parse_code(independent_set_code)
 print(parser.problem_type, parser.specific_graph_problem, parser.data)
-# generator = QASMGenerator()
+
 # qasm_code = generator.qasm_generate(classical_code=independent_set_code, verbose=False)
 # print(qasm_code.get('grover'))
 
@@ -54,3 +55,8 @@ print(parser.problem_type, parser.specific_graph_problem, parser.data)
 
 parser.parse_code(addition_code)
 print(parser.problem_type, parser.specific_graph_problem, parser.data)
+
+parser.parse_code(triangle_finding_code)
+print(parser.problem_type, parser.specific_graph_problem, parser.data)
+code = generator.qasm_generate(triangle_finding_code)
+print(code)

@@ -8,6 +8,7 @@ from qiskit.quantum_info import Statevector
 from classical_to_quantum.applications.graph.grover_applications.triangle_finding import *
 from classical_to_quantum.applications.graph.grover_applications.graph_oracle import *
 from utils import *
+from classical_to_quantum.applications.graph.grover_applications.grover_auxiliary import *
 
 
 def func(state):
@@ -175,7 +176,10 @@ class MyTestCase(unittest.TestCase):
         cnf = clique_to_sat(G, 3)
         oracle = cnf_to_quantum_oracle(cnf)
         print(oracle)
-        def func(state): return True
+
+        def func(state):
+            return True
+
         prep = QuantumCircuit(cnf.nv)
         prep.h(list(range(cnf.nv)))
         grover = GroverWrapper(oracle=oracle,
@@ -187,6 +191,17 @@ class MyTestCase(unittest.TestCase):
             grover.run(verbose=True)
         except Exception as e:
             print(e)
+
+    def test_triangle_graph_grover(self):
+        triangle = TriangleFinding(
+            "/Users/mac/workspace/quantum-journey/QUANTUM-CLASSICAL-TRANSLATION/classical_to_quantum/cases/Gset/G8")
+        result = triangle.run(verbose=True)
+        from classical_to_quantum.applications.graph.grover_applications.grover_auxiliary import get_top_measurements, \
+            plot_triangle_finding
+        top_measurements = get_top_measurements(result, 0.001, num=20)
+        print(top_measurements)
+        plot_triangle_finding(triangle.graph(), top_measurements)
+        print(triangle.export_to_qasm())
 
 
 if __name__ == '__main__':

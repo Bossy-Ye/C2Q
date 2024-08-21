@@ -221,6 +221,7 @@ class TriangleFinding(GraphProblem):
         # define oracle and prep circuits
         n_nodes = self.num_nodes
         N = 2**n_nodes
+        # a rough estimation that only 1 solution exists...
         self.iterations = math.floor(math.pi / 4 * math.sqrt(N))
         nodes_qubits = QuantumRegister(n_nodes, name='nodes')
         edge_anc = QuantumRegister(2, name='edge_anc')
@@ -230,8 +231,9 @@ class TriangleFinding(GraphProblem):
         self.oracle = triangle_oracle(self.edges, nodes_qubits, edge_anc, ancilla, neg_base)
         sub_qbits = QuantumRegister(n_nodes)
         prep = QuantumCircuit(sub_qbits, name="state_prep")
-        prep, sub_qbits = wn(prep, sub_qbits)
-        prep.x(sub_qbits)
+        prep.h(sub_qbits)
+        #prep, sub_qbits = wn(prep, sub_qbits)
+        #prep.x(sub_qbits)
         self.prep = prep
 
         def check_valid_triangle(state):
@@ -252,7 +254,6 @@ class TriangleFinding(GraphProblem):
                     tuple(sorted([b, c])) in edge_set and
                     tuple(sorted([c, a])) in edge_set
             )
-
         self.grover_wrapper = GroverWrapper(oracle=self.oracle,
                                             iterations=self.iterations,
                                             state_preparation=self.prep,
@@ -264,6 +265,9 @@ class TriangleFinding(GraphProblem):
         result = self.grover_wrapper.run()
         self.circuit = self.grover_wrapper.grover.construct_circuit(self.grover_wrapper.problem,
                                                                     1)
+        print(f"---doing {self.iterations} iterations---")
+        if verbose:
+            print(result)
         return result
 
     def export_to_qasm(self):

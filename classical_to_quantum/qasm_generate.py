@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from applications.graph.grover_applications.graph_oracle import independent_set_to_sat, cnf_to_quantum_oracle
+from applications.graph.grover_applications.grover_auxiliary import get_top_measurements, plot_triangle_finding
 from classical_to_quantum.parser import ProblemParser, ProblemType
 from classical_to_quantum.algorithms.vqe_algorithm import VQEAlgorithm
 from classical_to_quantum.applications.quantum_machine_learning.quantum_kernel_ml import QMLKernel
@@ -21,6 +22,7 @@ from openqaoa.problems import *
 from classical_to_quantum.applications.graph.grover_applications.graph_color import GraphColor
 from classical_to_quantum.applications.graph.graph_problem import GraphProblem
 from classical_to_quantum.applications.graph.Ising import Ising
+from classical_to_quantum.applications.graph.grover_applications.triangle_finding import TriangleFinding
 
 algorithms_mapping = {
     "Knapsack": [Knapsack],
@@ -39,7 +41,8 @@ algorithms_mapping = {
     "BPSP": [BPSP],
     "KColor": [Ising, GraphColor],
     "FromDocplex2IsingModel": [FromDocplex2IsingModel],
-    "QUBO": [QUBO]
+    "QUBO": [QUBO],
+    "Triangle": [TriangleFinding]
 }
 
 
@@ -127,9 +130,8 @@ class QASMGenerator:
             if verbose:
                 print(f'-------graph problem type:{self.parser.specific_graph_problem}--------')
             algorithms = algorithms_mapping.get(self.parser.specific_graph_problem)
-            print(algorithms)
             for algorithm in algorithms:
-                print(algorithm)
+                if verbose: print(algorithm)
                 if issubclass(algorithm, Ising):
                     problem = Ising(self.parser.data, self.parser.specific_graph_problem)
                     problem.run(verbose=verbose)
@@ -146,7 +148,17 @@ class QASMGenerator:
                                            objective_qubits=list(range(problem.num_nodes)))
                     res = grover.run(verbose=verbose)
                     qasm_codes['grover'] = grover.export_to_qasm()
+                elif issubclass(algorithm, TriangleFinding):
+                    problem = TriangleFinding(self.parser.data)
+                    res = problem.run(verbose=verbose)
+                    print("hi")
+                    if verbose:
+                        top_measurements = get_top_measurements(res, 0.001, num=20)
+                        plot_triangle_finding(problem.graph(), top_measurements)
+                    qasm_codes['grover'] = problem.export_to_qasm()
             return qasm_codes
+        elif self.problem_type == ProblemType.ARITHMETICS:
+            self.parser.data
         else:
             raise ValueError("Unsupported problem type")
 

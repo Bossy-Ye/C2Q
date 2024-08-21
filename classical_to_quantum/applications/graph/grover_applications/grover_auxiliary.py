@@ -3,6 +3,7 @@ from qiskit_algorithms import *
 from typing import List, Dict
 import networkx as nx
 
+
 def get_top_measurements(result: GroverResult, threshold: float = 0.001, num: int = 3) -> List[Dict[str, float]]:
     """
     Get the top `num` measurements from the circuit results that differ within a given threshold.
@@ -17,7 +18,6 @@ def get_top_measurements(result: GroverResult, threshold: float = 0.001, num: in
     """
     # Extract the circuit results from the result object
     circuit_results = result.circuit_results
-
     # Find the highest probability in the circuit results
     max_prob = max(circuit_results[0].values())
 
@@ -166,3 +166,33 @@ def plot_multiple_graph_colorings(G, bitstring_results, num_per_row=3):
 
     plt.tight_layout()
     plt.show()
+
+
+def plot_triangle_finding(G, bitstring_results, num_per_row=3):
+    # Iterate through each bitstring result
+    for bitstring_result in bitstring_results:
+        bitstring = list(bitstring_result.keys())[0]
+        probability = list(bitstring_result.values())[0]
+
+        # Convert the bitstring to a list of selected nodes (starting from the rightmost bit)
+        selected_nodes = [i for i, bit in enumerate(reversed(bitstring)) if bit == '1']
+
+        # Only consider valid triangles (exactly 3 nodes selected)
+        if len(selected_nodes) == 3:
+            # Create a color map for the nodes: selected nodes will be colored differently
+            color_map = ['red' if node in selected_nodes else 'lightblue' for node in G.nodes]
+
+            # Draw the graph with the color map
+            pos = nx.spring_layout(G)  # You can use other layouts like 'circular_layout', etc.
+            nx.draw(G, pos, with_labels=True, node_color=color_map, node_size=800, font_size=15, font_color='black',
+                    edge_color='gray')
+
+            # Highlight the edges of the selected triangle
+            nx.draw_networkx_edges(G, pos, edgelist=[(selected_nodes[0], selected_nodes[1]),
+                                                     (selected_nodes[1], selected_nodes[2]),
+                                                     (selected_nodes[2], selected_nodes[0])],
+                                   width=8, alpha=0.5, edge_color='green')
+
+            # Display the plot with title showing the probability
+            plt.title(f"Triangle: {selected_nodes}, Probability: {probability}")
+            plt.show()

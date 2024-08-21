@@ -19,8 +19,8 @@ maxcut_keywords = ["maxcut", "max_cut", "maximum cut"]
 independent_set_keywords = ["independent_set"]
 tsp_keywords = ["tsp", "distance"]
 coloring_keywords = ["coloring", "colored", "color"]
-arithmetic_keywords = ["addition", "subtraction", "multiplication", "sum", "minus"]
-
+arithmetic_keywords = ["addition", "subtraction", "multiplication", "sum", "minus", "add", "multiply", "mul", "sub"]
+triangle_finding_keywords = ["triangle", "triangles", "find_triangle", "find_triangles","triangle_find"]
 verbose = False
 
 
@@ -168,7 +168,7 @@ class ProblemParser:
                 print(f'{call}-----------')
                 arguments_string = call.get('args')
                 if len(arguments_string) != 2:
-                    raise ValueError("Basic arithmetic problems require two only two operands")
+                    raise ValueError("Basic arithmetic problems require only two operands")
 
                 def extract_variable_names_from_strings(name_strings):
                     variable_names = []
@@ -188,7 +188,6 @@ class ProblemParser:
             self._determine_specific_graph_problem()
         elif self.problem_type == ProblemType.ARITHMETICS:
             self._determine_arithmetic_operation()
-
 
         # Extract corresponding data based on the detected problem type
         self.extract_data()
@@ -256,6 +255,10 @@ class ProblemParser:
                 any(any(keyword in call for keyword in coloring_keywords) for call in self.visitor.calls):
             self.problem_type = ProblemType.GRAPH
             self.specific_graph_problem = "KColor"
+        elif any(any(keyword in var for keyword in triangle_finding_keywords) for var in self.visitor.variables) or \
+                any(any(keyword in call for keyword in triangle_finding_keywords) for call in self.visitor.calls):
+            self.problem_type = ProblemType.GRAPH
+            self.specific_graph_problem = "Triangle"
 
     def evaluation(self):
         """ Evaluate the parsed code and provide a summary """
