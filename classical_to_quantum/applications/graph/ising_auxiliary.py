@@ -1,3 +1,4 @@
+import networkx
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -56,3 +57,23 @@ def get_tsp_solution(bitstrings):
         solution.append(p_th_step)
 
     return solution
+
+
+def get_pos_for_graph(G:networkx.Graph):
+    edges = G.edges
+    # Extract all nodes
+    nodes = set()
+    for edge in edges:
+        nodes.add(edge[0])
+        nodes.add(edge[1])
+
+    # Number of nodes
+    num_nodes = len(nodes)
+
+    # Generate positions in a circular layout
+    angle_increment = 2 * np.pi / num_nodes
+    pos = {}
+    for i, node in enumerate(sorted(nodes)):
+        angle = i * angle_increment
+        pos[node] = (np.cos(angle), np.sin(angle))
+    return pos

@@ -6,7 +6,7 @@ from openqaoa.problems import *
 from openqaoa import QAOA
 from qiskit import IBMQ
 from classical_to_quantum.utils import adjacency_matrix_from_adj_dict
-
+from classical_to_quantum.applications.graph.ising_auxiliary import *
 class_mapping = {
     "Knapsack": Knapsack,
     "SlackFreeKnapsack": SlackFreeKnapsack,
@@ -34,7 +34,7 @@ class Ising(GraphProblem):
         self.qaoa = None
         self.opt_result = None
         self.classical_solution = None
-
+        self.class_name = class_name
         super().__init__(input_data)
         if class_name == 'MinimumVertexCover':
             self.problem = class_mapping[class_name](G=self.graph(), field=1.0, penalty=10)
@@ -46,6 +46,12 @@ class Ising(GraphProblem):
         elif class_name == 'KColor':
             # 4 colors now
             self.problem = class_mapping[class_name](G=self.graph(), k=4)
+        elif class_name == 'VRP':
+            print(self.graph().edges)
+            pos = get_pos_for_graph(G=self.graph())
+            self.problem = class_mapping[class_name](G=self.graph(),
+                                                     pos = pos,
+                                                     n_vehicles=2)
         else:
             self.problem = class_mapping[class_name](G=self.graph())
 
@@ -76,6 +82,11 @@ class Ising(GraphProblem):
         self.opt_result.plot_cost()
 
     def plot_graph_solution(self):
+        # seperated case for vrp
+        if self.class_name == 'VRP':
+            solution = self.problem.classical_solution()
+            self.problem.plot_solution(solution)
+            return
         if not self.is_executed:
             raise NotExecutedError
         solution = self.opt_result.most_probable_states.get('solutions_bitstrings')

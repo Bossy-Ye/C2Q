@@ -15,7 +15,8 @@ class MyTestCase(unittest.TestCase):
         generator = QASMGenerator()
         # Access and execute the code for the clique problem
         clique_code = data['test_cases']['clique']
-        maxcut_code = data['test_cases']['maximum cut']
+        self.maxcut_matrix_code = data['test_cases']['maximum cut distance matrix']
+        self.maxcut_code = data['test_cases']['maximum cut']
         eigenvalue_code = data['test_cases']['eigenvalue']
         svm_code = data['test_cases']['svm']
         cnf_code = data['test_cases']['cnf']
@@ -24,6 +25,7 @@ class MyTestCase(unittest.TestCase):
         self.tsp_code = data['test_cases']['tsp']
         self.coloring_code = data['test_cases']['coloring']
         self.triangle_finding_code = data['test_cases']['triangle finding']
+        self.vrp_code = data['test_cases']['vrp']
         self.generator = QASMGenerator()
         self.parser = ProblemParser()
 
@@ -35,10 +37,13 @@ class MyTestCase(unittest.TestCase):
         qasm = self.generator.qasm_generate(self.addition_code, verbose=True)
 
     def test_tsp(self):
-        print(self.tsp_code)
-        #self.parser.parse_code(self.tsp_code)
-        #print(self.parser.evaluation())
-        #qasm = self.generator.qasm_generate(self.tsp_code, verbose=True)
+        qasm = self.generator.qasm_generate(self.tsp_code, verbose=True)
+    def test_vrp(self):
+        qasm = self.generator.qasm_generate(self.vrp_code, verbose=True)
+    def test_maxcut(self):
+        qasm = self.generator.qasm_generate(self.maxcut_code, verbose=True)
+    def test_matrix_maxcut(self):
+        qasm = self.generator.qasm_generate(self.maxcut_matrix_code, verbose=True)
 
 
 if __name__ == '__main__':

@@ -17,10 +17,11 @@ graph_keywords = ["graph", "networkx", "nx", "nodes", "edges",
 clique_keywords = ["clique"]
 maxcut_keywords = ["maxcut", "max_cut", "maximum cut"]
 independent_set_keywords = ["independent_set"]
-tsp_keywords = ["tsp", "distance"]
+tsp_keywords = ["tsp", "traveling_salesman", "tsp_brute_force", "TSP"]
+vrp_keywords = ["vrp", "vehicle_routing"]
 coloring_keywords = ["coloring", "colored", "color"]
 arithmetic_keywords = ["addition", "subtraction", "multiplication", "sum", "minus", "add", "multiply", "mul", "sub"]
-triangle_finding_keywords = ["triangle", "triangles", "find_triangle", "find_triangles","triangle_find"]
+triangle_finding_keywords = ["triangle", "triangles", "find_triangle", "find_triangles", "triangle_find"]
 verbose = False
 
 
@@ -227,37 +228,56 @@ class ProblemParser:
 
     def _determine_specific_graph_problem(self):
         """Determine the specific graph problem type if it's a graph problem."""
+
+        # Function to check if any keyword is a substring in a list of strings
+        def vars_contains_keyword(vars, keywords):
+            return any(any(keyword in var for keyword in keywords) for var in vars)
+
+        def calls_contains_keyword(calls, keywords):
+            return any(any(keyword in call.get("func_name") for keyword in keywords) for call in calls)
+
         # Check for clique-related keywords
-        if any(any(keyword in var for keyword in clique_keywords) for var in self.visitor.variables) or \
-                any(any(keyword in call for keyword in clique_keywords) for call in self.visitor.calls):
+        if vars_contains_keyword(self.visitor.variables, clique_keywords) or calls_contains_keyword(self.visitor.calls,
+                                                                                              clique_keywords):
             self.problem_type = ProblemType.GRAPH
             self.specific_graph_problem = "Clique Problem"
 
         # Check for max-cut-related keywords
-        elif any(any(keyword in var for keyword in maxcut_keywords) for var in self.visitor.variables) or \
-                any(any(keyword in call for keyword in maxcut_keywords) for call in self.visitor.calls):
+        elif vars_contains_keyword(self.visitor.variables, maxcut_keywords) or calls_contains_keyword(self.visitor.calls,
+                                                                                                maxcut_keywords):
             self.problem_type = ProblemType.GRAPH
-            self.specific_graph_problem = "Max-Cut Problem"
+            self.specific_graph_problem = "MaximumCut"
 
-        # Check for independent_set keywords
-        elif any(any(keyword in var for keyword in independent_set_keywords) for var in self.visitor.variables) or \
-                any(any(keyword in call for keyword in independent_set_keywords) for call in self.visitor.calls):
+        # Check for independent set keywords
+        elif vars_contains_keyword(self.visitor.variables, independent_set_keywords) or calls_contains_keyword(
+                self.visitor.calls,
+                independent_set_keywords):
             self.problem_type = ProblemType.GRAPH
             self.specific_graph_problem = "MIS"
-        # Check for tsp keywords
-        elif any(any(keyword in var for keyword in tsp_keywords) for var in self.visitor.variables) or \
-                any(any(keyword in call for keyword in tsp_keywords) for call in self.visitor.calls):
+
+        # Check for TSP-related keywords
+        elif vars_contains_keyword(self.visitor.variables, tsp_keywords) or calls_contains_keyword(self.visitor.calls,
+                                                                                             tsp_keywords):
             self.problem_type = ProblemType.GRAPH
             self.specific_graph_problem = "TSP"
-        # Check for coloring keywords
-        elif any(any(keyword in var for keyword in coloring_keywords) for var in self.visitor.variables) or \
-                any(any(keyword in call for keyword in coloring_keywords) for call in self.visitor.calls):
+
+        # Check for graph coloring keywords
+        elif vars_contains_keyword(self.visitor.variables, coloring_keywords) or calls_contains_keyword(self.visitor.calls,
+                                                                                                  coloring_keywords):
             self.problem_type = ProblemType.GRAPH
             self.specific_graph_problem = "KColor"
-        elif any(any(keyword in var for keyword in triangle_finding_keywords) for var in self.visitor.variables) or \
-                any(any(keyword in call for keyword in triangle_finding_keywords) for call in self.visitor.calls):
+
+        # Check for triangle finding keywords
+        elif vars_contains_keyword(self.visitor.variables, triangle_finding_keywords) or calls_contains_keyword(
+                self.visitor.calls,
+                triangle_finding_keywords):
             self.problem_type = ProblemType.GRAPH
             self.specific_graph_problem = "Triangle"
+        # Check for vrp keywords
+        elif vars_contains_keyword(self.visitor.variables, vrp_keywords) or calls_contains_keyword(self.visitor.calls,
+                                                                                             vrp_keywords):
+            self.problem_type = ProblemType.GRAPH
+            self.specific_graph_problem = "VRP"
 
     def evaluation(self):
         """ Evaluate the parsed code and provide a summary """
@@ -342,7 +362,6 @@ class ProblemParser:
             # Try to find 'matrix' or 'observable'
             matrix = self.visitor.variables.get('matrix')
             observable = self.visitor.variables.get('observable')
-
             if matrix is not None:
                 self.data = matrix
             elif observable is not None:
@@ -361,7 +380,6 @@ class ProblemParser:
             possible_node_names = ['nodes', 'nodelist', 'node', 'Node']
             possible_adj_matrix_names = ['adjacency_matrix', 'adj_matrix', 'adjacent_matrix',
                                          'graph', 'matrix', 'distance_matrix']
-
             # Extract graph data
             graph_data = {}
             for edge_name in possible_edge_names:
@@ -377,13 +395,18 @@ class ProblemParser:
                     break
             for adj_matrix_name in possible_adj_matrix_names:
                 adj_matrix = self.visitor.variables.get(adj_matrix_name)
-                if adj_matrix:
+                if adj_matrix is not None:
                     graph_data['adjacency_matrix'] = adj_matrix
                     break
             # If edges were found, construct the graph
             if 'edges' in graph_data:
                 G = nx.Graph()
-                G.add_edges_from(graph_data.get("edges"))
+                edges_list = graph_data['edges']
+                default_weight = 1
+                # Convert list of lists to list of tuples, handling missing weights
+                edges = [(edge[0], edge[1], edge[2]) if len(edge) == 3 else (edge[0], edge[1], default_weight) for edge
+                         in edges_list]
+                G.add_weighted_edges_from(edges)
                 self.data = G  # Store the graph in self.data if needed
                 return  # Return if edges found
             # If adjacency matrix was found, construct the graph using the matrix

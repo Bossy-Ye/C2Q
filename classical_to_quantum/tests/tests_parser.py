@@ -19,6 +19,7 @@ independent_set_code = data['test_cases']['independent set']
 tsp_code = data['test_cases']['tsp']
 coloring_code = data['test_cases']['coloring']
 triangle_finding_code = data['test_cases']['triangle finding']
+vrp_code = data['test_cases']['vrp']
 
 parser = ProblemParser()
 parser.parse_code(clique_code)
@@ -58,5 +59,6 @@ print(parser.problem_type, parser.specific_graph_problem, parser.data)
 
 parser.parse_code(triangle_finding_code)
 print(parser.problem_type, parser.specific_graph_problem, parser.data)
-code = generator.qasm_generate(triangle_finding_code)
-print(code)
+
+parser.parse_code(vrp_code)
+print(parser.problem_type, parser.specific_graph_problem, parser.data)
