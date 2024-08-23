@@ -246,3 +246,4 @@ def permutations(list):
 
     f(0)
     return result
+

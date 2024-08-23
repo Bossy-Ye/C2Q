@@ -20,11 +20,13 @@ tsp_code = data['test_cases']['tsp']
 coloring_code = data['test_cases']['coloring']
 triangle_finding_code = data['test_cases']['triangle finding']
 vrp_code = data['test_cases']['vrp']
+factor_code = data['test_cases']['factor']
 
 parser = ProblemParser()
 parser.parse_code(clique_code)
 print(parser.problem_type, parser.specific_graph_problem, parser.data)
 
+print(maxcut_code)
 parser.parse_code(maxcut_code)
 print(parser.problem_type, parser.specific_graph_problem, parser.data)
 
@@ -61,4 +63,7 @@ parser.parse_code(triangle_finding_code)
 print(parser.problem_type, parser.specific_graph_problem, parser.data)
 
 parser.parse_code(vrp_code)
+print(parser.problem_type, parser.specific_graph_problem, parser.data)
+
+parser.parse_code(factor_code)
 print(parser.problem_type, parser.specific_graph_problem, parser.data)

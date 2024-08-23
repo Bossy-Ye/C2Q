@@ -48,7 +48,7 @@ class GroverWrapper(BaseAlgorithm):
                                             state_preparation=state_preparation,
                                             is_good_state=is_good_state,
                                             objective_qubits=objective_qubits)
-        self.grover = Grover(sampler=Sampler(), growth_rate=1.25)
+        self.grover = Grover(sampler=Sampler(), iterations=iterations)
 
     def run(self, verbose=False):
         result = self.grover.amplify(self.problem)

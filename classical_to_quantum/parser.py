@@ -22,6 +22,7 @@ vrp_keywords = ["vrp", "vehicle_routing"]
 coloring_keywords = ["coloring", "colored", "color"]
 arithmetic_keywords = ["addition", "subtraction", "multiplication", "sum", "minus", "add", "multiply", "mul", "sub"]
 triangle_finding_keywords = ["triangle", "triangles", "find_triangle", "find_triangles", "triangle_find"]
+factorization_keywords = ["factorization", "factorizations", "factorization", "factor", "gcd", "lcm", "factorize"]
 verbose = False
 
 
@@ -99,6 +100,7 @@ def handle_constant(node):
 
 class ProblemParser:
     def __init__(self):
+        self.composite_numer = None
         self.arithmetic_arguments = None
         self.visitor = None
         self.problem_type = None
@@ -123,6 +125,8 @@ class ProblemParser:
                 self._set_problem_type(ProblemType.EIGENVALUE)
             elif var_name in graph_keywords:
                 self._set_problem_type(ProblemType.GRAPH)
+            elif var_name in factorization_keywords:
+                self._set_problem_type(ProblemType.FACTOR)
 
         # Check function definitions for problem type
         for func in self.visitor.functions:
@@ -136,6 +140,8 @@ class ProblemParser:
                 self._set_problem_type(ProblemType.GRAPH)
             elif any(keyword in func['name'].lower() for keyword in arithmetic_keywords):
                 self._set_problem_type(ProblemType.ARITHMETICS)
+            elif any(keyword in func['name'].lower() for keyword in factorization_keywords):
+                self._set_problem_type(ProblemType.FACTOR)
 
         # Check main logic for problem type
         for node in self.visitor.main_logic:
@@ -151,6 +157,9 @@ class ProblemParser:
                         self._set_problem_type(ProblemType.CNF)
                     elif any(keyword in func_name.lower() for keyword in graph_keywords):
                         self._set_problem_type(ProblemType.GRAPH)
+                    elif any(keyword in func_name.lower() for keyword in factorization_keywords):
+                        self._set_problem_type(ProblemType.FACTOR)
+
         # Check imports for problem type
         for imp in self.visitor.imports:
             if 'networkx' in imp or 'nx' in imp:
@@ -161,6 +170,17 @@ class ProblemParser:
                 self._set_problem_type(ProblemType.EIGENVALUE)
             elif 'sat' in imp or 'cnf' in imp:
                 self._set_problem_type(ProblemType.CNF)
+            elif any(factor in imp for factor in factorization_keywords):
+                self._set_problem_type(ProblemType.FACTOR)
+
+        def extract_variable_names_from_strings(name_strings):
+            variable_names = []
+            for name_string in name_strings:
+                # Use regex to find the content between "id='" and "',"
+                match = re.search(r"id='(.*?)'", name_string)
+                if match:
+                    variable_names.append(match.group(1))
+            return variable_names
 
         # Check function calls for arithmetic operations
         for call in self.visitor.calls:
@@ -170,18 +190,18 @@ class ProblemParser:
                 if len(arguments_string) != 2:
                     raise ValueError("Basic arithmetic problems require only two operands")
 
-                def extract_variable_names_from_strings(name_strings):
-                    variable_names = []
-                    for name_string in name_strings:
-                        # Use regex to find the content between "id='" and "',"
-                        match = re.search(r"id='(.*?)'", name_string)
-                        if match:
-                            variable_names.append(match.group(1))
-                    return variable_names
-
                 arguments = extract_variable_names_from_strings(arguments_string)
 
                 self.arithmetic_arguments = arguments
+                break
+            elif call['func_name'].lower() in factorization_keywords:
+                self._set_problem_type(ProblemType.FACTOR)
+                arguments_string = call.get('args')
+                if len(arguments_string) != 1:
+                    raise ValueError("Factorization problems require only 1 operands")
+                composite_numer = extract_variable_names_from_strings(arguments_string)
+
+                self.composite_numer = composite_numer
                 break
 
         if self.problem_type == ProblemType.GRAPH:
@@ -238,13 +258,14 @@ class ProblemParser:
 
         # Check for clique-related keywords
         if vars_contains_keyword(self.visitor.variables, clique_keywords) or calls_contains_keyword(self.visitor.calls,
-                                                                                              clique_keywords):
+                                                                                                    clique_keywords):
             self.problem_type = ProblemType.GRAPH
             self.specific_graph_problem = "Clique Problem"
 
         # Check for max-cut-related keywords
-        elif vars_contains_keyword(self.visitor.variables, maxcut_keywords) or calls_contains_keyword(self.visitor.calls,
-                                                                                                maxcut_keywords):
+        elif vars_contains_keyword(self.visitor.variables, maxcut_keywords) or calls_contains_keyword(
+                self.visitor.calls,
+                maxcut_keywords):
             self.problem_type = ProblemType.GRAPH
             self.specific_graph_problem = "MaximumCut"
 
@@ -257,13 +278,14 @@ class ProblemParser:
 
         # Check for TSP-related keywords
         elif vars_contains_keyword(self.visitor.variables, tsp_keywords) or calls_contains_keyword(self.visitor.calls,
-                                                                                             tsp_keywords):
+                                                                                                   tsp_keywords):
             self.problem_type = ProblemType.GRAPH
             self.specific_graph_problem = "TSP"
 
         # Check for graph coloring keywords
-        elif vars_contains_keyword(self.visitor.variables, coloring_keywords) or calls_contains_keyword(self.visitor.calls,
-                                                                                                  coloring_keywords):
+        elif vars_contains_keyword(self.visitor.variables, coloring_keywords) or calls_contains_keyword(
+                self.visitor.calls,
+                coloring_keywords):
             self.problem_type = ProblemType.GRAPH
             self.specific_graph_problem = "KColor"
 
@@ -275,7 +297,7 @@ class ProblemParser:
             self.specific_graph_problem = "Triangle"
         # Check for vrp keywords
         elif vars_contains_keyword(self.visitor.variables, vrp_keywords) or calls_contains_keyword(self.visitor.calls,
-                                                                                             vrp_keywords):
+                                                                                                   vrp_keywords):
             self.problem_type = ProblemType.GRAPH
             self.specific_graph_problem = "VRP"
 
@@ -418,6 +440,9 @@ class ProblemParser:
         elif self.problem_type == ProblemType.ARITHMETICS:
             data = {"left": self.visitor.variables.get(self.arithmetic_arguments[0]),
                     "right": self.visitor.variables.get(self.arithmetic_arguments[1])}
+            self.data = data
+        elif self.problem_type == ProblemType.FACTOR:
+            data = {"composite number": self.visitor.variables.get(self.composite_numer[0])}
             self.data = data
             # Add additional checks or data extraction for other graph-related needs
             # TODO: Add other cases for GRAPH, FACTOR, etc.

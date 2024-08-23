@@ -1,8 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+from applications.arithmetic.factorization import quantum_factor_mul_oracle
 from applications.graph.grover_applications.graph_oracle import independent_set_to_sat, cnf_to_quantum_oracle
-from applications.graph.grover_applications.grover_auxiliary import get_top_measurements, plot_triangle_finding
+from applications.graph.grover_applications.grover_auxiliary import get_top_measurements, plot_triangle_finding, \
+    plot_multiple_graph_colorings
+from applications.graph.ising_auxiliary import plot_first_valid_coloring_solutions
 from classical_to_quantum.parser import ProblemParser, ProblemType
 from classical_to_quantum.algorithms.vqe_algorithm import VQEAlgorithm
 from classical_to_quantum.applications.quantum_machine_learning.quantum_kernel_ml import QMLKernel
@@ -76,6 +79,7 @@ class QASMGenerator:
         self.parser = ProblemParser()
         self.parser.parse_code(classical_code)
         self.problem_type = self.parser.problem_type
+        qasm_codes = {}
         if verbose:
             print(f'problem type: {self.parser.problem_type} data: {self.parser.data}')
         if self.problem_type == ProblemType.EIGENVALUE:
@@ -119,7 +123,6 @@ class QASMGenerator:
             wrapper.run(verbose=verbose)
             return {'grover': wrapper.export_to_qasm()}
         if self.problem_type == ProblemType.GRAPH:
-            qasm_codes = {}
             if verbose:
                 print(f'-------graph problem type:{self.parser.specific_graph_problem}--------')
             algorithms = algorithms_mapping.get(self.parser.specific_graph_problem)
@@ -127,10 +130,15 @@ class QASMGenerator:
                 if verbose: print(algorithm)
                 if issubclass(algorithm, Ising):
                     problem = Ising(self.parser.data, self.parser.specific_graph_problem)
-                    problem.run(verbose=verbose)
+                    res = problem.run(verbose=verbose)
                     if verbose:
-                        problem.plot_graph_solution()
-                        plt.show()
+                        if self.parser.specific_graph_problem == 'KColor':
+                            solutions = res.most_probable_states.get('solutions_bitstrings')
+                            print(solutions)
+                            plot_first_valid_coloring_solutions(solutions, problem)
+                        else:
+                            problem.plot_graph_solution()
+                            plt.show()
                     _, qasm_codes['qaoa'] = problem.generate_qasm()
                 elif issubclass(algorithm, TriangleFinding):
                     problem = TriangleFinding(self.parser.data)
@@ -139,6 +147,12 @@ class QASMGenerator:
                         top_measurements = get_top_measurements(res, 0.001, num=20)
                         plot_triangle_finding(problem.graph(), top_measurements)
                     qasm_codes['grover'] = problem.export_to_qasm()
+                elif issubclass(algorithm, GraphColor):
+                    problem = GraphColor(self.parser.data)
+                    res = problem.run(verbose=verbose)
+                    if verbose:
+                        top_measurements = get_top_measurements(res, 0.001, num=20)
+                        plot_multiple_graph_colorings(problem.graph(), top_measurements, num_per_row=3)
                 elif issubclass(algorithm, GraphProblem):
                     problem = GraphProblem(self.parser.data)
                     independent_set_cnf = independent_set_to_sat(problem.graph())
@@ -157,7 +171,19 @@ class QASMGenerator:
             res, circuit = operation[0](left, right)
             if verbose: print(f'quantum {self.parser.specific_arithmetic_operation} result: {res}')
             return qasm2.dumps(circuit)
-
+        elif self.problem_type == ProblemType.FACTOR:
+            number = self.parser.data.get('composite number')
+            oracle, prep_state, obj_bits = quantum_factor_mul_oracle(number)
+            grover = GroverWrapper(oracle=oracle,
+                                   iterations=1,
+                                   state_preparation=prep_state,
+                                   objective_qubits=obj_bits
+                                   )
+            res = grover.run(verbose=False)
+            solutions = get_top_measurements(res)
+            if verbose: print(solutions)
+            qasm_codes['grover'] = grover.export_to_qasm()
+            return qasm_codes
         else:
             raise ValueError("Unsupported problem type")
 
