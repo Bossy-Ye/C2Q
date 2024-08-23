@@ -69,5 +69,6 @@ class MyTestCase(unittest.TestCase):
     def test_factor(self):
         qasm = self.generator.qasm_generate(self.factor_code, verbose=True)
 
+
 if __name__ == '__main__':
     unittest.main()
