@@ -45,8 +45,19 @@ different types of problems will be required. And also a translator that gives r
 6. **Interpretation of Results**
    - **Quantum**: Interpret the measured quantum state to understand the solution. 
 
-### What I am trying to do first
-- **Basic arithmetic operation**: +, -, *, / are implemented with quantum unitary gates
+# Outline
+- **Parser**
+  - Leverage Python’s Abstract Syntax Tree (AST) to perform a Depth-First Search (DFS), systematically analyzing the entire tree structure to gather all the necessary information for the Generator.
+  - Notice: Try to make sure your code contains only a single function, only one usage at once. And also try to make code structure clear and names of variables and functions clearly indicates its usages. This tree-based parser is not that clever yet (based mainly on rules)... I am thinking to employ OPENAI interfaces later... 
+- **Generator**
+   - Generate the corresponding QASM code and visualize the results, with local simulation if specified.
+   - Based on results from parser and select corresponding algorithms... 
+   
+- **Recommender** 
+   - Given QASM code from Generator, selects the most suitable and available quantum computer to execute the translated quantum code and receives the quantum results.
+- **Interpreter**
+   - Transform the results from remote quantum computer into readable format.
+- **Basic arithmetic operation**: +, -, * are implemented with quantum unitary gates
 - **Graph problems**: perhaps easy to understand
   - qaoa (partially done based on openqaoa)
     - Visualization
@@ -54,12 +65,9 @@ different types of problems will be required. And also a translator that gives r
   - grover (oracle for each problem needed)
     - Convert it to SAT problem if it could be done.
     - Why **Sat**? Sat problem was the first problem proven to be NP-complete by Stephen Cook in 1971 (Cook’s theorem). This means that every problem in NP can be           reduced to SAT, making it a kind of "universal" problem for NP. Any problem in NP can be reduced to it in polynomial time. So study SAT counterpart of a graph problem has an empirical implication.
-    - How to choose an optimal iterations number wisely? We suppose the number of solutions is unknown, The formula for updating T is given by: choose T=1 initially, then T = ceil(4\5 T) each iteration[^1]
-- **Parser**
-  - Try to make sure your code contains only a single function, only one usage at once. And also try to make code structure clear and names of variables and functions clearly indicates its usages. This tree-based parser is not that clever yet (based mainly on rules)... I am thinking to employ OPENAI interfaces later... 
-- **Generator**
-   - Based on results from parser and select corresponding algorithms... 
-- **Interpreter**
+    - How to choose an optimal iterations number wisely? We suppose the number of solutions is unknown, The formula for updating T is given by: choose T=1 initially, then $T = \lceil \frac{4}{5} T \rceil$ during each iteration[^1]
+- **Eigen values**:
+- **Satisfiable Problems**:
 
 # Example
 ## Maximum Independent Set

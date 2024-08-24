@@ -4,7 +4,7 @@ import numpy as np
 from applications.arithmetic.factorization import quantum_factor_mul_oracle
 from applications.graph.grover_applications.graph_oracle import independent_set_to_sat, cnf_to_quantum_oracle
 from applications.graph.grover_applications.grover_auxiliary import get_top_measurements, plot_triangle_finding, \
-    plot_multiple_graph_colorings
+    plot_multiple_graph_colorings, plot_multiple_independent_sets
 from applications.graph.ising_auxiliary import plot_first_valid_coloring_solutions
 from classical_to_quantum.parser import ProblemParser, ProblemType
 from classical_to_quantum.algorithms.vqe_algorithm import VQEAlgorithm
@@ -153,6 +153,7 @@ class QASMGenerator:
                     if verbose:
                         top_measurements = get_top_measurements(res, 0.001, num=20)
                         plot_multiple_graph_colorings(problem.graph(), top_measurements, num_per_row=3)
+                    qasm_codes['grover'] = problem.export_to_qasm()
                 elif issubclass(algorithm, GraphProblem):
                     problem = GraphProblem(self.parser.data)
                     independent_set_cnf = independent_set_to_sat(problem.graph())
@@ -162,6 +163,10 @@ class QASMGenerator:
                                            objective_qubits=list(range(problem.num_nodes)))
                     res = grover.run(verbose=verbose)
                     qasm_codes['grover'] = grover.export_to_qasm()
+                    if verbose:
+                        if self.parser.specific_graph_problem == 'MIS':
+                            top_is_measurements = get_top_measurements(res, num=100)
+                            plot_multiple_independent_sets(problem.graph(), top_is_measurements)
 
             return qasm_codes
         elif self.problem_type == ProblemType.ARITHMETICS:
