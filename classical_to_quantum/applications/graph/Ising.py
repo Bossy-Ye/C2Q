@@ -47,7 +47,6 @@ class Ising(GraphProblem):
             # 4 colors now
             self.problem = class_mapping[class_name](G=self.graph(), k=4)
         elif class_name == 'VRP':
-            print(self.graph().edges)
             pos = get_pos_for_graph(G=self.graph())
             self.problem = class_mapping[class_name](G=self.graph(),
                                                      pos = pos,

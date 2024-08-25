@@ -16,8 +16,6 @@ from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from classical_to_quantum.algorithms.grover import GroverWrapper
 import os
 import tempfile
-from qiskit import transpile
-from qiskit.exceptions import MissingOptionalLibraryError
 from qiskit.circuit.library.phase_oracle import PhaseOracle
 from qiskit_aer import Aer
 from qiskit import transpile
@@ -28,6 +26,8 @@ from classical_to_quantum.applications.graph.Ising import Ising
 from classical_to_quantum.applications.graph.grover_applications.triangle_finding import TriangleFinding
 from classical_to_quantum.applications.arithmetic.quantum_arithmetic import *
 from classical_to_quantum.utils import *
+from qiskit.visualization import plot_histogram
+
 
 arithmetic_mapping = {
     "Addition": [quantum_add],
@@ -175,7 +175,8 @@ class QASMGenerator:
             operation = arithmetic_mapping.get(self.parser.specific_arithmetic_operation)
             res, circuit = operation[0](left, right)
             if verbose: print(f'quantum {self.parser.specific_arithmetic_operation} result: {res}')
-            return qasm2.dumps(circuit)
+            qasm_codes['QFT'] = qasm2.dumps(circuit)
+            return qasm_codes
         elif self.problem_type == ProblemType.FACTOR:
             number = self.parser.data.get('composite number')
             oracle, prep_state, obj_bits = quantum_factor_mul_oracle(number)
@@ -185,6 +186,9 @@ class QASMGenerator:
                                    objective_qubits=obj_bits
                                    )
             res = grover.run(verbose=False)
+            if verbose:
+                plot_histogram(res.circuit_results)
+                plt.show()
             solutions = get_top_measurements(res)
             if verbose: print(solutions)
             qasm_codes['grover'] = grover.export_to_qasm()
@@ -197,11 +201,11 @@ class QASMGenerator:
 
     def run_qasm_simulator(self, str, primitive: str = 'sampler'):
         seed = int(np.random.randint(1, 1000000))
-        circuit = qasm2.loads(str)
+        circuit = qasm2.loads(str, custom_instructions=qasm2.LEGACY_CUSTOM_INSTRUCTIONS)
         pm = generate_preset_pass_manager(optimization_level=1)
         optimized_circuit = pm.run(circuit)
         if primitive == "sampler":
-            optimized_circuit.measure_all()
+            #optimized_circuit.measure_all()
             sampler = Sampler()
             result = sampler.run(optimized_circuit, seed=seed).result()
             return result
