@@ -11,8 +11,6 @@ from qiskit import QuantumCircuit, Aer, execute
 import matplotlib.pyplot as plt
 # Example CNF Formula using PySAT
 from qiskit.circuit.library import OR
-from qiskit.quantum_info import Statevector
-from utils import get_evolved_state
 
 
 def cnf_to_quantum_circuit(cnf_formula):

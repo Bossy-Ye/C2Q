@@ -3,7 +3,7 @@ PACKAGE_NAME = classical_to_quantum
 PYTHON = python3
 PIP = pip3
 VENV_DIR = venv
-TEST_DIR = tests
+TEST_DIR = classical_to_quantum/tests
 EXAMPLES_DIR = examples
 
 # Default target: install dependencies

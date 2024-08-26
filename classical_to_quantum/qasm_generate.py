@@ -1,11 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from sympy.matrices.expressions.factorizations import Factorization
 
-from applications.arithmetic.factorization import quantum_factor_mul_oracle
-from applications.graph.grover_applications.graph_oracle import independent_set_to_sat, cnf_to_quantum_oracle
-from applications.graph.grover_applications.grover_auxiliary import get_top_measurements, plot_triangle_finding, \
+from classical_to_quantum.applications.arithmetic.factorization import quantum_factor_mul_oracle
+from classical_to_quantum.applications.graph.grover_applications.graph_oracle import independent_set_to_sat, cnf_to_quantum_oracle
+from classical_to_quantum.applications.graph.grover_applications.grover_auxiliary import get_top_measurements, plot_triangle_finding, \
     plot_multiple_graph_colorings, plot_multiple_independent_sets
-from applications.graph.ising_auxiliary import plot_first_valid_coloring_solutions
+from classical_to_quantum.applications.graph.ising_auxiliary import plot_first_valid_coloring_solutions
 from classical_to_quantum.parser import ProblemParser, ProblemType
 from classical_to_quantum.algorithms.vqe_algorithm import VQEAlgorithm
 from classical_to_quantum.applications.quantum_machine_learning.quantum_kernel_ml import QMLKernel
@@ -40,7 +41,7 @@ algorithms_mapping = {
     "MaximumCut": [Ising],
     "MinimumVertexCover": [Ising],
     "NumberPartition": [NumberPartition],
-    "ShortestPath": [ShortestPath],
+    "ShortestPath": [Ising],
     "TSP": [Ising],
     "TSP_LP": [TSP_LP],
     "PortfolioOptimization": [PortfolioOptimization],
