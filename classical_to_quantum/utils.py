@@ -1,5 +1,4 @@
 import math
-
 import numpy as np
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.quantum_info import Statevector

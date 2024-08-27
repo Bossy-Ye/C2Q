@@ -11,6 +11,8 @@ graph.add_edges_from(edge_list)
 draw_graph(graph, node_size=600, with_labels=True)
 
 from qiskit.quantum_info import SparsePauliOp
+
+
 def build_max_cut_paulis(graph: rx.PyGraph) -> list[tuple[str, float]]:
     """Convert the graph to Pauli list.
 

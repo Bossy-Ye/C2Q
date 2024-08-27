@@ -1,7 +1,3 @@
-import matplotlib.pyplot as plt
-import numpy as np
-from sympy.matrices.expressions.factorizations import Factorization
-
 from classical_to_quantum.applications.arithmetic.factorization import quantum_factor_mul_oracle
 from classical_to_quantum.applications.graph.grover_applications.graph_oracle import independent_set_to_sat, cnf_to_quantum_oracle
 from classical_to_quantum.applications.graph.grover_applications.grover_auxiliary import get_top_measurements, plot_triangle_finding, \

@@ -14,6 +14,7 @@ from qiskit.circuit.library import OR
 
 
 def cnf_to_quantum_circuit(cnf_formula):
+    # TODO revise this with less ancillary qubits...
     num_vars = cnf_formula.nv  # Number of variables
     num_clauses = len(cnf_formula.clauses)
 
@@ -169,25 +170,32 @@ def clique_to_sat(graph: nx.Graph, k: int) -> CNF:
     cnf = CNF()
     n = len(graph.nodes)
 
-    # Variables: x_ij where i is the vertex index and j is the position in the clique
-    var = lambda i, j: i * k + j + 1  # Create unique variables
+    # Variables: x_iv where i is the position in the clique and v is the vertex
+    var = lambda i, v: i * n + v + 1  # Create unique variables (i is 0-based, v is 0-based)
 
-    # Clause 1: Each position in the clique must be occupied by at least one vertex
-    for j in range(k):
-        cnf.append([var(i, j) for i in range(n)])
+    # Clause 1: Each position in the clique must be occupied by exactly one vertex
+    # \frac{n^2 k + nk}{2} clauses
+    for i in range(k):
+        # At least one vertex occupies the i-th position in the clique
+        cnf.append([var(i, v) for v in range(n)])
+        # No more than one vertex occupies the i-th position in the clique
+        for v in range(n):
+            for u in range(v + 1, n):
+                cnf.append([-var(i, v), -var(i, u)])
 
     # Clause 2: No vertex can occupy more than one position in the clique
-    for i in range(n):
-        for j in range(k):
-            for jp in range(j + 1, k):
-                cnf.append([-var(i, j), -var(i, jp)])
+    # \frac{k^2 n - nk}{2} clauses
+    for v in range(n):
+        for i in range(k):
+            for j in range(i + 1, k):
+                cnf.append([-var(i, v), -var(j, v)])
 
-    # Clause 3: No two vertices in the clique can be non-adjacent
-    for i in range(n):
-        for ip in range(i + 1, n):
-            if not graph.has_edge(i, ip):
-                for j in range(k):
-                    cnf.append([-var(i, j), -var(ip, j)])
-
+    # Clause 3: All vertices in the clique must be connected by an edge
+    # \(k^2-k\)\(\frac{n^2-n}{2}-|E|\) clauses
+    for i in range(k):
+        for j in range(i + 1, k):
+            for v in range(n):
+                for u in range(n):
+                    if v != u and not graph.has_edge(v, u):
+                        cnf.append([-var(i, v), -var(j, u)])
     return cnf
-

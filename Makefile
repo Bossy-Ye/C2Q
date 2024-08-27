@@ -4,7 +4,8 @@ PYTHON = python3
 PIP = pip3
 VENV_DIR = venv
 TEST_DIR = classical_to_quantum/tests
-EXAMPLES_DIR = examples
+EXAMPLES_DIR = classical_to_quantum/examples
+example = generator_examples
 
 # Default target: install dependencies
 all: install
