@@ -49,7 +49,7 @@ def generate_circuit():
     generator = QASMGenerator()
     qasm_code = generator.qasm_generate(classical_code, verbose=True)
 
-    # Convert QASM 3.0 code to QuantumCircuit
+    # Convert QASM 2.0 code to QuantumCircuit
     circuit = qasm.loads(qasm_code)
 
     # Transpile the circuit for visualization

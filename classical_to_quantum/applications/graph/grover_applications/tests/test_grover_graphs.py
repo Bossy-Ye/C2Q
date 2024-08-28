@@ -173,8 +173,8 @@ class MyTestCase(unittest.TestCase):
         G = networkx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (1, 2), (2, 3)])
         print(G.edges)
-        cnf = clique_to_sat(G, 3)
-        oracle = cnf_to_quantum_oracle(cnf)
+        cnf = clique_to_sat(G, 2)
+        oracle = cnf_to_quantum_oracle_optimized(cnf)
         print(oracle)
 
         def func(state):
@@ -183,7 +183,7 @@ class MyTestCase(unittest.TestCase):
         prep = QuantumCircuit(cnf.nv)
         prep.h(list(range(cnf.nv)))
         grover = GroverWrapper(oracle=oracle,
-                               iterations=1,
+                               iterations=2,
                                state_preparation=prep,
                                is_good_state=func,
                                objective_qubits=list(range(cnf.nv)))
