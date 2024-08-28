@@ -1,15 +1,15 @@
 # Classi|Q> Project!!!
 Trying to bridge the gap between classical computing and quantum computing, especially in the context of **NP-complete problem**, for those who are not familiar with quantum computing. This project is addressing both a theoretical and practical need
 
-
 ## License
 This project takes Qiskit open source project as a reference, thanks to community.
 A copy of this license is included in the `LICENSE` file.
 
 ## Attribution
-- Qiskit: https://qiskit.org/
-- License: http://www.apache.org/licenses/LICENSE-2.0
 - Author: Boshuai Ye, email: boshuaiye@gmail.com
+- License: http://www.apache.org/licenses/LICENSE-2.0
+- Qiskit: https://qiskit.org/
+
 ### Workflow of Classi|Q>
 
 ![alt text](./assets/workflow.png "Title")
