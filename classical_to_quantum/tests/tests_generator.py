@@ -60,9 +60,11 @@ class MyTestCase(unittest.TestCase):
         qasm = self.generator.qasm_generate(self.cnf_code, verbose=True)
 
     def test_independent_set(self):
+        print(self.independent_set_code)
         qasm = self.generator.qasm_generate(self.independent_set_code, verbose=True)
 
     def test_coloring(self):
+        print(self.coloring_code)
         qasm = self.generator.qasm_generate(self.coloring_code, verbose=True)
         self.assertEqual(True, True)
 

@@ -1,3 +1,5 @@
+import math
+
 from matplotlib import pyplot as plt
 from qiskit_algorithms import *
 from typing import List, Dict
@@ -87,7 +89,7 @@ def plot_multiple_independent_sets(G, measurements, num_per_row=3):
         fig.delaxes(axs[j])
 
     plt.tight_layout()
-    plt.show()
+    #plt.show()
 
 
 # Mapping from bit pairs to colors
@@ -165,12 +167,20 @@ def plot_multiple_graph_colorings(G, bitstring_results, num_per_row=3):
         fig.delaxes(axs[j])
 
     plt.tight_layout()
-    plt.show()
+    #plt.show()
 
 
 def plot_triangle_finding(G, bitstring_results, num_per_row=3):
-    # Iterate through each bitstring result
-    for bitstring_result in bitstring_results:
+    # Calculate the number of rows needed
+    num_plots = len(bitstring_results)
+    num_rows = math.ceil(num_plots / num_per_row)
+
+    # Create subplots
+    fig, axes = plt.subplots(num_rows, num_per_row, figsize=(5 * num_per_row, 5 * num_rows))
+    axes = axes.flatten()  # Flatten in case of a single row or column
+
+    # Iterate through each bitstring result and corresponding axis
+    for idx, (bitstring_result, ax) in enumerate(zip(bitstring_results, axes)):
         bitstring = list(bitstring_result.keys())[0]
         probability = list(bitstring_result.values())[0]
 
@@ -182,17 +192,28 @@ def plot_triangle_finding(G, bitstring_results, num_per_row=3):
             # Create a color map for the nodes: selected nodes will be colored differently
             color_map = ['red' if node in selected_nodes else 'lightblue' for node in G.nodes]
 
-            # Draw the graph with the color map
+            # Draw the graph with the color map on the corresponding axis
             pos = nx.spring_layout(G)  # You can use other layouts like 'circular_layout', etc.
             nx.draw(G, pos, with_labels=True, node_color=color_map, node_size=800, font_size=15, font_color='black',
-                    edge_color='gray')
+                    edge_color='gray', ax=ax)
 
             # Highlight the edges of the selected triangle
             nx.draw_networkx_edges(G, pos, edgelist=[(selected_nodes[0], selected_nodes[1]),
                                                      (selected_nodes[1], selected_nodes[2]),
                                                      (selected_nodes[2], selected_nodes[0])],
-                                   width=8, alpha=0.5, edge_color='green')
+                                   width=8, alpha=0.5, edge_color='green', ax=ax)
 
-            # Display the plot with title showing the probability
-            plt.title(f"Triangle: {selected_nodes}, Probability: {probability}")
-            plt.show()
+            # Set the title with the probability
+            ax.set_title(f"Triangle: {selected_nodes}, Probability: {probability}")
+
+        else:
+            # In case the bitstring doesn't correspond to a valid triangle, hide this axis
+            ax.axis('off')
+
+    # Hide any unused subplots
+    for idx in range(len(bitstring_results), len(axes)):
+        axes[idx].axis('off')
+
+    # Adjust layout and display the figure
+    plt.tight_layout()
+    #plt.show()

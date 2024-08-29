@@ -34,7 +34,7 @@ def plot_first_valid_coloring_solutions(solutions, coloring_problem_ising):
             fig.delaxes(axs[j])
 
         plt.tight_layout()  # Adjust layout to prevent overlap
-        plt.show()  # Show the combined figure with all valid subplots
+        #plt.show()  # Show the combined figure with all valid subplots
 
     except Exception as e:
         print(f"Error plotting solutions: {e}")

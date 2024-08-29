@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Input Classical Code</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
+
 <body>
     <div id="container">
         <h1>Input Classical Code Manually</h1>
@@ -17,11 +19,10 @@ function_name(parameters) {
         </pre>
         <textarea id="classical_code" placeholder="Enter classical code here..."></textarea>
         <button onclick="generateCircuit()">Generate Circuit</button>
-        <h2>QASM 3.0 Code</h2>
-        <pre id="qasm_code"></pre>
-        <h2>Circuit Diagram</h2>
-        <img id="circuit_image" src="" alt="Circuit Image">
+
+        <div id="results"></div>
     </div>
+
     <script>
         function generateCircuit() {
             const classicalCode = document.getElementById('classical_code').value;
@@ -34,8 +35,48 @@ function_name(parameters) {
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById('qasm_code').textContent = data.qasm_code;
-                document.getElementById('circuit_image').src = data.circuit_image;
+                const resultsContainer = document.getElementById('results');
+                resultsContainer.innerHTML = ''; // Clear previous results
+
+                for (let key in data.qasm_code) {
+                    // Create a container for each result
+                    const resultDiv = document.createElement('div');
+                    resultDiv.classList.add('result');
+
+                    // Create and append the QASM code block
+                    const qasmTitle = document.createElement('h2');
+                    qasmTitle.textContent = `QASM 3.0 Code (${key})`;
+                    resultDiv.appendChild(qasmTitle);
+
+                    const qasmCodePre = document.createElement('pre');
+                    qasmCodePre.textContent = data.qasm_code[key];
+                    resultDiv.appendChild(qasmCodePre);
+
+                    // Create and append the circuit image
+                    const circuitTitle = document.createElement('h2');
+                    circuitTitle.textContent = `Circuit Diagram (${key})`;
+                    resultDiv.appendChild(circuitTitle);
+
+                    const circuitImage = document.createElement('img');
+                    circuitImage.src = data.circuit_image[key];
+                    circuitImage.alt = `Circuit Diagram for ${key}`;
+                    resultDiv.appendChild(circuitImage);
+
+                    // Append the resultDiv to the results container
+                    resultsContainer.appendChild(resultDiv);
+                }
+
+                // Plot the locally simulated images from img_ios
+                for (let key in data.img_ios) {
+                    const imgTitle = document.createElement('h2');
+                    imgTitle.textContent = `Simulation Result (${key})`;
+                    resultsContainer.appendChild(imgTitle);
+
+                    const img = document.createElement('img');
+                    img.src = data.img_ios[key];
+                    img.alt = `Simulation Result for ${key}`;
+                    resultsContainer.appendChild(img);
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -44,4 +85,5 @@ function_name(parameters) {
         }
     </script>
 </body>
+
 </html>

@@ -6,13 +6,13 @@ from flask import Flask, render_template, request, jsonify
 from qiskit.visualization import circuit_drawer
 from io import BytesIO
 import base64
-from qiskit import qasm
+from qiskit import qasm, qasm2
 from applications.graph.Ising import Ising
 from classical_to_quantum.qasm_generate import QASMGenerator
 import os
 from werkzeug.utils import secure_filename
 import matplotlib.pyplot as plt
-
+from classical_to_quantum.utils import *
 
 app = Flask(__name__)
 
@@ -44,30 +44,35 @@ def graph_problem():
 def generate_circuit():
     data = request.json
     classical_code = data['classical_code']
-    problem_type = data['problem_type']
 
     generator = QASMGenerator()
-    qasm_code = generator.qasm_generate(classical_code, verbose=True)
+    qasm_codes, img_ios = generator.qasm_generate(classical_code, verbose=False)
+    print(img_ios)
+    qasm_code_results = {}
+    circuit_images = {}
+    for key, qasm_code in qasm_codes.items():
+        # Convert QASM 2.0 code to QuantumCircuit
+        circuit = qasm2.loads(qasm_code,
+                              custom_instructions=qasm2.LEGACY_CUSTOM_INSTRUCTIONS)
 
-    # Convert QASM 2.0 code to QuantumCircuit
-    circuit = qasm.loads(qasm_code)
+        # Transpile the circuit for visualization
+        transpiled_circuit = circuit.decompose()
 
-    # Transpile the circuit for visualization
-    transpiled_circuit = circuit.decompose()
+        # Generate circuit diagram as an image
+        img = circuit_drawer(transpiled_circuit, output='mpl')
 
-    # Generate circuit diagram as an image
-    img = circuit_drawer(transpiled_circuit, output='mpl')
-
-    # Convert image to base64 string
-    buf = BytesIO()
-    img.figure.savefig(buf, format='png')
-    buf.seek(0)
-    img_str = base64.b64encode(buf.getvalue()).decode('utf-8')
-    buf.close()
-
+        img_str = img_gen_img_io(img)
+        # Store the results in the dictionaries
+        qasm_code_results[key] = qasm_code.strip()
+        circuit_images[key] = f"data:image/png;base64,{img_str}"
+    for key, img_io in img_ios.items():
+        img_ios[key] = f"data:image/png;base64,{img_io}"
+    print(circuit_images)
+    print(img_ios)
     return jsonify({
-        'qasm_code': qasm_code.strip(),
-        'circuit_image': f"data:image/png;base64,{img_str}"
+        'qasm_code': qasm_code_results,
+        'circuit_image': circuit_images,
+        'img_ios': img_ios
     })
 
 

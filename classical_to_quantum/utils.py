@@ -1,8 +1,32 @@
+import base64
 import math
+from io import BytesIO
+
 import numpy as np
+from matplotlib import pyplot as plt
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.quantum_info import Statevector
 from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
+
+
+def plot_gen_img_io():
+    buf = BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+    graph_img_str = base64.b64encode(buf.getvalue()).decode('utf-8')
+    buf.close()
+    plt.close()
+    return graph_img_str
+
+
+def img_gen_img_io(img):
+    buf = BytesIO()
+    img.figure.savefig(buf, format='png')
+    buf.seek(0)
+    circuit_img_str = base64.b64encode(buf.getvalue()).decode('utf-8')
+    buf.close()
+    plt.close()
+    return circuit_img_str
 
 
 def qubit_num(n):
