@@ -1,5 +1,5 @@
 # Classi|Q> Project!!!
-Trying to bridge the gap between classical computing and quantum computing, especially in the context of **NP-complete problem**, for those who are not familiar with quantum computing. This project is addressing both a theoretical and practical need
+Trying to bridge the gap between classical computing and quantum computing, especially in the context of **NP-complete problem**, for those who are not familiar with quantum computing. This project is addressing both a theoretical and practical needs. Provide a general overview of the problems that can be solved by quantum computers from the perspective of **computational complexity theory**.
 
 ## License
 This project takes Qiskit open source project as a reference, thanks to community.
