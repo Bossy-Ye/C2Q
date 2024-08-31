@@ -1,4 +1,4 @@
-from classical_to_quantum.qasm_generate import QASMGenerator
+from Framework.generator import QASMGenerator
 classical_code = """
 import numpy as np
 from sklearn import datasets

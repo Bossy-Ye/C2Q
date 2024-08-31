@@ -1,4 +1,4 @@
-from classical_to_quantum.qasm_generate import QASMGenerator
+from Framework.generator import QASMGenerator
 
 triangle_finding_code = """
 import networkx as nx

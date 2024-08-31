@@ -1,17 +1,12 @@
 import tempfile
 
-import qiskit
-import qiskit.qasm as qasm
 from flask import Flask, render_template, request, jsonify
 from qiskit.visualization import circuit_drawer
-from io import BytesIO
-import base64
-from qiskit import qasm, qasm2
+from qiskit import qasm2
 from applications.graph.Ising import Ising
-from classical_to_quantum.qasm_generate import QASMGenerator
+from Framework.generator import QASMGenerator
 import os
 from werkzeug.utils import secure_filename
-import matplotlib.pyplot as plt
 from classical_to_quantum.utils import *
 
 app = Flask(__name__)

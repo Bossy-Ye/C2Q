@@ -1,6 +1,5 @@
 # Import necessary libs
 
-
 ```python
 import matplotlib.pyplot as plt
 from qiskit import qasm2
@@ -11,7 +10,7 @@ from classical_to_quantum.applications.graph.grover_applications.graph_color imp
 from classical_to_quantum.applications.graph.Ising import Ising
 from classical_to_quantum.applications.graph.grover_applications.grover_auxiliary import *
 from classical_to_quantum.applications.graph.ising_auxiliary import *
-from classical_to_quantum.qasm_generate import QASMGenerator
+from Framework.generator import QASMGenerator
 from qiskit.visualization import plot_histogram
 import json
 from qiskit import qasm2

@@ -1,5 +1,5 @@
-from classical_to_quantum.parser import ProblemParser
-from classical_to_quantum.qasm_generate import QASMGenerator
+from Framework.parser import ProblemParser
+from Framework.generator import QASMGenerator
 import json
 import utils
 

@@ -1,18 +1,13 @@
-from io import BytesIO
-
-import matplotlib.pyplot as plt
-
 from classical_to_quantum.applications.arithmetic.factorization import quantum_factor_mul_oracle
 from classical_to_quantum.applications.graph.grover_applications.graph_oracle import independent_set_to_sat, cnf_to_quantum_oracle
 from classical_to_quantum.applications.graph.grover_applications.grover_auxiliary import get_top_measurements, plot_triangle_finding, \
     plot_multiple_graph_colorings, plot_multiple_independent_sets
 from classical_to_quantum.applications.graph.ising_auxiliary import plot_first_valid_coloring_solutions
-from classical_to_quantum.parser import ProblemParser, ProblemType
+from Framework.parser import ProblemParser, ProblemType
 from classical_to_quantum.algorithms.vqe_algorithm import VQEAlgorithm
 from classical_to_quantum.applications.quantum_machine_learning.quantum_kernel_ml import QMLKernel
-from classical_to_quantum.utils import *
-from qiskit import QuantumCircuit, transpile, qasm2
-from qiskit.primitives import Sampler, Estimator
+from qiskit import qasm2
+from qiskit.primitives import Estimator
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from classical_to_quantum.algorithms.grover import GroverWrapper
 import os
@@ -58,7 +53,7 @@ algorithms_mapping = {
 
 
 class QASMGenerator:
-    def __init__(self):
+    def __init__(self, args=None):
         self.shots = 1024
         self.observable = None
         self.problem_type = None
@@ -174,11 +169,12 @@ class QASMGenerator:
                         img_ios['grover'] = plot_gen_img_io()
                     qasm_codes['grover'] = problem.export_to_qasm()
                 elif issubclass(algorithm, GraphProblem):
+                    # only implement IS now...
                     problem = GraphProblem(self.parser.data)
                     independent_set_cnf = independent_set_to_sat(problem.graph())
                     independent_set_oracle = cnf_to_quantum_oracle(independent_set_cnf)
                     grover = GroverWrapper(oracle=independent_set_oracle,
-                                           iterations=2,
+                                           iterations=1,
                                            objective_qubits=list(range(problem.num_nodes)))
                     res = grover.run(verbose=verbose)
                     qasm_codes['grover'] = grover.export_to_qasm()
