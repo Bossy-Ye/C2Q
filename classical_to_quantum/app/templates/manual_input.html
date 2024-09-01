@@ -13,9 +13,14 @@
         <h1>Input Classical Code Manually</h1>
         <p>Please input the classical code with only one function. Example format:</p>
         <pre>
-function_name(parameters) {
-    // Function body
-}
+def addition(left, right):
+    return left + right
+
+# Example usage:
+left = 4
+right = 5
+sum_result = addition(left, right)
+print(sum_result)
         </pre>
         <textarea id="classical_code" placeholder="Enter classical code here..."></textarea>
         <button onclick="generateCircuit()">Generate Circuit</button>

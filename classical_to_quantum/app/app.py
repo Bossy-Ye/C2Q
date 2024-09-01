@@ -42,7 +42,6 @@ def generate_circuit():
 
     generator = QASMGenerator()
     qasm_codes, img_ios = generator.qasm_generate(classical_code, verbose=False)
-    print(img_ios)
     qasm_code_results = {}
     circuit_images = {}
     for key, qasm_code in qasm_codes.items():
@@ -51,7 +50,7 @@ def generate_circuit():
                               custom_instructions=qasm2.LEGACY_CUSTOM_INSTRUCTIONS)
 
         # Transpile the circuit for visualization
-        transpiled_circuit = circuit.decompose()
+        transpiled_circuit = circuit
 
         # Generate circuit diagram as an image
         img = circuit_drawer(transpiled_circuit, output='mpl')
@@ -62,8 +61,6 @@ def generate_circuit():
         circuit_images[key] = f"data:image/png;base64,{img_str}"
     for key, img_io in img_ios.items():
         img_ios[key] = f"data:image/png;base64,{img_io}"
-    print(circuit_images)
-    print(img_ios)
     return jsonify({
         'qasm_code': qasm_code_results,
         'circuit_image': circuit_images,

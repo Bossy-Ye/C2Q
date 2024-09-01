@@ -1,11 +1,11 @@
 docplex==2.25.236
+Flask==3.0.3
 matplotlib==3.9.2
 matplotlib-inline==0.1.7
 networkx==3.2.1
 numpy==1.26.4
 openqaoa==0.2.6
 PennyLane==0.37.0
-pytest==8.3.2
 python-sat==1.8.dev13
 qiskit==0.45.3
 qiskit-aer==0.14.2
@@ -13,5 +13,4 @@ qiskit-algorithms==0.3.0
 qiskit-machine-learning==0.7.2
 qiskit-qir==0.4.0
 qiskit-terra==0.45.3
-urllib3==2.2.2
 tweedledum==1.0.0

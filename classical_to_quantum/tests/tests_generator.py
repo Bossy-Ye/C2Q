@@ -1,7 +1,11 @@
 import unittest
+
+from qiskit import qasm2
+
 from Framework.parser import ProblemParser
 from Framework.generator import QASMGenerator
 import json
+import qiskit.qasm2
 
 
 class MyTestCase(unittest.TestCase):
@@ -30,6 +34,21 @@ class MyTestCase(unittest.TestCase):
         self.generator = QASMGenerator()
         self.parser = ProblemParser()
 
+    def test_mul(self):
+        classical_code = """
+            function addition(left, right) {
+                return left + right;
+            }
+            // Example usage:
+            left = 4;
+            right = 5;
+            sum = addition(left, right);
+            print(sum);
+        """
+        qasm, _ = self.generator.qasm_generate(classical_code, verbose=True)
+        circuit = qasm['QFT']
+        print(qasm2.loads(circuit, custom_instructions=qasm2.LEGACY_CUSTOM_INSTRUCTIONS))
+
     def test_triangle_finding(self):
         self.generator.qasm_generate(self.triangle_finding_code, verbose=True)
         self.assertEqual(True, True)  # add assertion here
@@ -50,6 +69,7 @@ class MyTestCase(unittest.TestCase):
         qasm = self.generator.qasm_generate(self.maxcut_matrix_code, verbose=True)
 
     def test_subtraction(self):
+        print(self.sub_code)
         qasm = self.generator.qasm_generate(self.sub_code, verbose=True)
 
     def test_multiplication(self):

@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Graph Problem Solver</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <div id="container">
@@ -13,32 +7,27 @@
         <!-- Graph Problems Section -->
         <div id="graph_problems">
             <h2>Supported Graph Problems</h2>
-            <h3>Solvable by Grover's Algorithm</h3>
-            <ul id="grover_problems">
+            <h3>Solvable Graph Problems</h3>
+            <ul id="graph_problem_list">
                 <li>
                     <span>Maximum Cut</span>
-                    <button type="button" onclick="submitProblem('MaximumCut', 'grover')">Submit and Run with Grover</button>
+                    <button type="button" onclick="submitProblem('MaximumCut')">Run</button>
                 </li>
                 <li>
                     <span>Vertex Cover</span>
-                    <button type="button" onclick="submitProblem('VertexCover', 'grover')">Submit and Run with Grover</button>
+                    <button type="button" onclick="submitProblem('VertexCover')">Run</button>
                 </li>
-                <!-- Add more problems here as needed -->
-            </ul>
-
-            <h3>Solvable by QAOA</h3>
-            <ul id="qaoa_problems">
                 <li>
                     <span>Clique</span>
-                    <button type="button" onclick="submitProblem('Clique', 'qaoa')">Submit and Run with QAOA</button>
+                    <button type="button" onclick="submitProblem('Clique')">Run</button>
                 </li>
                 <li>
                     <span>Partition</span>
-                    <button type="button" onclick="submitProblem('Partition', 'qaoa')">Submit and Run with QAOA</button>
+                    <button type="button" onclick="submitProblem('Partition')">Run</button>
                 </li>
                 <li>
                     <span>TSP</span>
-                    <button type="button" onclick="submitProblem('TSP', 'qaoa')">Submit and Run with QAOA</button>
+                    <button type="button" onclick="submitProblem('TSP')">Run</button>
                 </li>
                 <!-- Add more problems here as needed -->
             </ul>
@@ -65,8 +54,7 @@ Example:
 1 5 1
             </pre>
             <textarea id="gset_data" name="gset_data" rows="10" cols="50" placeholder="Paste your GSET formatted data here..."></textarea>
-            <button type="button" id="submit_qaoa_manual" onclick="submitManualForm('qaoa')">Submit and Run with QAOA</button>
-            <button type="button" id="submit_grover_manual" onclick="submitManualForm('grover')">Submit and Run with Grover</button>
+            <button type="button" id="submit_manual" onclick="submitManualForm()">Run</button>
         </form>
 
         <h2>QASM 2.0 Code</h2>
@@ -80,46 +68,44 @@ Example:
     </div>
 
     <script>
-        function submitProblem(problemType, algorithm) {
-            // Create form data for the selected problem and algorithm
+        function submitProblem(problemType) {
+            // Create form data for the selected problem
             const formData = new FormData();
             formData.append('problem_type', problemType);
-            formData.append('algorithm', algorithm);
 
             fetch('/graph_problem', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    alert(data.error);
-                } else {
-                    document.getElementById('qasm_code').textContent = data.qasm_code;
-                    document.getElementById('circuit_image').src = data.circuit_image;
-                    document.getElementById('graph_image').src = data.graph_image;
-                }
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        document.getElementById('qasm_code').textContent = data.qasm_code;
+                        document.getElementById('circuit_image').src = data.circuit_image;
+                        document.getElementById('graph_image').src = data.graph_image;
+                    }
+                });
         }
 
-        function submitManualForm(algorithm) {
+        function submitManualForm() {
             const formData = new FormData(document.getElementById('manual_form'));
-            formData.append('algorithm', algorithm);
 
             fetch('/graph_problem', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    alert(data.error);
-                } else {
-                    document.getElementById('qasm_code').textContent = data.qasm_code;
-                    document.getElementById('circuit_image').src = data.circuit_image;
-                    document.getElementById('graph_image').src = data.graph_image;
-                }
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        document.getElementById('qasm_code').textContent = data.qasm_code;
+                        document.getElementById('circuit_image').src = data.circuit_image;
+                        document.getElementById('graph_image').src = data.graph_image;
+                    }
+                });
         }
     </script>
 </body>

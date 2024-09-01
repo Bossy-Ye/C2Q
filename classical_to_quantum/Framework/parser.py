@@ -107,6 +107,7 @@ class ProblemParser:
         self.source_code = None
         self.data = None
         self.specific_graph_problem = None
+        self.specific_arithmetic_operation = None
 
     def parse_code(self, code):
         self.__init__()
@@ -184,7 +185,9 @@ class ProblemParser:
 
         # Check function calls for arithmetic operations
         for call in self.visitor.calls:
-            if call['func_name'] in ['addition', 'subtraction', 'multiplication', 'division']:
+            if call['func_name'] in ['addition', 'subtraction', 'multiplication', 'division',
+                                     'add', 'subtract', 'multiply', 'divide',
+                                     'sub', ]:
                 self._set_problem_type(ProblemType.ARITHMETICS)
                 arguments_string = call.get('args')
                 if len(arguments_string) != 2:
@@ -219,31 +222,27 @@ class ProblemParser:
 
     def _determine_arithmetic_operation(self):
         """Determine the specific arithmetic operation type based on the variables or function calls."""
+
+        # Keywords for each arithmetic operation
+        addition_keywords = ['add', 'addition', 'plus', '+']
+        subtraction_keywords = ['subtraction', 'sub', 'subtract', 'minus', '-']
+        multiplication_keywords = ['multiplication', 'mul', 'multiply', 'times','*']
+        division_keywords = ['division', 'divide', '/']
+
         # Check for addition-related keywords or operations
-        if any(isinstance(var, ast.BinOp) and isinstance(var.op, ast.Add) for var in self.visitor.variables.values()) or \
-                any(call['func_name'] == 'addition' for call in self.visitor.calls):
-            self.problem_type = ProblemType.ARITHMETICS
+        if any(call['func_name'] in addition_keywords for call in self.visitor.calls):
             self.specific_arithmetic_operation = "Addition"
 
         # Check for subtraction-related keywords or operations
-        elif any(isinstance(var, ast.BinOp) and isinstance(var.op, ast.Sub) for var in
-                 self.visitor.variables.values()) or \
-                any(call['func_name'] == 'subtraction' for call in self.visitor.calls):
-            self.problem_type = ProblemType.ARITHMETICS
+        elif any(call['func_name'] in subtraction_keywords for call in self.visitor.calls):
             self.specific_arithmetic_operation = "Subtraction"
 
         # Check for multiplication-related keywords or operations
-        elif any(isinstance(var, ast.BinOp) and isinstance(var.op, ast.Mult) for var in
-                 self.visitor.variables.values()) or \
-                any(call['func_name'] == 'multiplication' for call in self.visitor.calls):
-            self.problem_type = ProblemType.ARITHMETICS
+        elif any(call['func_name'] in multiplication_keywords for call in self.visitor.calls):
             self.specific_arithmetic_operation = "Multiplication"
 
         # Check for division-related keywords or operations
-        elif any(isinstance(var, ast.BinOp) and isinstance(var.op, ast.Div) for var in
-                 self.visitor.variables.values()) or \
-                any(call['func_name'] == 'division' for call in self.visitor.calls):
-            self.problem_type = ProblemType.ARITHMETICS
+        elif any(call['func_name'] in division_keywords for call in self.visitor.calls):
             self.specific_arithmetic_operation = "Division"
 
     def _determine_specific_graph_problem(self):
