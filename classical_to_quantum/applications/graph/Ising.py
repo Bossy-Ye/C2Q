@@ -5,6 +5,7 @@ from openqaoa.utilities import plot_graph
 from openqaoa.problems import *
 from openqaoa import QAOA
 from qiskit import IBMQ
+#from qiskit_optimization.applications.tsp import Tsp
 from classical_to_quantum.utils import adjacency_matrix_from_adj_dict
 from classical_to_quantum.applications.graph.ising_auxiliary import *
 class_mapping = {
@@ -14,7 +15,7 @@ class_mapping = {
     "MinimumVertexCover": MinimumVertexCover,
     "NumberPartition": NumberPartition,
     "ShortestPath": ShortestPath,
-    "TSP": TSP,
+    "TSP": TSP, # from qiskit
     "TSP_LP": TSP_LP,
     "PortfolioOptimization": PortfolioOptimization,
     "MIS": MIS,

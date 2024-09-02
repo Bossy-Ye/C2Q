@@ -35,21 +35,12 @@ class MyTestCase(unittest.TestCase):
         self.parser = ProblemParser()
 
     def test_mul(self):
-        classical_code = """
-            function addition(left, right) {
-                return left + right;
-            }
-            // Example usage:
-            left = 4;
-            right = 5;
-            sum = addition(left, right);
-            print(sum);
-        """
-        qasm, _ = self.generator.qasm_generate(classical_code, verbose=True)
+        qasm, _ = self.generator.qasm_generate(self.mul_code, verbose=True)
         circuit = qasm['QFT']
         print(qasm2.loads(circuit, custom_instructions=qasm2.LEGACY_CUSTOM_INSTRUCTIONS))
 
     def test_triangle_finding(self):
+        print(self.triangle_finding_code)
         self.generator.qasm_generate(self.triangle_finding_code, verbose=True)
         self.assertEqual(True, True)  # add assertion here
 
@@ -60,6 +51,7 @@ class MyTestCase(unittest.TestCase):
         qasm = self.generator.qasm_generate(self.tsp_code, verbose=True)
 
     def test_vrp(self):
+        print(self.vrp_code)
         qasm = self.generator.qasm_generate(self.vrp_code, verbose=True)
 
     def test_maxcut(self):

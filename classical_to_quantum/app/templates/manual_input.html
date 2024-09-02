@@ -6,13 +6,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Input Classical Code</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .scrollable {
+            height: 200px;
+            overflow: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .copy-button {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            padding: 5px 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .code-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        #generating-message {
+            color: #007BFF;
+            font-weight: bold;
+            margin-top: 20px;
+            display: none; /* Hide initially */
+        }
+    </style>
 </head>
 
 <body>
     <div id="container">
         <h1>Input Classical Code Manually</h1>
         <p>Please input the classical code with only one function. Example format:</p>
-        <pre>
+
+        <div class="scrollable">
+            <div class="code-title">Addition</div>
+            <button class="copy-button" onclick="copyToClipboard('code1')">Copy</button>
+            <pre id="code1">
 def addition(left, right):
     return left + right
 
@@ -21,16 +58,131 @@ left = 4
 right = 5
 sum_result = addition(left, right)
 print(sum_result)
-        </pre>
+            </pre>
+        </div>
+
+        <div class="scrollable">
+            <div class="code-title">Vehicle Routing Problem</div>
+            <button class="copy-button" onclick="copyToClipboard('code2')">Copy</button>
+            <pre id="code2">
+from ortools.constraint_solver import pywrapcp, routing_enums_pb2
+
+def create_data_model(G, depot):
+    data = {}
+    data['graph'] = G
+    data['depot'] = depot
+    data['num_vehicles'] = 2  # Adjust the number of vehicles
+    data['locations'] = list(G.nodes)
+    data['num_locations'] = len(data['locations'])
+
+    # Create a distance matrix from the graph
+    distance_matrix = nx.floyd_warshall_numpy(G, weight='weight')
+    data['distance_matrix'] = distance_matrix.tolist()
+
+    return data
+
+def solve_vrp(data):
+    # Create the routing index manager.
+    manager = pywrapcp.RoutingIndexManager(len(data['distance_matrix']),
+                                           data['num_vehicles'], data['depot'])
+
+    # Create Routing Model.
+    routing = pywrapcp.RoutingModel(manager)
+
+    def distance_callback(from_index, to_index):
+        from_node = manager.IndexToNode(from_index)
+        to_node = manager.IndexToNode(to_index)
+        return data['distance_matrix'][from_node][to_node]
+
+    transit_callback_index = routing.RegisterTransitCallback(distance_callback)
+    routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
+
+    # Add distance constraint.
+    dimension_name = 'Distance'
+    routing.AddDimension(
+        transit_callback_index,
+        0,  # no slack
+        3000,  # vehicle maximum travel distance (adjust as needed)
+        True,  # start cumul to zero
+        dimension_name)
+    distance_dimension = routing.GetDimensionOrDie(dimension_name)
+    distance_dimension.SetGlobalSpanCostCoefficient(100)
+
+    # Set search parameters
+    search_parameters = pywrapcp.DefaultRoutingSearchParameters()
+    search_parameters.first_solution_strategy = (
+        routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)
+
+    # Solve the problem.
+    solution = routing.SolveWithParameters(search_parameters)
+
+    if solution:
+        print_solution(manager, routing, solution)
+    else:
+        print("No solution found!")
+
+def print_solution(manager, routing, solution):
+    total_distance = 0
+    for vehicle_id in range(manager.GetNumberOfVehicles()):
+        index = routing.Start(vehicle_id)
+        plan_output = f'Route for vehicle {vehicle_id}:\n'
+        route_distance = 0
+        while not routing.IsEnd(index):
+            plan_output += f' {manager.IndexToNode(index)} ->'
+            previous_index = index
+            index = solution.Value(routing.NextVar(index))
+            route_distance += routing.GetArcCostForVehicle(previous_index, index, vehicle_id)
+        plan_output += f' {manager.IndexToNode(index)}\n'
+        plan_output += f'Distance of the route: {route_distance}m\n'
+        print(plan_output)
+        total_distance += route_distance
+    print(f'Total distance of all routes: {total_distance}m')
+
+# Create a sample graph
+G = nx.Graph()
+
+# Add weighted edges between nodes (representing distances or costs)
+edges = [
+    (0, 1, 10), (0, 2, 20), (0, 3, 30), (0, 4, 40),
+    (1, 2, 25), (1, 3, 35), (1, 4, 45),
+    (2, 3, 15), (2, 4, 30),
+    (3, 4, 20)
+]
+G.add_weighted_edges_from(edges)
+
+# Define depot (starting point for all vehicles)
+depot = 0
+
+# Create the data model
+data = create_data_model(G, depot)
+
+# Solve the VRP
+solve_vrp(data)
+            </pre>
+        </div>
+
         <textarea id="classical_code" placeholder="Enter classical code here..."></textarea>
         <button onclick="generateCircuit()">Generate Circuit</button>
+
+        <div id="generating-message">Generating...</div>
 
         <div id="results"></div>
     </div>
 
     <script>
+        function copyToClipboard(elementId) {
+            const codeElement = document.getElementById(elementId);
+            const text = codeElement.innerText || codeElement.textContent;
+            navigator.clipboard.writeText(text).then(function() {
+                alert('Code copied to clipboard!');
+            }, function(err) {
+                console.error('Failed to copy text: ', err);
+            });
+        }
+
         function generateCircuit() {
             const classicalCode = document.getElementById('classical_code').value;
+            document.getElementById('generating-message').style.display = 'block'; // Show generating message
             fetch('/generate_circuit', {
                 method: 'POST',
                 headers: {
@@ -40,6 +192,7 @@ print(sum_result)
             })
             .then(response => response.json())
             .then(data => {
+                document.getElementById('generating-message').style.display = 'none'; // Hide generating message
                 const resultsContainer = document.getElementById('results');
                 resultsContainer.innerHTML = ''; // Clear previous results
 
@@ -86,6 +239,7 @@ print(sum_result)
             .catch(error => {
                 console.error('Error:', error);
                 alert('An error occurred while generating the circuit.');
+                document.getElementById('generating-message').style.display = 'none'; // Hide generating message in case of error
             });
         }
     </script>
