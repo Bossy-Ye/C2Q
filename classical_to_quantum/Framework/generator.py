@@ -1,6 +1,14 @@
+import matplotlib.pyplot as plt
+from qiskit.circuit.library import TwoLocal
+from qiskit_algorithms import SamplingVQE
+from qiskit_algorithms.optimizers import SPSA
+from qiskit_optimization.converters import QuadraticProgramToQubo
+
 from classical_to_quantum.applications.arithmetic.factorization import quantum_factor_mul_oracle
-from classical_to_quantum.applications.graph.grover_applications.graph_oracle import independent_set_to_sat, cnf_to_quantum_oracle
-from classical_to_quantum.applications.graph.grover_applications.grover_auxiliary import get_top_measurements, plot_triangle_finding, \
+from classical_to_quantum.applications.graph.grover_applications.graph_oracle import independent_set_to_sat, \
+    cnf_to_quantum_oracle
+from classical_to_quantum.applications.graph.grover_applications.grover_auxiliary import get_top_measurements, \
+    plot_triangle_finding, \
     plot_multiple_graph_colorings, plot_multiple_independent_sets
 from classical_to_quantum.applications.graph.ising_auxiliary import plot_first_valid_coloring_solutions
 from Framework.parser import ProblemParser, ProblemType
@@ -23,7 +31,9 @@ from classical_to_quantum.applications.graph.grover_applications.triangle_findin
 from classical_to_quantum.applications.arithmetic.quantum_arithmetic import *
 from classical_to_quantum.utils import *
 from qiskit.visualization import plot_histogram
-
+from classical_to_quantum.Framework.interpreter import *
+from qiskit_optimization.algorithms import MinimumEigenOptimizer
+from qiskit_optimization.applications.tsp import Tsp
 
 arithmetic_mapping = {
     "Addition": [quantum_add],
@@ -127,9 +137,9 @@ class QASMGenerator:
                 if issubclass(algorithm, Ising):
                     problem = Ising(self.parser.data, self.parser.specific_graph_problem)
                     res = problem.run(verbose=verbose)
+                    solutions = res.most_probable_states.get('solutions_bitstrings')
                     if verbose:
                         if self.parser.specific_graph_problem == 'KColor':
-                            solutions = res.most_probable_states.get('solutions_bitstrings')
                             print(solutions)
                             plot_first_valid_coloring_solutions(solutions, problem)
                         else:
@@ -137,7 +147,6 @@ class QASMGenerator:
                             plt.show()
                     else:
                         if self.parser.specific_graph_problem == 'KColor':
-                            solutions = res.most_probable_states.get('solutions_bitstrings')
                             plot_first_valid_coloring_solutions(solutions, problem)
                             img_ios['qaoa'] = plot_gen_img_io()
                         else:
@@ -188,6 +197,28 @@ class QASMGenerator:
                             top_is_measurements = get_top_measurements(res, num=100)
                             plot_multiple_independent_sets(problem.graph(), top_is_measurements)
                             img_ios['grover'] = plot_gen_img_io()
+                elif issubclass(algorithm, Tsp):
+                    problem = Tsp.create_random_instance(n=3)
+                    qp = problem.to_quadratic_program()
+                    qp2qubo = QuadraticProgramToQubo()
+                    qubo = qp2qubo.convert(qp)
+                    qubitOp, offset = qubo.to_ising()
+                    optimizer = SPSA(maxiter=300)
+                    ry = TwoLocal(qubitOp.num_qubits, "ry", "cz", reps=5, entanglement="linear")
+                    vqe = SamplingVQE(sampler=Sampler(), ansatz=ry, optimizer=optimizer)
+                    result = vqe.compute_minimum_eigenvalue(qubitOp)
+
+                    x = problem.sample_most_likely(result.eigenstate)
+                    solution = problem.interpret(x)
+                    Interpreter.draw_tsp_solution(problem.graph, solution)
+                    if verbose:
+                        print('solution:', solution)
+                        plt.show()
+                    else:
+                        img_ios['qaoa'] = plot_gen_img_io()
+                    params = [0 for i in ry.parameters]
+                    qasm_codes['qaoa'] = qasm2.dumps(ry.bind_parameters(params))
+                    #plot_tsp_solution(problem.graph, solution)
         elif self.problem_type == ProblemType.ARITHMETICS:
             left = self.parser.data.get('left')
             right = self.parser.data.get('right')
@@ -241,7 +272,6 @@ class QASMGenerator:
         result = simulator.run(compiled_circuit, shots=self.shots).result()
         return result.get_counts(compiled_circuit)
 
-# Example usage
-# cnf_formula = [[1, -2], [2, 3, -1]]
-# dimacs_string = generate_dimacs(cnf_formula)
-# print(dimacs_string)
+
+
+

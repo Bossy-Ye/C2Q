@@ -48,6 +48,7 @@ class MyTestCase(unittest.TestCase):
         qasm = self.generator.qasm_generate(self.addition_code, verbose=True)
 
     def test_tsp(self):
+        print(self.tsp_code)
         qasm = self.generator.qasm_generate(self.tsp_code, verbose=True)
 
     def test_vrp(self):

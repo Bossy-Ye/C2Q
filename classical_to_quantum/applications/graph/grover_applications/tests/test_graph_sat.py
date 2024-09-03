@@ -13,7 +13,9 @@ from classical_to_quantum.applications.graph.grover_applications.graph_oracle im
 from pysat.formula import CNF
 from pysat.solvers import Solver
 from qiskit.visualization import plot_histogram
+
 from classical_to_quantum.utils import get_evolved_state
+
 
 def adjust_expected_states(expected_states, num_vars, total_qubits):
     """
