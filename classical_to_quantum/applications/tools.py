@@ -1,6 +1,6 @@
 from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
 from qiskit.quantum_info import Statevector
-
+from qiskit.circuit import *
 
 class OptimizerLog:
     def __init__(self):
