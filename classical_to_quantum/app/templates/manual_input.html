@@ -7,6 +7,54 @@
     <title>Input Classical Code</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <style>
+        /* Page styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url("../static/assets/background1.png");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Container styling */
+        #container {
+            background-color: rgba(255, 255, 255, 0.9); /* Slight transparency */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            width: 100%;
+            margin: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #4CAF50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            color: #007BFF;
+            font-size: 1.2rem;
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+
+        /* Scrollable container */
         .scrollable {
             height: 200px;
             overflow: auto;
@@ -15,7 +63,16 @@
             background-color: #f9f9f9;
             position: relative;
             margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
+
+        .code-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
         .copy-button {
             position: absolute;
             right: 10px;
@@ -26,17 +83,90 @@
             border: none;
             cursor: pointer;
             font-size: 12px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
         }
-        .code-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 10px;
+
+        .copy-button:hover {
+            background-color: #0056b3;
         }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
         #generating-message {
             color: #007BFF;
             font-weight: bold;
             margin-top: 20px;
-            display: none; /* Hide initially */
+            display: none;
+            text-align: center;
+        }
+
+        /* Results styling */
+        .result {
+            margin-bottom: 30px;
+        }
+
+        .result h2 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        pre {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 10px 0;
+        }
+
+        /* Media Queries for responsiveness */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            button {
+                font-size: 1rem;
+                padding: 12px;
+            }
+
+            textarea {
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -44,8 +174,13 @@
 <body>
     <div id="container">
         <h1>Input Classical Code Manually</h1>
-        <p>Please input the classical code with only one function. Example format:</p>
+        <p>Please input the classical code with only one function. Below are two examples: one for a simple addition operation and another for solving the Vehicle Routing Problem (VRP).</p>
 
+        <!-- Notice for Addition Case -->
+        <div class="section-title">Example 1: Simple Addition Code</div>
+        <p>This code adds two numbers and prints the result.</p>
+
+        <!-- Scrollable Code Section 1 -->
         <div class="scrollable">
             <div class="code-title">Addition</div>
             <button class="copy-button" onclick="copyToClipboard('code1')">Copy</button>
@@ -61,6 +196,11 @@ print(sum_result)
             </pre>
         </div>
 
+        <!-- Notice for Vehicle Routing Problem Case -->
+        <div class="section-title">Example 2: Vehicle Routing Problem (VRP)</div>
+        <p>This code solves the Vehicle Routing Problem using OR-Tools, where vehicles are assigned routes to minimize the total distance traveled.</p>
+
+        <!-- Scrollable Code Section 2 -->
         <div class="scrollable">
             <div class="code-title">Vehicle Routing Problem</div>
             <button class="copy-button" onclick="copyToClipboard('code2')">Copy</button>
@@ -161,23 +301,35 @@ solve_vrp(data)
             </pre>
         </div>
 
+        <!-- Input Area -->
         <textarea id="classical_code" placeholder="Enter classical code here..."></textarea>
         <button onclick="generateCircuit()">Generate Circuit</button>
 
+        <!-- Generating message -->
         <div id="generating-message">Generating...</div>
 
+        <!-- Results container -->
         <div id="results"></div>
     </div>
 
     <script>
         function copyToClipboard(elementId) {
             const codeElement = document.getElementById(elementId);
-            const text = codeElement.innerText || codeElement.textContent;
-            navigator.clipboard.writeText(text).then(function() {
-                alert('Code copied to clipboard!');
-            }, function(err) {
-                console.error('Failed to copy text: ', err);
-            });
+            const text = codeElement.textContent || codeElement.innerText;
+
+            // Create a temporary textarea element to copy the code
+            const tempTextArea = document.createElement("textarea");
+            tempTextArea.value = text;
+            document.body.appendChild(tempTextArea);
+
+            // Select and copy the text
+            tempTextArea.select();
+            document.execCommand("copy");
+
+            // Remove the temporary element
+            document.body.removeChild(tempTextArea);
+
+            alert("Code copied to clipboard!");
         }
 
         function generateCircuit() {
@@ -190,57 +342,52 @@ solve_vrp(data)
                 },
                 body: JSON.stringify({ classical_code: classicalCode })
             })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('generating-message').style.display = 'none'; // Hide generating message
-                const resultsContainer = document.getElementById('results');
-                resultsContainer.innerHTML = ''; // Clear previous results
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('generating-message').style.display = 'none'; // Hide generating message
+                    const resultsContainer = document.getElementById('results');
+                    resultsContainer.innerHTML = ''; // Clear previous results
 
-                for (let key in data.qasm_code) {
-                    // Create a container for each result
-                    const resultDiv = document.createElement('div');
-                    resultDiv.classList.add('result');
+                    for (let key in data.qasm_code) {
+                        const resultDiv = document.createElement('div');
+                        resultDiv.classList.add('result');
 
-                    // Create and append the QASM code block
-                    const qasmTitle = document.createElement('h2');
-                    qasmTitle.textContent = `QASM 3.0 Code (${key})`;
-                    resultDiv.appendChild(qasmTitle);
+                        const qasmTitle = document.createElement('h2');
+                        qasmTitle.textContent = `QASM 3.0 Code (${key})`;
+                        resultDiv.appendChild(qasmTitle);
 
-                    const qasmCodePre = document.createElement('pre');
-                    qasmCodePre.textContent = data.qasm_code[key];
-                    resultDiv.appendChild(qasmCodePre);
+                        const qasmCodePre = document.createElement('pre');
+                        qasmCodePre.textContent = data.qasm_code[key];
+                        resultDiv.appendChild(qasmCodePre);
 
-                    // Create and append the circuit image
-                    const circuitTitle = document.createElement('h2');
-                    circuitTitle.textContent = `Circuit Diagram (${key})`;
-                    resultDiv.appendChild(circuitTitle);
+                        const circuitTitle = document.createElement('h2');
+                        circuitTitle.textContent = `Circuit Diagram (${key})`;
+                        resultDiv.appendChild(circuitTitle);
 
-                    const circuitImage = document.createElement('img');
-                    circuitImage.src = data.circuit_image[key];
-                    circuitImage.alt = `Circuit Diagram for ${key}`;
-                    resultDiv.appendChild(circuitImage);
+                        const circuitImage = document.createElement('img');
+                        circuitImage.src = data.circuit_image[key];
+                        circuitImage.alt = `Circuit Diagram for ${key}`;
+                        resultDiv.appendChild(circuitImage);
 
-                    // Append the resultDiv to the results container
-                    resultsContainer.appendChild(resultDiv);
-                }
+                        resultsContainer.appendChild(resultDiv);
+                    }
 
-                // Plot the locally simulated images from img_ios
-                for (let key in data.img_ios) {
-                    const imgTitle = document.createElement('h2');
-                    imgTitle.textContent = `Simulation Result (${key})`;
-                    resultsContainer.appendChild(imgTitle);
+                    for (let key in data.img_ios) {
+                        const imgTitle = document.createElement('h2');
+                        imgTitle.textContent = `Simulation Result (${key})`;
+                        resultsContainer.appendChild(imgTitle);
 
-                    const img = document.createElement('img');
-                    img.src = data.img_ios[key];
-                    img.alt = `Simulation Result for ${key}`;
-                    resultsContainer.appendChild(img);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while generating the circuit.');
-                document.getElementById('generating-message').style.display = 'none'; // Hide generating message in case of error
-            });
+                        const img = document.createElement('img');
+                        img.src = data.img_ios[key];
+                        img.alt = `Simulation Result for ${key}`;
+                        resultsContainer.appendChild(img);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while generating the circuit.');
+                    document.getElementById('generating-message').style.display = 'none'; // Hide generating message in case of error
+                });
         }
     </script>
 </body>

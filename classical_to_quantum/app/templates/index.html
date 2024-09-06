@@ -3,14 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome</title>
+    <title>Welcome to C2|Q></title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Page styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url("../static/assets/background1.png");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Container styling */
+        #container {
+            background-color: rgba(255, 255, 255, 0.9); /* Slight transparency to blend with background */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px;
+            width: 320px;
+        }
+
+        /* Heading styling */
+        h1 {
+            font-size: 2rem;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        /* Button styling */
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            margin: 10px 0;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Button container */
+        button + button {
+            margin-top: 10px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 600px) {
+            #container {
+                width: 90%;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            button {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Image styling */
+        .quantum-image {
+            margin-top: 20px;
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
     <div id="container">
-        <h1>Welcome to Classi|Q>!</h1>
+        <h1>Welcome to C2|Q>!</h1>
         <button onclick="window.location.href='/manual_input'">Input Classical Code Manually</button>
         <button onclick="window.location.href='/graph_problem'">Graph Problem</button>
+
+        <!-- Quantum Image Section -->
+        <img class="quantum-image" src="{{ url_for('static', filename='assets/img_1.png') }}" alt="Quantum Circuit">
+        <p>Bridging the gap between classical and quantum computing</p>
     </div>
 </body>
 </html>
