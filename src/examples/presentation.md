@@ -1,103 +1,3 @@
-# Classi|Q> Project!!!
-Trying to bridge the gap between classical computing and quantum computing, especially in the context of **NP-complete problem**, for those who are not familiar with quantum computing. This project is addressing both a theoretical and practical needs. Provide a general overview of the problems that can be solved by quantum computers from the perspective of **computational complexity theory**.
-
-
-## License
-This project takes Qiskit open source project as a reference, thanks to community.
-A copy of this license is included in the `LICENSE` file.
-
-## Attribution
-- Author: Boshuai Ye, email: boshuaiye@gmail.com
-- License: http://www.apache.org/licenses/LICENSE-2.0
-- Qiskit: https://qiskit.org/
-
-### Workflow of Classi|Q>
-
-![alt text](./assets/workflow.png "Title")
-
-### How we translate classical problem into quantum???
-We aim to analyze the given classical code by extracting its Abstract Syntax Tree (AST), traversing it to identify the type of problem being solved, and then capturing the original data. 
-The next step is to convert this input data into a format suitable for 
-quantum computation. Currently, we are focusing on converting NP problems 
-to CNF (Conjunctive Normal Form) and utilizing the Quantum Approximate 
-Optimization Algorithm (QAOA). For these cases, oracles tailored to 
-different types of problems will be required. And also a translator that gives readable output.
-
-### From the point of view of computational theory
- - bounded-error quantum polynomial time (BQP) is the class of decision problems sovable by a quantum computer in polynomial time.
-
-### Limitedness
-1. ***Inherent complexity to translate original problem into CNF***...
-2. ***Not all problems have a quantum counterpart...*** 
-3. ***From the view of computational theory, parts of supported algorithms, say Grover, takes $\sqrt{N}$ steps, although it's a speedup compared with normal N, but in computational theory, its not a speedup at all... The square of root of a exponential function is still exponential.***
-5. Difficulty in Classical Simulation:
-6. Simulating the output distribution of a random quantum circuit on a classical computer is believed to be a hard problem, particularly as the number of qubits and the circuit depth increase. This hardness stems from the exponential growth of the state space (with the number of qubits) and the complex interference patterns that arise due to the random gates.
-
-### Translating Classical Problems into Quantum
-
-1. **Problem Formulation and Data Representation**
-   - **Classical**: We aim to analyze the given classical code by extracting its Abstract Syntax Tree (AST), traversing it to identify the type of problem being solved and fetching input data
-   - **Quantum**: Convert input data into quantum format (with qubits)
-2. **Algorithm Selection**
-   - **Classical**: Choose an appropriate classical algorithm (e.g., sorting, searching, optimization).
-   - **Quantum**: Identify or design a quantum algorithm (e.g., Grover's algorithm for searching, Shor's algorithm for factoring) that can solve the problem more efficiently using quantum principles.
-3. **State Initialization**
-   - **Classical**: Initialize the data in a particular state or configuration.
-   - **Quantum**: Prepare an initial quantum state, often starting from |0⟩, |1⟩, or a superposition state.
-4. **Circuit Design**
-   - **Classical**: Some parts of the algorithm are ran classically, for example: gradient decent in QAOA
-   - **Quantum**: Design a quantum circuit that implements the quantum algorithm. This involves choosing quantum gates (e.g., Hadamard, CNOT, T-gate) that manipulate qubits according to the problem’s requirements. This part is automated.
-5. **Execution**
-   - **Local**: Run the circuit with local simulator
-   - **Quantum**: Execute the quantum circuit on a remote quantum computer.
-6. **Interpretation of Results**
-   - **Quantum**: Interpret the measured quantum state to understand the solution. 
-
-# Workflow of our framework
-![Image of Workflow](workflow.png)
-- We aim to analyze the given classical code by extracting its Abstract Syntax Tree (AST), traversing it to identify the type of problem being solved, and then capturing the original data. The next step is to convert this input data into a format suitable for quantum computation. Currently, we are focusing on converting NP problems to CNF (Conjunctive Normal Form) and utilizing the Quantum Approximate Optimization Algorithm (QAOA). For these cases, oracles tailored to different types of problems will be required. And also a translator that gives readable output.
-# Outline
-- **Parser**
-  - Leverage Python’s Abstract Syntax Tree (AST) to perform a Depth-First Search (DFS), systematically analyzing the entire tree structure to gather all the necessary information for the Generator.
-![Image of Workflow](https://i0.wp.com/pybit.es/wp-content/uploads/2021/05/tree-sketch.png?w=750&ssl=1)
-  - Notice: Try to make sure your code contains only a single function, only one usage at once. And also try to make code structure clear and names of variables and functions clearly indicates its usages. This tree-based parser is not that clever yet (based mainly on rules)... I am thinking to employ OPENAI interfaces later... 
-- **Generator**
-   - Generate the corresponding QASM code and visualize the results, with local simulation if specified.
-   - Based on results from parser and select corresponding algorithms... 
-- **Optimizer**
-   -  The codes generated by the translator are fed into the optimizer to determine the most suitable algorithm for running on real quantum hardware. The optimizer also takes responsibility for finding the optimal algorithm parameters, such as the number of iterations in Grover’s algorithm. If necessary, the code will be executed on local simulators.
-- **Recommender** 
-   - Given QASM code from Generator, selects the most suitable and available quantum computer to execute the translated quantum code and receives the quantum results.
-- **Interpreter**
-   - Transform the results from remote quantum computer into readable format.
-- **Basic arithmetic operation**: +, -, * are implemented with quantum unitary gates
-- **Graph problems**: perhaps easy to understand
-  - qaoa (partially done based on openqaoa)
-    - Visualization
-    - Support different file format e.g., gset, tsplib 
-  - grover (oracle for each problem needed)
-    - Convert it to SAT problem if it could be done.
-    - Why **Sat**? Sat problem was the first problem proven to be NP-complete by Stephen Cook in 1971 (Cook’s theorem). This means that every problem in NP can be           reduced to SAT, making it a kind of "universal" problem for NP. Any problem in NP can be reduced to it in polynomial time. So study SAT counterpart of a graph problem has an empirical implication.
-    - How to choose an optimal iterations number wisely? We suppose the number of solutions is unknown, The formula for updating T is given by: choose T=1 initially, then $T = \lceil \frac{4}{5} T \rceil$ during each iteration[^1]
-- **Eigen values (minimum or multiple)**:
-- **Satisfiable Problems**:
-- **Factorization**:
-
-### Future improvements
-- Utilize Pennylane to enhance visualization of ease coding[^2]
-- Employ the power of randomness??? For example, in quantum oracle, the verification of CNF, only select a small number of clauses to reduce the complexity of circuits (should be really carefully handled and analysed...)
-- Support more qubits, thus more complex circuits...
-
-[^1]: Boyer, M., Brassard, G., Høyer, P., & Tapp, A. (1998). Tight bounds on quantum searching. Fortschritte Der Physik, 46(4–5), 493–505. https://doi.org/10.1002/(sici)1521-3978(199806)46:4/5
-
-[^2]: Ville Bergholm, Josh Izaac, Maria Schuld, Christian Gogolin, M. Sohaib Alam, Shahnawaz Ahmed, Juan Miguel Arrazola, Carsten Blank, Alain Delgado, Soran Jahangiri, Keri McKiernan, Johannes Jakob Meyer, Zeyue Niu, Antal Száva, and Nathan Killoran. PennyLane: Automatic differentiation of hybrid quantum-classical computations. 2018. arXiv:1811.04968
-
-
-# Get started
-### Run the following in your terminal
-`make install`
-
-
 # Import necessary libs
 
 ```python
@@ -146,6 +46,43 @@ multiplication_code = data['test_cases']['multiplication']
 
 generator = QASMGenerator()
 ```
+
+# Workflow of our framework
+![Image of Workflow](workflow.png)
+- We aim to analyze the given classical code by extracting its Abstract Syntax Tree (AST), traversing it to identify the type of problem being solved, and then capturing the original data. The next step is to convert this input data into a format suitable for quantum computation. Currently, we are focusing on converting NP problems to CNF (Conjunctive Normal Form) and utilizing the Quantum Approximate Optimization Algorithm (QAOA). For these cases, oracles tailored to different types of problems will be required. And also a translator that gives readable output.
+# Outline
+- **Parser**
+  - Leverage Python’s Abstract Syntax Tree (AST) to perform a Depth-First Search (DFS), systematically analyzing the entire tree structure to gather all the necessary information for the Generator.
+![Image of Workflow](https://i0.wp.com/pybit.es/wp-content/uploads/2021/05/tree-sketch.png?w=750&ssl=1)
+  - Notice: Try to make sure your code contains only a single function, only one usage at once. And also try to make code structure clear and names of variables and functions clearly indicates its usages. This tree-based parser is not that clever yet (based mainly on rules)... I am thinking to employ OPENAI interfaces later... 
+- **Generator**
+   - Generate the corresponding QASM code and visualize the results, with local simulation if specified.
+   - Based on results from parser and select corresponding algorithms... 
+   
+- **Recommender** 
+   - Given QASM code from Generator, selects the most suitable and available quantum computer to execute the translated quantum code and receives the quantum results.
+- **Interpreter**
+   - Transform the results from remote quantum computer into readable format.
+- **Basic arithmetic operation**: +, -, * are implemented with quantum unitary gates
+- **Graph problems**: perhaps easy to understand
+  - qaoa (partially done based on openqaoa)
+    - Visualization
+    - Support different file format e.g., gset, tsplib 
+  - grover (oracle for each problem needed)
+    - Convert it to SAT problem if it could be done.
+    - Why **Sat**? Sat problem was the first problem proven to be NP-complete by Stephen Cook in 1971 (Cook’s theorem). This means that every problem in NP can be           reduced to SAT, making it a kind of "universal" problem for NP. Any problem in NP can be reduced to it in polynomial time. So study SAT counterpart of a graph problem has an empirical implication.
+    - How to choose an optimal iterations number wisely? We suppose the number of solutions is unknown, The formula for updating T is given by: choose T=1 initially, then $T = \lceil \frac{4}{5} T \rceil$ during each iteration[^1]
+- **Eigen values (minimum or multiple)**:
+- **Satisfiable Problems**:
+- **Factorization**:
+
+### Future improvements
+- Utilize Pennylane to enhance visualization of ease coding[^2]
+- Support more qubits, thus more complex circuits...
+
+[^1]: Boyer, M., Brassard, G., Høyer, P., & Tapp, A. (1998). Tight bounds on quantum searching. Fortschritte Der Physik, 46(4–5), 493–505. https://doi.org/10.1002/(sici)1521-3978(199806)46:4/5
+
+[^2]: Ville Bergholm, Josh Izaac, Maria Schuld, Christian Gogolin, M. Sohaib Alam, Shahnawaz Ahmed, Juan Miguel Arrazola, Carsten Blank, Alain Delgado, Soran Jahangiri, Keri McKiernan, Johannes Jakob Meyer, Zeyue Niu, Antal Száva, and Nathan Killoran. PennyLane: Automatic differentiation of hybrid quantum-classical computations. 2018. arXiv:1811.04968
 
 
 # Example: Independent Set
@@ -519,7 +456,7 @@ plot_multiple_graph_colorings(coloring_problem.graph(), bitstring_results, num_p
 
 
     
-![png](./presentation_files/presentation_14_1.png)
+![png](presentation_files/presentation_14_1.png)
     
 
 
@@ -3361,4 +3298,3 @@ plot_histogram(res.quasi_dists)
 ```python
 
 ```
-

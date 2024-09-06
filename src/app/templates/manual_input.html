@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Classical Code</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Page styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url("../static/assets/background1.png");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Container styling */
+        #container {
+            background-color: rgba(255, 255, 255, 0.9); /* Slight transparency */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            width: 100%;
+            margin: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #4CAF50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #generating-message {
+            color: #007BFF;
+            font-weight: bold;
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        /* Results styling */
+        .result {
+            margin-bottom: 30px;
+        }
+
+        .result h2 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        pre {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 10px 0;
+        }
+
+        /* Media Queries for responsiveness */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            button {
+                font-size: 1rem;
+                padding: 12px;
+            }
+
+            textarea {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <h1>Input Classical Code</h1>
+        <p>Enter your classical code below and generate a quantum circuit based on it. Your code should include a single function for best results.</p>
+
+        <!-- Input Area -->
+        <textarea id="classical_code" placeholder="Enter your classical code here..."></textarea>
+        <button onclick="generateCircuit()">Generate Circuit</button>
+
+        <!-- Generating message -->
+        <div id="generating-message">Generating...</div>
+
+        <!-- Results container -->
+        <div id="results"></div>
+    </div>
+
+    <script>
+        function generateCircuit() {
+            const classicalCode = document.getElementById('classical_code').value;
+            document.getElementById('generating-message').style.display = 'block'; // Show generating message
+            fetch('/generate_circuit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ classical_code: classicalCode })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('generating-message').style.display = 'none'; // Hide generating message
+                    const resultsContainer = document.getElementById('results');
+                    resultsContainer.innerHTML = ''; // Clear previous results
+
+                    for (let key in data.qasm_code) {
+                        const resultDiv = document.createElement('div');
+                        resultDiv.classList.add('result');
+
+                        const qasmTitle = document.createElement('h2');
+                        qasmTitle.textContent = `QASM 3.0 Code (${key})`;
+                        resultDiv.appendChild(qasmTitle);
+
+                        const qasmCodePre = document.createElement('pre');
+                        qasmCodePre.textContent = data.qasm_code[key];
+                        resultDiv.appendChild(qasmCodePre);
+
+                        const circuitTitle = document.createElement('h2');
+                        circuitTitle.textContent = `Circuit Diagram (${key})`;
+                        resultDiv.appendChild(circuitTitle);
+
+                        const circuitImage = document.createElement('img');
+                        circuitImage.src = data.circuit_image[key];
+                        circuitImage.alt = `Circuit Diagram for ${key}`;
+                        resultDiv.appendChild(circuitImage);
+
+                        resultsContainer.appendChild(resultDiv);
+                    }
+
+                    for (let key in data.img_ios) {
+                        const imgTitle = document.createElement('h2');
+                        imgTitle.textContent = `Simulation Result (${key})`;
+                        resultsContainer.appendChild(imgTitle);
+
+                        const img = document.createElement('img');
+                        img.src = data.img_ios[key];
+                        img.alt = `Simulation Result for ${key}`;
+                        resultsContainer.appendChild(img);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while generating the circuit.');
+                    document.getElementById('generating-message').style.display = 'none'; // Hide generating message in case of error
+                });
+        }
+    </script>
+</body>
+
+</html>
